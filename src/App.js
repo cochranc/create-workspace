@@ -1,15 +1,12 @@
 import React from 'react';
-//import Konva from 'konva';
-//import { Stage, Layer, Rect, Text } from 'react-konva';
-import './App.css';
+import './styles/App.css';
+import Workspace from './Workspace';
 
+//complete application
 function App() {
 
-  return (
-    <div>
-      <p> test </p>
-    </div>
-  );
+    return <Workspace/>;
+
 }
 
 export default App;
