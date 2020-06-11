@@ -9,21 +9,19 @@ function ValNode(props) {
     const [value, setValue] = useState(props.value);
     const [isShown, setIsShown] = useState(false);
 
-    //<p class="hide">valNode: val: {value}</p>
     return (
         <div>
             <div class="node"
                 onMouseEnter={() => setIsShown(true)}
                 onMouseLeave={() => setIsShown(false)}
             >
-                <div class="node-icon"
-                    id="valNode"
+                <div class="node-icon" id="valNode"
                 ></div>
             </div>
             {/*this is a hidden object. It will appear when hovered over.*/}
-            {isShown && (
+            { /*isShown && (
                 <div class="info">valNode: val: {value}</div>
-            )}
+            )*/}
         </div>
     );
 
@@ -42,9 +40,9 @@ function VarNode(props) {
             >
                 <div class="node-icon" id="varNode"></div>
             </div>
-            {isShown && (
+            {/*isShown && (
                 <div class="info">varNode: name: {name}</div>
-            )}
+            )*/}
         </div>
     );
 
@@ -67,9 +65,9 @@ function FunNode(props) {
             >
                 <div class="node-icon" id="funNode"></div>
             </div>
-            {isShown && (
+            {/*isShown && (
                 <div class="info">funNode: name: {name}, minParams: {minParams}, maxParams: {maxParams}</div>
-            )}
+            )*/}
         </div>
     );
 

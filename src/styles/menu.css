@@ -1,3 +1,13 @@
+#menu {
+    display: flex; /* or inline-flex */
+    flex-direction: row;
+    flex-basis: auto;
+    justify-content: flex-start;
+    align-items: center;
+    height: 80px;
+    width: auto;
+    border: 1px solid black;
+}
 
 #workspaceIcon {
     background-image: url('./icons/menuIcon.png');
@@ -47,20 +57,7 @@
     background-size: 50px 50px;
 }
 
-#menu {
-    border: 1px solid #1C6EA4;
-    height: 140px;
-}
-
-
-/* sets li objects side by side */
-li {
-    display: inline-block;
-    position: relative;
-    padding: 20px;
-}
-
 .icon {
     width: 60px;
-    height: 60px;
+    height: 50px;
 }

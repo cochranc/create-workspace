@@ -1,34 +1,30 @@
+.node-icon{
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    transform: rotate(-45deg);
+}
 
 #valNode {
-    position: absolute;
-    width: 70.71px;
-    height: 70.71px;
-    background: #FFF500;
-    transform: rotate(-45deg);
+    background: rgb(255, 251, 14);
 }
 
 #varNode {
-    position: absolute;
-    width: 70.71px;
-    height: 70.71px;
     background: rgb(204, 112, 7);
-    transform: rotate(-45deg);
 }
 
-#funNode {
-    position: absolute;
-    width: 70.71px;
-    height: 70.71px;    
+#funNode {   
     background: rgb(19, 211, 195);
-    transform: rotate(-45deg);
 }
 
 .node {
-    width: 100px;
-    height: 100px;
+    width: 60px;
+    height: 50px;
 }
 
+/*
 .info {
     width: 100px;
     height: 100px;
 }
+*/

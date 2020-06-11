@@ -5,32 +5,14 @@ function Menu(props) {
 
     return (
         <div id="menu">
-            <ul>
-                <li>
-                    <div class="icon" id="workspaceIcon" />
-                </li>
-                <li>
-                    <div class="icon" id="valueIcon" />
-                </li>
-                <li>
-                    <div class="icon" id="functionIcon" />
-                </li>
-                <li>
-                    <div class="icon" id="customFunctionIcon" />
-                </li>
-                <li>
-                    <div class="icon" id="cursorIcon" />
-                </li>
-                <li>
-                    <div class="icon" id="undoIcon" />
-                </li>
-                <li>
-                    <div class="icon" id="redoIcon" />
-                </li>
-                <li>
-                    <div class="icon" id="saveIcon" />
-                </li>
-            </ul>
+            <div class="icon" id="workspaceIcon" />
+            <div class="icon" id="valueIcon" />
+            <div class="icon" id="functionIcon" />
+            <div class="icon" id="customFunctionIcon" />
+            <div class="icon" id="cursorIcon" />
+            <div class="icon" id="undoIcon" />
+            <div class="icon" id="redoIcon" />
+            <div class="icon" id="saveIcon" />
         </div>
     )
 }
