@@ -1,0 +1,66 @@
+
+#workspaceIcon {
+    background-image: url('./icons/menuIcon.png');
+    background-repeat:no-repeat;
+    background-size: 50px 50px;
+}
+
+#valueIcon {
+    background-image: url('./icons/vIcon.png');
+    background-repeat:no-repeat;
+    background-size: 50px 50px;
+}
+
+#functionIcon {
+    background-image: url('./icons/fIcon.png');
+    background-repeat:no-repeat;
+    background-size: 50px 50px;
+}
+
+#customFunctionIcon {
+    background-image: url('./icons/userDefinedIcon.png');
+    background-repeat:no-repeat;
+    background-size: 50px 50px;
+}
+
+#cursorIcon {
+    background-image: url('./icons/arrowClickIcon.png');
+    background-repeat:no-repeat;
+    background-size: 50px 50px;
+}
+
+#undoIcon {
+    background-image: url('./icons/undoIcon.png');
+    background-repeat:no-repeat;
+    background-size: 50px 50px;
+}
+
+#redoIcon {
+    background-image: url('./icons/redoIcon.png');
+    background-repeat:no-repeat;
+    background-size: 50px 50px;
+}
+
+#saveIcon {
+    background-image: url('./icons/save.png');
+    background-repeat:no-repeat;
+    background-size: 50px 50px;
+}
+
+#menu {
+    border: 1px solid #1C6EA4;
+    height: 140px;
+}
+
+
+/* sets li objects side by side */
+li {
+    display: inline-block;
+    position: relative;
+    padding: 20px;
+}
+
+.icon {
+    width: 60px;
+    height: 60px;
+}
