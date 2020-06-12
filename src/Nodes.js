@@ -19,9 +19,9 @@ function ValNode(props) {
                 ></div>
             </div>
             {/*this is a hidden object. It will appear when hovered over.*/}
-            { /*isShown && (
+            { isShown && (
                 <div class="info">valNode: val: {value}</div>
-            )*/}
+            )}
         </div>
     );
 
@@ -40,9 +40,9 @@ function VarNode(props) {
             >
                 <div class="node-icon" id="varNode"></div>
             </div>
-            {/*isShown && (
+            {isShown && (
                 <div class="info">varNode: name: {name}</div>
-            )*/}
+            )}
         </div>
     );
 
@@ -65,9 +65,9 @@ function FunNode(props) {
             >
                 <div class="node-icon" id="funNode"></div>
             </div>
-            {/*isShown && (
+            {isShown && (
                 <div class="info">funNode: name: {name}, minParams: {minParams}, maxParams: {maxParams}</div>
-            )*/}
+            )}
         </div>
     );
 

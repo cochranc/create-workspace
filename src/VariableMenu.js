@@ -9,7 +9,7 @@ function VariableMenu() {
     var exVar = ['x', 'y', 't'];
 
     return (
-        <div id="flex">
+        <div class="flex" id="variable">
             <div class="node">
                 <ValNode value={0.5} />
             </div>

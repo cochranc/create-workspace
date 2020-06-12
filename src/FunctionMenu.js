@@ -26,7 +26,7 @@ function FunctionMenu() {
 
     return (
 
-        <div id="flex">
+        <div class="flex" id="function">
             {//creates an instance of a FunNode with the values from exFun
                 exFun.map((item, index) => {
                     return (

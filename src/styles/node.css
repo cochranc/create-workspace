@@ -20,11 +20,14 @@
 .node {
     width: 60px;
     height: 50px;
+    padding-top: 10px;
+    padding-bottom: 30px;
 }
 
-/*
+
 .info {
+    background-color: rgb(226, 218, 205);
+    height: auto;
     width: 100px;
-    height: 100px;
 }
-*/
+

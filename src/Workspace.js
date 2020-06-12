@@ -12,8 +12,6 @@ function Workspace() {
     return (
         <div>
             <Menu />
-            <FunctionMenu />
-            <VariableMenu />
         </div>
     );
 
