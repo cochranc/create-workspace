@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import Menu from './Menu';
 import FunctionForm from './FunctionForm';
 import './styles/workspace.css';
-import MIST, { Layout } from './mist.js';
+import MIST from './mist.js';
 import VarNode from './VarNode';
 import FunNode from './FunNode';
 
@@ -19,28 +19,28 @@ export default class Workspace extends Component {
         var y = this.layout.addVal("y", 75, 100);
         this.layout.addEdge(x, mult, 0);
         this.layout.addEdge(y, mult, 0);
+        this.nodeList = [];
       }
 
     componentDidMount() {
-        /*const script = document.createElement("script");
-        script.src = "./mist.js";
-        script.async = true;
-        document.body.appendChild(script);*/
     }
 
     
-    addOp(name, x, y) {
-        console.log("put "+name+" at "+x+", "+y);
-    }
-
-    addVal(name, x, y) {
+    addOpToList(name, x, y) {
         console.log("put "+name+" at "+x+", "+y);
         x = x + 'px';
         y = y + 'px';
-        return <VarNode name={name} style={{x, y, position:'absolute'}}/>;
+        this.nodeList.push(<FunNode name={name} style={{x, y, position:'absolute'}}/>);
     }
 
-    addEdge(source, sink, edgeNum) {
+    addValToList(name, x, y) {
+        console.log("put "+name+" at "+x+", "+y);
+        x = x + 'px';
+        y = y + 'px';
+        this.nodeList.push(<VarNode name={name} style={{x, y, position:'absolute'}}/>);
+    }
+
+    addEdgeToList(source, sink, edgeNum) {
         console.log("put edge from "+source+" to "+sink+", with id="+edgeNum);
     }
 
@@ -51,7 +51,8 @@ export default class Workspace extends Component {
             <div id="workspace" ref="workspace">
                 <Menu/>
                 <FunctionForm/>
-                {MIST.displayLayout(this.layout, )}
+                {MIST.displayLayout(this.layout, this)}
+                <ls>{this.nodeList}</ls>
             </div>
         );
     }
