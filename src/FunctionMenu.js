@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { FunNode } from './Nodes';
+import { VarNode } from './VarNode';
+import FunNode from './FunNode';
 import './styles/fun&varMenu.css';
 
 // menu that lists the different functions
@@ -26,11 +27,11 @@ function FunctionMenu() {
 
     return (
 
-        <div class="flex" id="function">
+        <div className="flex" id="function">
             {//creates an instance of a FunNode with the values from exFun
                 exFun.map((item, index) => {
                     return (
-                        <div class="node">
+                        <div className="node">
                             <FunNode name={item.name}
                                 minParams={item.minParams}
                                 maxParams={item.maxParams}
