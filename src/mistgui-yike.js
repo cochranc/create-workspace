@@ -19,6 +19,15 @@ var functionRGBcolor = '#AE88D6';
 var lineStrokeWidth = 2;
 
 var menuFontSize = width / 75; //12 when width = 900
+var valueSideLength = functionTotalSideLength / 1.414;
+var valueMenuColor = '#F2937C';
+var valueMenuColorLight = '#FDE6DD';
+var valueXYColor = '#EFDC5C';
+var valueTimeColor = '#FD9E54'
+var valueMouseColor = '#E46868';
+var valueConstantColor = '#F17C9D';
+
+var menuFontSize = width / 75; //12 when width = 900
 var nodeFontSize = width / 56.25; //16 when width = 900
 var globalScale = width / 900; // for elements that are more difficult to scale (undo/redo)
 
@@ -42,6 +51,20 @@ var functions = {
   rgb: { rep: 'rgb', max: 3, min: 3, prefix: 'rgb', color: functionRGBcolor },
   mistif: { rep: 'if', max: 3, min: 3, prefix: 'mistif', color: functionSingleColor }
 }
+
+
+var values = {
+  x: { rep: 'x', color: valueXYColor },
+  y: { rep: 'y', color: valueXYColor },
+  second: { rep: 't.s', color: valueTimeColor },
+  minute: { rep: 't.m', color: valueTimeColor },
+  hour: { rep: 't.h', color: valueTimeColor },
+  day: { rep: 't.d', color: valueTimeColor },
+  constant: { rep: '#', color: valueConstantColor },
+  mouseX: { rep: 'm.x', color: valueMouseColor },
+  mouseY: { rep: 'm.y', color: valueMouseColor }
+}
+
 
 function MakeFunctionGroup(props) {
 
@@ -117,6 +140,64 @@ function MakeFunctionGroup(props) {
 };
 
 
+
+/* /*
+  makeValueGroup takes a string valName, the name of a key in the values object above,
+  an integer x, and an integer y, and returns the corresponding function node object,
+  centered at (x + width / 40, y + width / 40).
+// */
+function MakeValueGroup(props) {
+
+  var valName = props.name;
+  return <Group
+    name={valName}
+    x={props.x}
+    y={props.y}
+    lineOut={[]}
+    rep={values[valName].rep}
+    renderFunction={values[valName].rep}
+    //visible={false}
+    //renderLayer={null}
+    scaleX={1}
+    scaleY={1}
+    draggable
+  >
+    <Rect
+      name={valName}
+      x={functionRectSideLength / 2}
+      y={0}
+      width={valueSideLength}
+      height={valueSideLength}
+      fill={values[valName].color}
+      rotation={45}
+    />
+    <Text
+      text={values[valName].rep}
+      fontFamily={globalFont}
+      fill={'black'}
+      fontSize={nodeFontSize}
+      x={0}
+      y={valueSideLength / 2}
+      width={functionRectSideLength}
+      align={'center'}
+    />
+    <Rect
+      name={'imageBox'}
+      x={valueImageBoxOffset}
+      y={valueImageBoxOffset}
+      width={imageBoxSideLength}
+      height={imageBoxSideLength}
+      fill={imageBoxColor}
+      stroke={'black'}
+      strokeWidth={.5}
+      //visible={false}
+      expanded={false}
+    />
+  </Group>
+};
+
+
+
 /*
   makeLine takes either the props from a functionGroup object or valueGroup object as input
   (props) and creates a line that begins at the left edge of source. 
@@ -127,7 +208,7 @@ function MakeLine(props) {
   var yOffset = functionTotalSideLength / 2;;
 
   var source = props.sourceProps;
-  
+
   //orginal code - not sure if we can use it
   /*
   if (props.source == "function") {
@@ -146,7 +227,7 @@ function MakeLine(props) {
       //alter this to make the line longer
       source.x + functionTotalSideLength + 30,
       source.y + yOffset,
-    ]} 
+    ]}
     stroke='black'
     strokeWidth={lineStrokeWidth}
     source={source}
@@ -157,10 +238,11 @@ function MakeLine(props) {
   ></Line>;
 }
 
+
 export default {
   height, globalFont, functionFont, functions, functionStrokeWidth,
   functionHalfStrokeWidth, functionTotalSideLength, functionRectSideLength, functionColor, functionColorLight,
   functionMultColor, functionSingleColor, functionRGBcolor, menuFontSize, nodeFontSize, globalScale,
   imageBoxSideLength, imageBoxColor, functionImageBoxOffset, valueImageBoxOffset, renderSideLength,
-  MakeFunctionGroup, MakeLine
+  MakeFunctionGroup, MakeValueGroup, MakeLine
 };
