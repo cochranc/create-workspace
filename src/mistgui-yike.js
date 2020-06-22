@@ -41,11 +41,13 @@ var functions = {
   mistif:    {rep: 'if', max: 3, min: 3, prefix: 'mistif', color: functionSingleColor}
 }
 
-var makeFunctionGroup = function(funName, x, y) {
+function MakeFunctionGroup (props) {
+
+  var funName = props.name;
   return <Group
       name={funName}
-      x={x - functionHalfStrokeWidth}
-      y={y}
+      x={props.x - functionHalfStrokeWidth}
+      y={props.y}
       numInputs={0} 
       maxInputs={functions[funName].max}
       minInputs={functions[funName].min}
@@ -58,6 +60,9 @@ var makeFunctionGroup = function(funName, x, y) {
       //renderLayer={null}
       scaleX={1}
       scaleY={1}
+      draggable
+      onDragStart={props.onDragStart}
+      onDragEnd={props.onDragEnd}
     >
       <Rect
         name={funName}
@@ -99,4 +104,4 @@ export default {height, globalFont, functionFont, functions, functionStrokeWidth
   functionHalfStrokeWidth, functionTotalSideLength, functionRectSideLength, functionColor, functionColorLight,
   functionMultColor, functionSingleColor, functionRGBcolor, menuFontSize, nodeFontSize, globalScale,
   imageBoxSideLength, imageBoxColor, functionImageBoxOffset, valueImageBoxOffset, renderSideLength,
-  makeFunctionGroup};
+  MakeFunctionGroup};
