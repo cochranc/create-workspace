@@ -71,6 +71,8 @@ export default function Workspace(props) {
                     // only contains name, x, and y props
                     // props from MakeFunctionGroup are not brought up to the parent
                     sourceProps={exampleFunction.props}/>
+                    <gui.MakeOutlet 
+                    sourceProps={exampleFunction.props} />
                 </Layer>
             </Stage>
         </div>

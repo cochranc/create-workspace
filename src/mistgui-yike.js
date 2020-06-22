@@ -1,5 +1,5 @@
 import React from 'react';
-import { Rect, Group, Text, Line } from 'react-konva';
+import { Rect, Group, Text, Line, Shape } from 'react-konva';
 
 var width = window.innerWidth;
 var height = window.innerHeight;
@@ -26,6 +26,10 @@ var valueXYColor = '#EFDC5C';
 var valueTimeColor = '#FD9E54'
 var valueMouseColor = '#E46868';
 var valueConstantColor = '#F17C9D';
+
+var outletXOffset = width / 400;
+var outletYOffset = functionRectSideLength / 3;
+var outletColor =  '#C4C4C4';
 
 var menuFontSize = width / 75; //12 when width = 900
 var nodeFontSize = width / 56.25; //16 when width = 900
@@ -235,8 +239,44 @@ function MakeLine(props) {
 
     //sourceIndex={source.lineOut.length}
     outlet={null}
-  ></Line>;
+  />;
 }
+
+/*
+  makeOutlet takes a function node object, functGroup, and returns an outlet node object 
+  to be added to that group.
+  It DOES NOT add the outlet to the group.
+*/
+
+function MakeOutlet (props) {
+  var source = props.sourceProps;
+  var bezPoint = width / 50;
+  
+  return <Shape
+  sceneFunc = { function(context) {
+    context.beginPath();
+    context.moveTo(0, 0);
+    context.bezierCurveTo(-bezPoint, -bezPoint, -bezPoint, bezPoint, 0, 0);
+    context.closePath();
+    context.fillStrokeShape(this);
+  }}
+  x = {source.x + outletXOffset}
+  y = {source.y + outletYOffset}
+  /*
+  name = {'outlet' + (functGroup.children.length - OUTLET_OFFSET)}
+  x = {functGroup.children[0].x() + outletXOffset}
+  y = {functGroup.children[0].y() + (functGroup.children.length - OUTLET_OFFSET) * 
+    outletYOffset + functionHalfStrokeWidth}
+    */
+  fill = {outletColor}
+  opacity = {1}
+  stroke = 'black'
+  strokeWidth = {1}
+  lineIn = {null}
+  //outletIndex = {functGroup.children.length - OUTLET_OFFSET}
+  />
+  ;
+};
 
 
 export default {
@@ -244,5 +284,5 @@ export default {
   functionHalfStrokeWidth, functionTotalSideLength, functionRectSideLength, functionColor, functionColorLight,
   functionMultColor, functionSingleColor, functionRGBcolor, menuFontSize, nodeFontSize, globalScale,
   imageBoxSideLength, imageBoxColor, functionImageBoxOffset, valueImageBoxOffset, renderSideLength,
-  MakeFunctionGroup, MakeValueGroup, MakeLine
+  MakeFunctionGroup, MakeValueGroup, MakeLine, MakeOutlet
 };
