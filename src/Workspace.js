@@ -52,6 +52,12 @@ export default function Workspace(props) {
         y={100}
     />
 
+    var exampleValue = <gui.MakeValueGroup 
+    name="x"
+    x={400}
+    y={300}
+    />
+
     // we should probably have the menu, the workspace, the function bar, and the settings here
     return (
         <div id="workspace">
@@ -60,6 +66,7 @@ export default function Workspace(props) {
             <Stage width={window.innerWidth} height={window.innerHeight - 200}>
                 <Layer>
                     {exampleFunction}
+                    {exampleValue}
                     <gui.MakeLine 
                     // only contains name, x, and y props
                     // props from MakeFunctionGroup are not brought up to the parent
