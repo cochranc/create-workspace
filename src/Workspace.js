@@ -10,6 +10,7 @@ import FunctionForm from './FunctionForm';
 import './styles/workspace.css';
 
 
+
 //container for everything related to the create workspace
 export default function Workspace(props) {
     // this layout would be brought back from past sessions
@@ -45,6 +46,12 @@ export default function Workspace(props) {
         console.log("put edge from " + source + " to " + sink + ", with id=" + edgeNum);
     };
 
+    var exampleFunction = <gui.MakeFunctionGroup
+        name="add"
+        x={100}
+        y={100}
+    />
+
     // we should probably have the menu, the workspace, the function bar, and the settings here
     return (
         <div id="workspace">
@@ -52,11 +59,11 @@ export default function Workspace(props) {
             <FunctionForm />
             <Stage width={window.innerWidth} height={window.innerHeight - 200}>
                 <Layer>
-                    <gui.MakeFunctionGroup
-                        name="add"
-                        x={100}
-                        y={100}
-                    />
+                    {exampleFunction}
+                    <gui.MakeLine 
+                    // only contains name, x, and y props
+                    // props from MakeFunctionGroup are not brought up to the parent
+                    sourceProps={exampleFunction.props}/>
                 </Layer>
             </Stage>
         </div>
