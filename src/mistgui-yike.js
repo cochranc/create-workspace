@@ -119,57 +119,57 @@ function MakeFunctionGroup (props) {
 //   an integer x, and an integer y, and returns the corresponding function node object,
 //   centered at (x + width / 40, y + width / 40).
 // */
-function MakeValueGroup (props) {
+// function MakeValueGroup (props) {
 
-  var valName = props.name;
-  return <Group
-      name={valName}
-      x={props.x }
-      y={props.y}
-      lineOut={[]}
-      rep={values[valnName].rep}
-      renderFunction={values[valName].rep}
-      visible={false}
-      renderLayer={null}
-      scaleX={1}
-      scaleY={1}
-      draggable
-      onDragStart={props.onDragStart}
-      onDragEnd={props.onDragEnd}
-    >
-      <Rect
-        name={valName}
-        x={functionRectSideLength/2}
-        y={0}
-        width={valueSideLength}
-        height={valueSideLength}
-        fill={values[valName].color}
-        rotation={45}
-      />
-      <Text
-        text={values[valName].rep}
-        fontFamily={globalFont}
-        fill={'black'}
-        fontSize={nodeFontSize}
-        x={0}
-        y={valueSideLength/2}
-        width={functionRectSideLength}
-        align={'center'}
-      />
-      <Rect
-        name={'imageBox'}
-        x={valueImageBoxOffset}
-        y={valueImageBoxOffset}
-        width={imageBoxSideLength}
-        height={imageBoxSideLength}
-        fill={imageBoxColor}
-        stroke={'black'}
-        strokeWidth={.5}
-        visible={false}
-        expanded={false}
-      />
-    </Group>
-};
+//   var valName = props.name;
+//   return <Group
+//       name={valName}
+//       x={props.x }
+//       y={props.y}
+//       lineOut={[]}
+//       rep={values[valnName].rep}
+//       renderFunction={values[valName].rep}
+//       visible={false}
+//       renderLayer={null}
+//       scaleX={1}
+//       scaleY={1}
+//       draggable
+//       onDragStart={props.onDragStart}
+//       onDragEnd={props.onDragEnd}
+//     >
+//       <Rect
+//         name={valName}
+//         x={functionRectSideLength/2}
+//         y={0}
+//         width={valueSideLength}
+//         height={valueSideLength}
+//         fill={values[valName].color}
+//         rotation={45}
+//       />
+//       <Text
+//         text={values[valName].rep}
+//         fontFamily={globalFont}
+//         fill={'black'}
+//         fontSize={nodeFontSize}
+//         x={0}
+//         y={valueSideLength/2}
+//         width={functionRectSideLength}
+//         align={'center'}
+//       />
+//       <Rect
+//         name={'imageBox'}
+//         x={valueImageBoxOffset}
+//         y={valueImageBoxOffset}
+//         width={imageBoxSideLength}
+//         height={imageBoxSideLength}
+//         fill={imageBoxColor}
+//         stroke={'black'}
+//         strokeWidth={.5}
+//         visible={false}
+//         expanded={false}
+//       />
+//     </Group>
+// };
 
 
 export default {height, globalFont, functionFont, functions, functionStrokeWidth,
