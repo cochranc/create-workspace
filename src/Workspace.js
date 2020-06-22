@@ -1,8 +1,8 @@
-import React, {Component} from 'react'
-import Menu from './Menu';
-import FunctionForm from './FunctionForm';
+import React, {Component} from 'react';
+import {Stage, Layer} from 'react-konva';
 import './styles/workspace.css';
 import MIST from './mist.js';
+import gui from './mistgui-yike.js';
 import VarNode from './VarNode';
 import FunNode from './FunNode';
 
@@ -48,12 +48,20 @@ export default class Workspace extends Component {
     // we should probably have the menu, the workspace, the function bar, and the settings here
     render() {
         return (
-            <div id="workspace" ref="workspace">
+            <Stage width={window.innerWidth} height={window.innerHeight}>
+                <Layer>
+                    {gui.makeFunctionGroup("add", 100, 100)}
+                </Layer>
+            </Stage>
+            /*<div id="workspace">
                 <Menu/>
                 <FunctionForm/>
                 {MIST.displayLayout(this.layout, this)}
                 <ls>{this.nodeList}</ls>
-            </div>
+                {initializeStage("workspace")}
+                {this.nodeList.push(gui.makeFunctionGroup("add", 100, 100))}
+                <ls>{this.nodeList}</ls>
+            </div>*/
         );
     }
 }

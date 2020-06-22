@@ -7,8 +7,10 @@
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
     "fabric": "^3.6.3",
+    "konva": "^6.0.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-konva": "^16.13.0-3",
     "react-script-tag": "^1.1.2",
     "react-scripts": "3.4.1",
     "reactstrap": "^8.4.1"
