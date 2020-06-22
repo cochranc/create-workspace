@@ -1,9 +1,13 @@
-import React, {Component} from 'react'
+import React, { Component, useState } from 'react'
 import './styles/functionform.css';
 import MIST from './mist.js';
 
 //container for everything related to the create workspace
-export default class FunctionForm extends Component {
+export default function FunctionForm(props) {
+    const [value, setValue] = useState('');
+
+    // don't need this, but commented out in case we do in the future
+    /*
     constructor(props) {
         super(props);
         this.state = {value: ''};
@@ -11,27 +15,27 @@ export default class FunctionForm extends Component {
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
-    
-    handleChange(event) {
-        this.setState({value: event.target.value});
-    }
-    
-    handleSubmit(event) {
+    */
+
+    function handleChange(event) {
+        setValue(event.target.value);
+    };
+
+    function handleSubmit(event) {
         event.preventDefault();
         event.stopPropagation();
         event.nativeEvent.stopImmediatePropagation();
-        console.log(MIST.parse(this.state.value, ""));
+        console.log(MIST.parse(value, ""));
         //console.log(MIST.App("plus", new MIST.Val("x"), new MIST.Val("y")));
         return false;
-    }
-    
-    render() {
-        return (
-            <form id="form" onSubmit={event => this.handleSubmit(event)}>
-                <label>
-                    <input id="textbox" type="text" value={this.state.value} onChange={this.handleChange} />
-                </label>
-            </form>
-        );
-    }
+    };
+
+    return (
+        <form id="form" onSubmit={handleSubmit}>
+            <label>
+                <input id="textbox" type="text" value={value} onChange={handleChange} />
+            </label>
+        </form>
+    );
+
 }

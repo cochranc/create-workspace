@@ -61,8 +61,22 @@ function MakeFunctionGroup (props) {
       scaleX={1}
       scaleY={1}
       draggable
-      onDragStart={props.onDragStart}
-      onDragEnd={props.onDragEnd}
+      /*
+      dragBoundFunc = {function (pos) {
+        var newY = pos.y;
+        var newX = pos.x;
+        if (pos.y < 0) {
+          newY = 0;
+        }
+        if (pos.y > props.layerHeight) {
+          newY = props.layerHeight
+        }
+        return {
+          x: newX,
+          y: newY,
+        }
+      }}
+      */
     >
       <Rect
         name={funName}
