@@ -29,7 +29,7 @@ var valueConstantColor = '#F17C9D';
 
 var outletXOffset = width / 400;
 var outletYOffset = functionRectSideLength / 3;
-var outletColor =  '#C4C4C4';
+var outletColor = '#C4C4C4';
 
 var menuFontSize = width / 75; //12 when width = 900
 var nodeFontSize = width / 56.25; //16 when width = 900
@@ -243,39 +243,38 @@ function MakeLine(props) {
 }
 
 /*
-  makeOutlet takes a function node object, functGroup, and returns an outlet node object 
+  makeOutlet takes the properties of function node object, functGroup, and returns an outlet node object 
   to be added to that group.
   It DOES NOT add the outlet to the group.
 */
-
-function MakeOutlet (props) {
+function MakeOutlet(props) {
   var source = props.sourceProps;
   var bezPoint = width / 50;
-  
+
   return <Shape
-  sceneFunc = { function(context) {
-    context.beginPath();
-    context.moveTo(0, 0);
-    context.bezierCurveTo(-bezPoint, -bezPoint, -bezPoint, bezPoint, 0, 0);
-    context.closePath();
-    context.fillStrokeShape(this);
-  }}
-  x = {source.x + outletXOffset}
-  y = {source.y + outletYOffset}
-  /*
-  name = {'outlet' + (functGroup.children.length - OUTLET_OFFSET)}
-  x = {functGroup.children[0].x() + outletXOffset}
-  y = {functGroup.children[0].y() + (functGroup.children.length - OUTLET_OFFSET) * 
-    outletYOffset + functionHalfStrokeWidth}
-    */
-  fill = {outletColor}
-  opacity = {1}
-  stroke = 'black'
-  strokeWidth = {1}
-  lineIn = {null}
+    sceneFunc={function (context) {
+      context.beginPath();
+      context.moveTo(0, 0);
+      context.bezierCurveTo(-bezPoint, -bezPoint, -bezPoint, bezPoint, 0, 0);
+      context.closePath();
+      context.fillStrokeShape(this);
+    }}
+    x={source.x + outletXOffset}
+    y={source.y + outletYOffset}
+    /*
+    name = {'outlet' + (functGroup.children.length - OUTLET_OFFSET)}
+    x = {functGroup.children[0].x() + outletXOffset}
+    y = {functGroup.children[0].y() + (functGroup.children.length - OUTLET_OFFSET) * 
+      outletYOffset + functionHalfStrokeWidth}
+      */
+    fill={outletColor}
+    opacity={1}
+    stroke='black'
+    strokeWidth={1}
+    lineIn={null}
   //outletIndex = {functGroup.children.length - OUTLET_OFFSET}
   />
-  ;
+    ;
 };
 
 

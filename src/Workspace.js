@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Stage, Layer } from 'react-konva';
 import Konva from 'konva';
 import MIST from './mist.js';
@@ -52,10 +52,10 @@ export default function Workspace(props) {
         y={100}
     />
 
-    var exampleValue = <gui.MakeValueGroup 
-    name="x"
-    x={400}
-    y={300}
+    var exampleValue = <gui.MakeValueGroup
+        name="x"
+        x={400}
+        y={300}
     />
 
     // we should probably have the menu, the workspace, the function bar, and the settings here
@@ -67,12 +67,12 @@ export default function Workspace(props) {
                 <Layer>
                     {exampleFunction}
                     {exampleValue}
-                    <gui.MakeLine 
-                    // only contains name, x, and y props
-                    // props from MakeFunctionGroup are not brought up to the parent
-                    sourceProps={exampleFunction.props}/>
-                    <gui.MakeOutlet 
-                    sourceProps={exampleFunction.props} />
+                    <gui.MakeLine
+                        // only contains name, x, and y props
+                        // props from MakeFunctionGroup are not brought up to the parent
+                        sourceProps={exampleValue.props} />
+                    <gui.MakeOutlet
+                        sourceProps={exampleFunction.props} />
                 </Layer>
             </Stage>
         </div>
