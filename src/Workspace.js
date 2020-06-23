@@ -1,90 +1,150 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Stage, Layer } from 'react-konva';
-import Konva from 'konva';
-import MIST from './mist.js';
-import gui from './mistgui-yike.js';
-import VarNode from './VarNode';
-import FunNode from './FunNode';
+//import Konva from 'konva';
+//import MIST from './mist.js';
+import gui, {MakeFunctionGroup, MakeValueGroup} from './mistgui-yike.js';
 import Menu from './Menu';
 import FunctionForm from './FunctionForm';
 import './styles/workspace.css';
 
+/* Global Variables */
+var width = window.innerWidth;
+var height = window.innerHeight;
+var globalFont = 'Arial';
+var functionFont = 'Courier New';
+
+var functionStrokeWidth = width / 90;
+var functionHalfStrokeWidth = functionStrokeWidth / 2;
+var functionTotalSideLength = width / 20;
+var functionRectSideLength = functionTotalSideLength - functionStrokeWidth;
+var functionColor = '#3FAAA0';
+var functionColorLight = '#C6F1ED';
+var functionMultColor = '#5EC783';
+var functionSingleColor = '#77C9E2';
+var functionRGBcolor = '#AE88D6';
+
+var lineStrokeWidth = 2;
+
+var menuFontSize = width / 75; //12 when width = 900
+var valueSideLength = functionTotalSideLength / 1.414;
+var valueMenuColor = '#F2937C';
+var valueMenuColorLight = '#FDE6DD';
+var valueXYColor = '#EFDC5C';
+var valueTimeColor = '#FD9E54'
+var valueMouseColor = '#E46868';
+var valueConstantColor = '#F17C9D';
+
+var outletXOffset = width / 400;
+var outletYOffset = functionRectSideLength / 3;
+var outletColor = '#C4C4C4';
+
+var menuFontSize = width / 75; //12 when width = 900
+var nodeFontSize = width / 56.25; //16 when width = 900
+var globalScale = width / 900; // for elements that are more difficult to scale (undo/redo)
+
+var imageBoxSideLength = width / 80;
+var imageBoxColor = 'white';
+var functionImageBoxOffset = width / 300;
+var valueImageBoxOffset = width / 31;
+var renderSideLength = width / 18;
+
+var functions = {
+    add: { rep: 'sum', max: 20, min: 2, prefix: 'sum', color: functionMultColor },
+    multiply: { rep: 'mult', max: 20, min: 2, prefix: 'mult', color: functionMultColor },
+    square: { rep: 'sqr', max: 1, min: 1, prefix: 'square', color: functionSingleColor },
+    negate: { rep: 'neg', max: 1, min: 1, prefix: 'neg', color: functionSingleColor },
+    sine: { rep: 'sin', max: 1, min: 1, prefix: 'sin', color: functionSingleColor },
+    cosine: { rep: 'cos', max: 1, min: 1, prefix: 'cos', color: functionSingleColor },
+    absolute: { rep: 'abs', max: 1, min: 1, prefix: 'abs', color: functionSingleColor },
+    average: { rep: 'avg', max: 20, min: 2, prefix: 'avg', color: functionMultColor },
+    sign: { rep: 'sign', max: 1, min: 1, prefix: 'sign', color: functionSingleColor },
+    wrapsum: { rep: 'wsum', max: 20, min: 2, prefix: 'wsum', color: functionMultColor },
+    rgb: { rep: 'rgb', max: 3, min: 3, prefix: 'rgb', color: functionRGBcolor },
+    mistif: { rep: 'if', max: 3, min: 3, prefix: 'mistif', color: functionSingleColor }
+};
+
+
+var values = {
+    x: { rep: 'x', color: valueXYColor },
+    y: { rep: 'y', color: valueXYColor },
+    second: { rep: 't.s', color: valueTimeColor },
+    minute: { rep: 't.m', color: valueTimeColor },
+    hour: { rep: 't.h', color: valueTimeColor },
+    day: { rep: 't.d', color: valueTimeColor },
+    constant: { rep: '#', color: valueConstantColor },
+    mouseX: { rep: 'm.x', color: valueMouseColor },
+    mouseY: { rep: 'm.y', color: valueMouseColor }
+};
+/* Global Variables */
 
 
 //container for everything related to the create workspace
 export default function Workspace(props) {
-    // this layout would be brought back from past sessions
-    /*
-    this.layout = new MIST.Layout();
-    var mult = this.layout.addOp("mult", 50, 50);
-    var x = this.layout.addVal("x", 25, 100);
-    var y = this.layout.addVal("y", 75, 100);
-    this.layout.addEdge(x, mult, 0);
-    this.layout.addEdge(y, mult, 0);
-    this.nodeList = [];
-    */
 
-    //useEffect = componenetDidMount
+    // keep track of current nodes and lines in workspace
+    const [functionNodes, setFunctionNodes] = useState([]);
+    const [variableNodes, SetVariableNodes] = useState([]);
+    const [lines, setLines] = useState([]);
 
-    function addOpToList(name, x, y) {
-        console.log("put " + name + " at " + x + ", " + y);
-        x = x + 'px';
-        y = y + 'px';
-        //this.nodeList.push(gui.makeFunctionGroup(name, x, y));
-        this.nodeList.push(<FunNode name={name} style={{ x, y, position: 'absolute' }} />);
-    };
+    // idea for the future
+    // keep track of things added/deleted to enable the redo/undo button
+    const [history, setHistory] = useState([]);
 
-    function addValToList(name, x, y) {
-        console.log("put " + name + " at " + x + ", " + y);
-        x = x + 'px';
-        y = y + 'px';
-        //this.nodeList.push(gui.makeValueGroup(name, x, y));
-        this.nodeList.push(<VarNode name={name} style={{ x, y, position: 'absolute' }} />);
-    };
+    // writing functions that don't mutate the data directly
+    // will make it easier to redo/undo actions
+    function pushFunctionNode(node) {
+        let newNodes = functionNodes;
+        newNodes.push(node);
+        setFunctionNodes(newNodes);
+        console.log(functionNodes.length);
+        return node;
+    }
 
-    function addEdgeToList(source, sink, edgeNum) {
-        console.log("put edge from " + source + " to " + sink + ", with id=" + edgeNum);
-    };
+    function pushVariableNode(node) {
+        let newNodes = variableNodes;
+        newNodes.push(node);
+        setFunctionNodes(newNodes);
+        return node;
+    }
 
-    var exampleFunction = <gui.MakeFunctionGroup
-        name="add"
-        x={100}
-        y={100}
-    />
+    function pushLine(line) {
+        let newLines = lines;
+        newLines.push(line);
+        setLines(newLines);
+        return line;
+    }
 
-    var exampleValue = <gui.MakeValueGroup
-        name="x"
-        x={400}
-        y={300}
-    />
 
-    // we should probably have the menu, the workspace, the function bar, and the settings here
+    var exampleFunction = {
+        //copy props from add function
+        ...functions.add,
+        x: 100,
+        y: 100,
+        draggable: true
+    }
+
+    
+    var exampleValue = {
+        ...values.x,
+        x: 200,
+        y: 200,
+        draggable: true
+    }
+
+    // Note: I rewrote MakeFunctionGroup and MakeValueGroup but
+    // not makeLine and makeOutlet. Now that the state is here, we might be able
+    // to bring back most of the code that was commented out back
     return (
         <div id="workspace">
             <Menu />
             <FunctionForm />
-            <Stage width={window.innerWidth} height={window.innerHeight - 200}>
+            <Stage width={width} height={height - 200}>
                 <Layer>
-                    {exampleFunction}
-                    {exampleValue}
-                    <gui.MakeLine
-                        // only contains name, x, and y props
-                        // props from MakeFunctionGroup are not brought up to the parent
-                        sourceProps={exampleValue.props} />
-                    <gui.MakeOutlet
-                        sourceProps={exampleFunction.props} />
+                    <MakeFunctionGroup {...exampleFunction} />
+                    <MakeValueGroup {...exampleValue}/>
                 </Layer>
             </Stage>
         </div>
-        /*<div id="workspace">
-            <Menu/>
-            <FunctionForm/>
-            {MIST.displayLayout(this.layout, this)}
-            <ls>{this.nodeList}</ls>
-            {initializeStage("workspace")}
-            {this.nodeList.push(gui.makeFunctionGroup("add", 100, 100))}
-            <ls>{this.nodeList}</ls>
-        </div>*/
     );
 
 }

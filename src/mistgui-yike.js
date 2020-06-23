@@ -1,6 +1,7 @@
 import React from 'react';
 import { Rect, Group, Text, Line, Shape } from 'react-konva';
 
+/* Global Variables */
 var width = window.innerWidth;
 var height = window.innerHeight;
 var globalFont = 'Arial';
@@ -42,33 +43,33 @@ var valueImageBoxOffset = width / 31;
 var renderSideLength = width / 18;
 
 var functions = {
-  add: { rep: 'sum', max: 20, min: 2, prefix: 'sum', color: functionMultColor },
-  multiply: { rep: 'mult', max: 20, min: 2, prefix: 'mult', color: functionMultColor },
-  square: { rep: 'sqr', max: 1, min: 1, prefix: 'square', color: functionSingleColor },
-  negate: { rep: 'neg', max: 1, min: 1, prefix: 'neg', color: functionSingleColor },
-  sine: { rep: 'sin', max: 1, min: 1, prefix: 'sin', color: functionSingleColor },
-  cosine: { rep: 'cos', max: 1, min: 1, prefix: 'cos', color: functionSingleColor },
-  absolute: { rep: 'abs', max: 1, min: 1, prefix: 'abs', color: functionSingleColor },
-  average: { rep: 'avg', max: 20, min: 2, prefix: 'avg', color: functionMultColor },
-  sign: { rep: 'sign', max: 1, min: 1, prefix: 'sign', color: functionSingleColor },
-  wrapsum: { rep: 'wsum', max: 20, min: 2, prefix: 'wsum', color: functionMultColor },
-  rgb: { rep: 'rgb', max: 3, min: 3, prefix: 'rgb', color: functionRGBcolor },
-  mistif: { rep: 'if', max: 3, min: 3, prefix: 'mistif', color: functionSingleColor }
-}
+    add: { rep: 'sum', max: 20, min: 2, prefix: 'sum', color: functionMultColor },
+    multiply: { rep: 'mult', max: 20, min: 2, prefix: 'mult', color: functionMultColor },
+    square: { rep: 'sqr', max: 1, min: 1, prefix: 'square', color: functionSingleColor },
+    negate: { rep: 'neg', max: 1, min: 1, prefix: 'neg', color: functionSingleColor },
+    sine: { rep: 'sin', max: 1, min: 1, prefix: 'sin', color: functionSingleColor },
+    cosine: { rep: 'cos', max: 1, min: 1, prefix: 'cos', color: functionSingleColor },
+    absolute: { rep: 'abs', max: 1, min: 1, prefix: 'abs', color: functionSingleColor },
+    average: { rep: 'avg', max: 20, min: 2, prefix: 'avg', color: functionMultColor },
+    sign: { rep: 'sign', max: 1, min: 1, prefix: 'sign', color: functionSingleColor },
+    wrapsum: { rep: 'wsum', max: 20, min: 2, prefix: 'wsum', color: functionMultColor },
+    rgb: { rep: 'rgb', max: 3, min: 3, prefix: 'rgb', color: functionRGBcolor },
+    mistif: { rep: 'if', max: 3, min: 3, prefix: 'mistif', color: functionSingleColor }
+};
 
 
 var values = {
-  x: { rep: 'x', color: valueXYColor },
-  y: { rep: 'y', color: valueXYColor },
-  second: { rep: 't.s', color: valueTimeColor },
-  minute: { rep: 't.m', color: valueTimeColor },
-  hour: { rep: 't.h', color: valueTimeColor },
-  day: { rep: 't.d', color: valueTimeColor },
-  constant: { rep: '#', color: valueConstantColor },
-  mouseX: { rep: 'm.x', color: valueMouseColor },
-  mouseY: { rep: 'm.y', color: valueMouseColor }
-}
-
+    x: { rep: 'x', color: valueXYColor },
+    y: { rep: 'y', color: valueXYColor },
+    second: { rep: 't.s', color: valueTimeColor },
+    minute: { rep: 't.m', color: valueTimeColor },
+    hour: { rep: 't.h', color: valueTimeColor },
+    day: { rep: 't.d', color: valueTimeColor },
+    constant: { rep: '#', color: valueConstantColor },
+    mouseX: { rep: 'm.x', color: valueMouseColor },
+    mouseY: { rep: 'm.y', color: valueMouseColor }
+};
+/* Global Variables */
 
 function MakeFunctionGroup(props) {
 
@@ -78,34 +79,18 @@ function MakeFunctionGroup(props) {
     x={props.x - functionHalfStrokeWidth}
     y={props.y}
     numInputs={0}
-    maxInputs={functions[funName].max}
-    minInputs={functions[funName].min}
+    maxInputs={props.max}
+    minInputs={props.min}
     lineOut={[]}
-    rep={functions[funName].rep}
-    prefix={functions[funName].prefix}
-    separator={functions[funName].separator}
+    rep={props.rep}
+    prefix={props.prefix}
+    separator={props.separator}
     renderFunction={null}
     //visible={false}
     //renderLayer={null}
     scaleX={1}
     scaleY={1}
-    draggable
-  /*
-  dragBoundFunc = {function (pos) {
-    var newY = pos.y;
-    var newX = pos.x;
-    if (pos.y < 0) {
-      newY = 0;
-    }
-    if (pos.y > props.layerHeight) {
-      newY = props.layerHeight
-    }
-    return {
-      x: newX,
-      y: newY,
-    }
-  }}
-  */
+    draggable = {props.draggable}
   >
     <Rect
       name={funName}
@@ -113,13 +98,13 @@ function MakeFunctionGroup(props) {
       y={functionHalfStrokeWidth}
       width={functionRectSideLength}
       height={functionRectSideLength}
-      fill={functions[funName].color}
+      fill={props.color}
       lineJoin={'round'}
-      stroke={functions[funName].color}
+      stroke={props.color}
       strokeWidth={functionStrokeWidth}
     />
     <Text
-      text={functions[funName].rep}
+      text={props.rep}
       fontFamily={globalFont}
       fill={'black'}
       fontSize={nodeFontSize}
@@ -158,8 +143,8 @@ function MakeValueGroup(props) {
     x={props.x}
     y={props.y}
     lineOut={[]}
-    rep={values[valName].rep}
-    renderFunction={values[valName].rep}
+    rep={props.rep}
+    renderFunction={props.rep}
     //visible={false}
     //renderLayer={null}
     scaleX={1}
@@ -172,11 +157,11 @@ function MakeValueGroup(props) {
       y={0}
       width={valueSideLength}
       height={valueSideLength}
-      fill={values[valName].color}
+      fill={props.color}
       rotation={45}
     />
     <Text
-      text={values[valName].rep}
+      text={props.rep}
       fontFamily={globalFont}
       fill={'black'}
       fontSize={nodeFontSize}
@@ -206,6 +191,7 @@ function MakeValueGroup(props) {
   makeLine takes either the props from a functionGroup object or valueGroup object as input
   (props) and creates a line that begins at the left edge of source. 
 */
+
 function MakeLine(props) {
 
   //make sure the line starts from the middle of the node
@@ -277,11 +263,13 @@ function MakeOutlet(props) {
     ;
 };
 
+// allows imports to be named instead of calling ex: gui.MakeFunctionGroup
+export {MakeFunctionGroup, MakeValueGroup, MakeLine, MakeOutlet};
 
+// "gui"
 export default {
   height, globalFont, functionFont, functions, functionStrokeWidth,
   functionHalfStrokeWidth, functionTotalSideLength, functionRectSideLength, functionColor, functionColorLight,
   functionMultColor, functionSingleColor, functionRGBcolor, menuFontSize, nodeFontSize, globalScale,
   imageBoxSideLength, imageBoxColor, functionImageBoxOffset, valueImageBoxOffset, renderSideLength,
-  MakeFunctionGroup, MakeValueGroup, MakeLine, MakeOutlet
 };
