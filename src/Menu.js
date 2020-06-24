@@ -14,7 +14,6 @@ function Menu(props) {
 
         //toggles value menu
         if (clicked == 'valueIcon') {
-
             //makes sure two menus aren't open at once
             if(!isValueMenuOpen && isFunctionMenuOpen) {
                  setIsFunctionMenuOpen(false);
@@ -36,18 +35,18 @@ function Menu(props) {
 
     return (
         <div id="menu">
-            <div class="icon" id="workspaceIcon" />
-            <div class="icon" id="valueIcon" onClick={() => onClick('valueIcon')}/>
+            <div className="icon" id="workspaceIcon" />
+            <div className="icon" id="valueIcon" onClick={() => onClick('valueIcon')}/>
             {//only shows variable menu if true
             isValueMenuOpen ? <VariableMenu/>: null}
-            <div class="icon" id="functionIcon" onClick={() => onClick('functionIcon')}/>
+            <div className="icon" id="functionIcon" onClick={() => onClick('functionIcon')}/>
             {//only shows function menu if true{
             isFunctionMenuOpen ? <FunctionMenu/>: null}
-            <div class="icon" id="customFunctionIcon" />
-            <div class="icon" id="cursorIcon" />
-            <div class="icon" id="undoIcon" />
-            <div class="icon" id="redoIcon" />
-            <div class="icon" id="saveIcon" />
+            <div className="icon" id="customFunctionIcon" />
+            <div className="icon" id="cursorIcon" />
+            <div className="icon" id="undoIcon" />
+            <div className="icon" id="redoIcon" />
+            <div className="icon" id="saveIcon" />
         </div>
     )
 }
