@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
-import { Stage, Layer } from 'react-konva';
-//import Konva from 'konva';
+import { Stage, Layer, Rect, Group} from 'react-konva';
+import Konva from 'konva';
 //import MIST from './mist.js';
-import gui, {MakeFunctionGroup, MakeValueGroup} from './mistgui-yike.js';
+//import gui, { makeRect } from './mistgui-yik.js';
+//import gui, {MakeFunctionGroup, MakeValueGroup} from './mistgui-yike.js';
 import Menu from './Menu';
 import FunctionForm from './FunctionForm';
+import FunNode from './FunNode';
 import './styles/workspace.css';
+import { useStrictMode } from 'react-konva';
 
 /* Global Variables */
 var width = window.innerWidth;
@@ -48,6 +51,7 @@ var functionImageBoxOffset = width / 300;
 var valueImageBoxOffset = width / 31;
 var renderSideLength = width / 18;
 
+
 var functions = {
     add: { rep: 'sum', max: 20, min: 2, prefix: 'sum', color: functionMultColor },
     multiply: { rep: 'mult', max: 20, min: 2, prefix: 'mult', color: functionMultColor },
@@ -81,8 +85,12 @@ var values = {
 //container for everything related to the create workspace
 export default function Workspace(props) {
 
+    useStrictMode(true);
+
     // keep track of current nodes and lines in workspace
-    const [functionNodes, setFunctionNodes] = useState([]);
+    const [functionNodes, setFunctionNodes] = useState([
+        ["add", 100, 100, '#3FAAA0', 0]
+    ]);
     const [variableNodes, SetVariableNodes] = useState([]);
     const [lines, setLines] = useState([]);
 
@@ -123,6 +131,8 @@ export default function Workspace(props) {
         draggable: true
     }
 
+    //var exampleGroup = makeFunctionGroup("add", 100, 100)
+
     
     var exampleValue = {
         ...values.x,
@@ -130,6 +140,30 @@ export default function Workspace(props) {
         y: 200,
         draggable: true
     }
+
+    // for testingggggg
+    function makeGroup() {
+        return <Group
+        x={100}
+        y={100}
+        />
+    }
+    function makeRect() {
+        return <Rect
+        x={100}
+        y={100}
+        width={100}
+        length={100}
+        color='5EC783'
+        />
+    }
+
+    //const groupData = ["add", 100, 100, '#3FAAA0', 0];
+    /*const group = <FunNode
+        name={"add"}
+        x={100} y={100}
+        color={'#3FAAA0'}
+        numInputs={0}/>*/
 
     // Note: I rewrote MakeFunctionGroup and MakeValueGroup but
     // not makeLine and makeOutlet. Now that the state is here, we might be able
@@ -140,8 +174,15 @@ export default function Workspace(props) {
             <FunctionForm />
             <Stage width={width} height={height - 200}>
                 <Layer>
-                    <MakeFunctionGroup {...exampleFunction} />
-                    <MakeValueGroup {...exampleValue}/>
+                    {functionNodes.map((item) =>
+                        <FunNode
+                            name={item[0]}
+                            x={item[1]}
+                            y={item[2]}
+                            color={item[3]}
+                            numInputs={item[4]}
+                            children={item[5]}
+                        />)}
                 </Layer>
             </Stage>
         </div>

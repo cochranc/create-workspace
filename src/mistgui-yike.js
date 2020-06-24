@@ -1,5 +1,5 @@
 import React from 'react';
-import { Rect, Group, Text, Line, Shape } from 'react-konva';
+import { Rect, Group, Text, Line, Shape, useStrictMode } from 'react-konva';
 
 /* Global Variables */
 var width = window.innerWidth;
@@ -91,6 +91,7 @@ function MakeFunctionGroup(props) {
     scaleX={1}
     scaleY={1}
     draggable = {props.draggable}
+    _useStrictMode
   >
     <Rect
       name={funName}
@@ -102,6 +103,7 @@ function MakeFunctionGroup(props) {
       lineJoin={'round'}
       stroke={props.color}
       strokeWidth={functionStrokeWidth}
+      _useStrictMode
     />
     <Text
       text={props.rep}
@@ -112,6 +114,7 @@ function MakeFunctionGroup(props) {
       y={functionTotalSideLength / 2 - functionHalfStrokeWidth}
       width={functionTotalSideLength}
       align={'center'}
+      _useStrictMode
     />
     <Rect
       name={'imageBox'}
@@ -124,6 +127,7 @@ function MakeFunctionGroup(props) {
       strokeWidth={.5}
       //visible={false}
       expanded={false}
+      _useStrictMode
     />
   </Group>
 };
@@ -195,7 +199,7 @@ function MakeValueGroup(props) {
 function MakeLine(props) {
 
   //make sure the line starts from the middle of the node
-  var yOffset = functionTotalSideLength / 2;;
+  var yOffset = functionTotalSideLength / 2;
 
   var source = props.sourceProps;
 
