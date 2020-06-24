@@ -90,6 +90,7 @@ export default function Workspace(props) {
     // keep track of current nodes and lines in workspace
     const [functionNodes, setFunctionNodes] = useState([
         ["add", 100, 100, '#3FAAA0', 0]
+        //["multiply", 50, 10, '#3FAAA0', 0]
     ]);
     const [variableNodes, SetVariableNodes] = useState([]);
     const [lines, setLines] = useState([]);
