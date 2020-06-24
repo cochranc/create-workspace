@@ -29,10 +29,13 @@ function FunNode(props) {
     var somelistofstuff = []
 
     return (
-        <Group>
+        <Group
+        draggable>
             <Rect
-                x={gui.functionHalfStrokeWidth}
-                y={gui.functionHalfStrokeWidth}
+                x={x}
+                y={y}
+                //x={gui.functionHalfStrokeWidth}
+                //y={gui.functionHalfStrokeWidth}
                 width={gui.functionRectSideLength}
                 height={gui.functionRectSideLength}
                 fill={color}
