@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
-import { Layer, Rect, Group, Text, Line, Shape, useStrictMode } from 'react-konva';
-import './styles/node.css';
-//import gui from './mistgui-yike.js';
+import React, { useState } from "react";
+import {
+  Rect,
+  Group,
+  Text,
+  Line,
+  Shape,
+  useStrictMode
+} from "react-konva";
 import gui from './mistgui-globals.js';
 
-//import { Stage, Layer, Rect, Text } from 'react-konva';
-
-
-// function nodes - for defined functions
 function FunNode(props) {
     const name = props.name;
     const index = props.index;
@@ -29,8 +30,31 @@ function FunNode(props) {
     //var showImage = false;
     const [showImage, setShowImage] = useState(false);
 
+    function handleDragStart(e) {
+        e.target.setAttrs({
+          shadowOffset: {
+            x: 15,
+            y: 15
+            },
+            scaleX: 1.1,
+            scaleY: 1.1
+        });
+    }
+    
+    function handleDragEnd(e) {
+        e.target.to({
+            duration: 0.5,
+            easing: Konva.Easings.ElasticEaseOut,
+            scaleX: 1,
+            scaleY: 1,
+            shadowOffsetX: 5,
+            shadowOffsetY: 5
+        });
+    }
+
     return (
         <Group
+            onDragStart={handleDragStart} onDragEnd={handleDragEnd}
             onClick={(event) => {
                 props.handler(index, event.currentTarget.x(), event.currentTarget.y())
                 props.check(index)
@@ -100,8 +124,5 @@ function FunNode(props) {
             )}
         </Group>
     );
-    
 }
-
-
-export default FunNode; 
+export default FunNode;
