@@ -3,13 +3,16 @@ import {
   Rect,
   Group,
   Text,
-  Line,
   Shape,
   useStrictMode
 } from "react-konva";
 import Konva from 'konva';
 import gui from './mistgui-globals.js';
 
+/**
+ * 
+ * @param {name, index, x, y, numInputs, numOutlets} props 
+ */
 function FunNode(props) {
     const name = props.name;
     const index = props.index;
@@ -28,7 +31,6 @@ function FunNode(props) {
     const scaleX = 1;
     const scaleY = 1;
     const numOutlets = props.numOutlets;
-    //var showImage = false;
     const [showImage, setShowImage] = useState(false);
 
     function handleDragStart(e) {
@@ -51,17 +53,13 @@ function FunNode(props) {
             shadowOffsetX: 5,
             shadowOffsetY: 5
         });
+        props.handler(index, e.currentTarget.x(), e.currentTarget.y())
     }
 
     return (
         <Group
-            onDragStart={handleDragStart} onDragEnd={handleDragEnd}
-            onClick={(event) => {
-                props.handler(index, event.currentTarget.x(), event.currentTarget.y())
-                props.check(index)
-                console.log("x:"+x);
-            }}
             draggable
+            onDragStart={handleDragStart} onDragEnd={handleDragEnd}
             x={x - gui.functionHalfStrokeWidth}
             y={y}
         >

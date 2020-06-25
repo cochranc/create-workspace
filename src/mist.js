@@ -1543,13 +1543,13 @@ MIST.displayLayout = function(layout, display)
   // Process all of the operations
   for (var id in layout.operations) {
     var op = layout.operations[id];
-    things[id] = display.addOpToList(op.name, op.x, op.y);
+    things[id] = display.pushFunctionNode(op.name, op.x, op.y);
   } // for
 
   // Process all of the values
   for (var id in layout.values) {
     var val = layout.values[id];
-    things[id] = display.addValToList(val.name, val.x, val.y);
+    things[id] = display.pushVariableNode(val.name, val.x, val.y);
   } // for
   
   // Process all of the edges
@@ -1563,7 +1563,7 @@ MIST.displayLayout = function(layout, display)
     if (!sink) {
       throw "Invalid sink in edge from " + edge.source + " to " + edge.sink;
     }
-    display.addEdgeToList(things[source.id], things[sink.id], edge.i);
+    display.pushLine(things[source.id], things[sink.id], edge.i);
   } // for
 }; // MIST.displayLayout
 

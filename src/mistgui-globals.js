@@ -214,6 +214,8 @@ var animation = false;
 var OUTLET_OFFSET = 3;
 var bezPoint = width / 50;
 
+export {width, height}
+
 export default {width, height, globalFont, functionFont, currentWorkspace, functionStrokeWidth,
     functionHalfStrokeWidth, functionTotalSideLength, functionRectSideLength,
     functionColor, functionColorLight, functionMultColor, functionSingleColor,
