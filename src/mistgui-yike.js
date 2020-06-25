@@ -8,9 +8,9 @@ var globalFont = 'Arial';
 var functionFont = 'Courier New';
 
 var functionStrokeWidth = width / 90;
-var functionHalfStrokeWidth = functionStrokeWidth / 2;
+var functionHalfStrokeWidth = width / 45; // functionStrokeWidth/2
 var functionTotalSideLength = width / 20;
-var functionRectSideLength = functionTotalSideLength - functionStrokeWidth;
+var functionRectSideLength = width / 20 - width / 45; // functionTotalSideLength - functionStrokeWidth
 var functionColor = '#3FAAA0';
 var functionColorLight = '#C6F1ED';
 var functionMultColor = '#5EC783';
@@ -19,8 +19,8 @@ var functionRGBcolor = '#AE88D6';
 
 var lineStrokeWidth = 2;
 
-var menuFontSize = width / 75; //12 when width = 900
-var valueSideLength = functionTotalSideLength / 1.414;
+var menuFontSize = width / 75; // 12 when width = 900
+var valueSideLength = width / 20 / 1.414;
 var valueMenuColor = '#F2937C';
 var valueMenuColorLight = '#FDE6DD';
 var valueXYColor = '#EFDC5C';
@@ -29,7 +29,7 @@ var valueMouseColor = '#E46868';
 var valueConstantColor = '#F17C9D';
 
 var outletXOffset = width / 400;
-var outletYOffset = functionRectSideLength / 3;
+var outletYOffset = (width / 20 - width / 45) / 3;
 var outletColor = '#C4C4C4';
 
 var menuFontSize = width / 75; //12 when width = 900

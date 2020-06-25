@@ -7,6 +7,7 @@ import Konva from 'konva';
 import Menu from './Menu';
 import FunctionForm from './FunctionForm';
 import FunNode from './FunNode';
+import ValNode from './ValNode';
 import './styles/workspace.css';
 import { useStrictMode } from 'react-konva';
 
@@ -89,15 +90,39 @@ export default function Workspace(props) {
 
     // keep track of current nodes and lines in workspace
     const [functionNodes, setFunctionNodes] = useState([
-        ["add", 100, 100, '#3FAAA0', 0]
-        //["multiply", 50, 10, '#3FAAA0', 0]
+        ["add", 100, 100, '#3FAAA0', 0, 0],
+        ["multiply", 50, 10, '#3FAAA0', 0, 2]
     ]);
-    const [variableNodes, SetVariableNodes] = useState([]);
+    const [variableNodes, SetVariableNodes] = useState([
+        ["x", 50, 100],
+        ["y", 50, 200]
+    ]);
+    const [valueNodes, SetValueNodes] = useState([
+        ["x", 50, 100],
+        ["y", 50, 200]
+    ]);
     const [lines, setLines] = useState([]);
 
     // idea for the future
     // keep track of things added/deleted to enable the redo/undo button
     const [history, setHistory] = useState([]);
+
+    function handler(index, x, y) {
+        return functionNodes.map((lst, i) => {
+            if(i != index) return lst;
+            lst[1] = x;
+            lst[2] = y;
+            return lst;
+        })
+        /*var lst = functionNodes;
+        lst[index][1] = x;
+        lst[index][2] = y;
+        setFunctionNodes(lst);
+        console.log('from handler, lst='+lsts);*/
+    }
+    function checkState(index) {
+        console.log(functionNodes[index])
+    }
 
     // writing functions that don't mutate the data directly
     // will make it easier to redo/undo actions
@@ -123,49 +148,6 @@ export default function Workspace(props) {
         return line;
     }
 
-
-    var exampleFunction = {
-        //copy props from add function
-        ...functions.add,
-        x: 100,
-        y: 100,
-        draggable: true
-    }
-
-    //var exampleGroup = makeFunctionGroup("add", 100, 100)
-
-    
-    var exampleValue = {
-        ...values.x,
-        x: 200,
-        y: 200,
-        draggable: true
-    }
-
-    // for testingggggg
-    function makeGroup() {
-        return <Group
-        x={100}
-        y={100}
-        />
-    }
-    function makeRect() {
-        return <Rect
-        x={100}
-        y={100}
-        width={100}
-        length={100}
-        color='5EC783'
-        />
-    }
-
-    //const groupData = ["add", 100, 100, '#3FAAA0', 0];
-    /*const group = <FunNode
-        name={"add"}
-        x={100} y={100}
-        color={'#3FAAA0'}
-        numInputs={0}/>*/
-
     // Note: I rewrote MakeFunctionGroup and MakeValueGroup but
     // not makeLine and makeOutlet. Now that the state is here, we might be able
     // to bring back most of the code that was commented out back
@@ -175,15 +157,26 @@ export default function Workspace(props) {
             <FunctionForm />
             <Stage width={width} height={height - 200}>
                 <Layer>
-                    {functionNodes.map((item) =>
+                    {functionNodes.map((item, index) =>
                         <FunNode
                             name={item[0]}
+                            index={index}
                             x={item[1]}
                             y={item[2]}
-                            color={item[3]}
                             numInputs={item[4]}
-                            children={item[5]}
-                        />)}
+                            numOutlets={item[5]}
+                            handler={handler}
+                            check={checkState}
+                        />
+                    )}
+                    {valueNodes.map((item, index) =>
+                        <ValNode
+                            name={item[0]}
+                            index={index}
+                            x={item[1]}
+                            y={item[2]}
+                        />
+                    )}
                 </Layer>
             </Stage>
         </div>
