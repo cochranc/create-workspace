@@ -7,6 +7,7 @@ import {
   Shape,
   useStrictMode
 } from "react-konva";
+import Konva from 'konva';
 import gui from './mistgui-globals.js';
 
 function FunNode(props) {
