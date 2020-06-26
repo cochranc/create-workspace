@@ -54,24 +54,23 @@ export default function Workspace(props) {
             const funIDoffset = functionNodes.length;
             const valIDoffset = valueNodes.length;
             var layout = layouts[i];
+            var funNodes = [...functionNodes];
             for (var id in layout.operations) {
                 funIDs.push(id);
                 var op = layout.operations[id];
-                var funNodes = [...functionNodes];
                 const node = [op.name, op.x, op.y, '#3FAAA0', 0, 0];
                 funNodes.push(node);
-                setFunctionNodes(funNodes);
             }
+            setFunctionNodes(prevNodes => ([...prevNodes, ...funNodes]));
+            var valNodes = [...valueNodes];
             for (id in layout.values) {
                 valIDs.push(id);
                 var val = layout.values[id];
-                var valNodes = [...valueNodes];
                 const node = [val.name, val.x, val.y];
                 valNodes.push(node);
-                console.log("valNodes: "+valNodes);
-                setValueNodes(valNodes);
-                console.log("updated variable nodes: "+valueNodes);
             }
+            setValueNodes(prevNodes => ([...prevNodes, ...valNodes]));
+            let newLines = [...lines];
             for (var j = 0; j < layout.edges.length; j++) {
                 var edge = layout.edges[i];
                 var source = layout.operations[edge.source] || layout.values[edge.source];
@@ -82,12 +81,11 @@ export default function Workspace(props) {
                 if (!sink) {
                     throw "Invalid sink in edge from " + edge.source + " to " + edge.sink;
                 }
-                let newLines = [...lines];
                 newLines.push([
                     valIDs.indexOf(source.id) + valIDoffset, // index of source in valueNodes
                     funIDs.indexOf(sink.id) + funIDoffset]); // index of sink in functionNodes
-                setLines(newLines);
             }
+            setLines(prevLines => ([...prevLines, ...newLines]));
         }
     }
     
