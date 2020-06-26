@@ -52,7 +52,7 @@ class DrawArrow extends Component {
     return (
       <Arrow
         ref={ref => (this.arrow = ref)}
-        points={[100, 100]}
+        points={[this.props.sourceX, this.props.sourceY, this.props.sinkX, this.props.sinkY]}
         pointerLength={20}
         pointerWidth={20}
         fill="black"

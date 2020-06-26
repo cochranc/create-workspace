@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Konva from 'konva';
 import { Layer, Rect, Group, Text, Line, Shape, useStrictMode } from 'react-konva';
 import './styles/node.css';
 //import gui from './mistgui-yike.js';
@@ -12,6 +13,7 @@ function ValNode(props) {
     const name = props.name;
     const x = props.x;
     const y = props.y;
+    const index = props.index;
     const [lineOut, setLineOut] = useState([]);
     const rep = gui.values[name].rep;
     const renderFunction = gui.values[name].rep;
@@ -22,9 +24,33 @@ function ValNode(props) {
     //var showImage = false;
     const [showImage, setShowImage] = useState(false);
 
+    function handleDragStart(e) {
+        e.target.setAttrs({
+          shadowOffset: {
+            x: 15,
+            y: 15
+            },
+            scaleX: 1.1,
+            scaleY: 1.1
+        });
+    }
+    
+    function handleDragEnd(e) {
+        e.target.to({
+            duration: 0.5,
+            easing: Konva.Easings.ElasticEaseOut,
+            scaleX: 1,
+            scaleY: 1,
+            shadowOffsetX: 5,
+            shadowOffsetY: 5
+        });
+        props.handler(index, e.currentTarget.x(), e.currentTarget.y())
+    }
+
     return (
         <Group
             draggable
+            onDragStart={handleDragStart} onDragEnd={handleDragEnd}
             x={x - gui.functionHalfStrokeWidth}
             y={y}
         >

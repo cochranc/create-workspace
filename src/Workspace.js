@@ -17,9 +17,9 @@ export default function Workspace(props) {
 
     //example layouts for testing
     var layout1 = new MIST.Layout();
-    var mult = layout1.addOp("add", 50, 50);
-    var x = layout1.addVal("x", 25, 100);
-    var y = layout1.addVal("y", 75, 100);
+    var mult = layout1.addOp("add", 125, 100);
+    var x = layout1.addVal("x", 50, 100);
+    var y = layout1.addVal("y", 50, 150);
     layout1.addEdge(x, mult, 0);
     layout1.addEdge(y, mult, 0);
 
@@ -49,17 +49,30 @@ export default function Workspace(props) {
 
     function displayLayout() {
         for(var i = 0; i < layouts.length; i++) {
+            var funIDs = [];
+            var valIDs = [];
+            const funIDoffset = functionNodes.length;
+            const valIDoffset = valueNodes.length;
             var layout = layouts[i];
-            var things = [];
             for (var id in layout.operations) {
+                funIDs.push(id);
                 var op = layout.operations[id];
-                things[id] = pushFunctionNode(op.name, op.x, op.y);
+                var funNodes = [...functionNodes];
+                const node = [op.name, op.x, op.y, '#3FAAA0', 0, 0];
+                funNodes.push(node);
+                setFunctionNodes(funNodes);
             }
-            for (var id in layout.values) {
+            for (id in layout.values) {
+                valIDs.push(id);
                 var val = layout.values[id];
-                things[id] = pushVariableNode(val.name, val.x, val.y);
+                var valNodes = [...valueNodes];
+                const node = [val.name, val.x, val.y];
+                valNodes.push(node);
+                console.log("valNodes: "+valNodes);
+                setValueNodes(valNodes);
+                console.log("updated variable nodes: "+valueNodes);
             }
-            for (var i = 0; i < layout.edges.length; i++) {
+            for (var j = 0; j < layout.edges.length; j++) {
                 var edge = layout.edges[i];
                 var source = layout.operations[edge.source] || layout.values[edge.source];
                 if (!source) {
@@ -69,7 +82,11 @@ export default function Workspace(props) {
                 if (!sink) {
                     throw "Invalid sink in edge from " + edge.source + " to " + edge.sink;
                 }
-                pushLine(things[source.id], things[sink.id], edge.i);
+                let newLines = [...lines];
+                newLines.push([
+                    valIDs.indexOf(source.id) + valIDoffset, // index of source in valueNodes
+                    funIDs.indexOf(sink.id) + funIDoffset]); // index of sink in functionNodes
+                setLines(newLines);
             }
         }
     }
@@ -96,20 +113,26 @@ export default function Workspace(props) {
         setLines(newLines);
     }
 
-    // rename! Updates functionNodes
-    function handler(index, x, y) {
+    function updateFunNodes(index, x, y) {
         var newLst = [...functionNodes];
         newLst[index][1] = x;
         newLst[index][2] = y;
         setFunctionNodes(newLst);
     }
+    function updateValNodes(index, x, y) {
+        var newLst = [...valueNodes];
+        newLst[index][1] = x;
+        newLst[index][2] = y;
+        setValueNodes(newLst);
+    }
+
     function checkState(index) {
         console.log(functionNodes[index])
     }
 
     useEffect(() => {
         displayLayout();
-      });
+    }, []);
 
     
 
@@ -122,15 +145,15 @@ export default function Workspace(props) {
             <FunctionForm />
             <Stage width={width} height={height - 200}>
                 <Layer>
-                    {/*lines.map((item, index) =>
+                    {lines.map((item, index) =>
                         <DrawArrow
                             index={index}
-                            sourceX={variableNodes[item[0]][1]} // x-coord of the source
-                            sourceY={variableNodes[item[0]][2]} // y-coord of the source
+                            sourceX={valueNodes[item[0]][1]} // x-coord of the source
+                            sourceY={valueNodes[item[0]][2]} // y-coord of the source
                             sinkX={functionNodes[item[1]][1]} // x-coord of the sink
                             sinkY={functionNodes[item[1]][2]} // y-coord of the sink
                         />
-                    )*/}
+                    )}
                     {functionNodes.map((item, index) =>
                         <FunNode
                             name={item[0]}
@@ -139,7 +162,7 @@ export default function Workspace(props) {
                             y={item[2]}
                             numInputs={item[4]}
                             numOutlets={item[5]}
-                            handler={handler}
+                            handler={updateFunNodes}
                             check={checkState}
                         />
                     )}
@@ -149,6 +172,7 @@ export default function Workspace(props) {
                             index={index}
                             x={item[1]}
                             y={item[2]}
+                            handler={updateValNodes}
                         />
                     )}
                 </Layer>
