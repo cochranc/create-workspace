@@ -56,10 +56,15 @@ function FunNode(props) {
         props.handler(index, e.currentTarget.x(), e.currentTarget.y())
     }
 
+    function handleDrag(e) {
+        props.handler(index, e.currentTarget.x(), e.currentTarget.y())
+    }
+
     return (
         <Group
             draggable
             onDragStart={handleDragStart} onDragEnd={handleDragEnd}
+            onDragMove={handleDrag}
             x={x - gui.functionHalfStrokeWidth}
             y={y}
         >

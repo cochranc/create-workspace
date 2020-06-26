@@ -47,10 +47,15 @@ function ValNode(props) {
         props.handler(index, e.currentTarget.x(), e.currentTarget.y())
     }
 
+    function handleDrag(e) {
+        props.handler(index, e.currentTarget.x(), e.currentTarget.y())
+    }
+
     return (
         <Group
             draggable
             onDragStart={handleDragStart} onDragEnd={handleDragEnd}
+            onDrag={handleDrag}
             x={x - gui.functionHalfStrokeWidth}
             y={y}
         >
