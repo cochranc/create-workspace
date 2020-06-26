@@ -143,7 +143,7 @@ export default function Workspace(props) {
             <FunctionForm />
             <Stage width={width} height={height - 200}>
                 <Layer>
-                    {lines.map((item, index) =>
+                {lines.map((item, index) =>
                         <DrawArrow
                             index={index}
                             sourceX={valueNodes[item[0]][1]} // x-coord of the source
