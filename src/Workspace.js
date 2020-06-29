@@ -67,7 +67,6 @@ export default function Workspace(props) {
                 funNodes.push(node);
             }
             setFunctionNodes(funNodes);
-            //console.log("functionNodes.length: "+functionNodes.length);
             var valNodes = [...valueNodes];
             for (id in layout.values) {
                 valIDs.push(id);
@@ -76,7 +75,6 @@ export default function Workspace(props) {
                 valNodes.push(node);
             }
             setValueNodes(valNodes);
-            //console.log("functionNodes.length: "+functionNodes.length);
             let newLines = [...lines];
             for (var j = 0; j < layout.edges.length; j++) {
                 var edge = layout.edges[j];
@@ -89,10 +87,9 @@ export default function Workspace(props) {
                     throw "Invalid sink in edge from " + edge.source + " to " + edge.sink;
                 }
                 var sourceIndex = (
-                    // if source is a value
                     layout.operations[source.id] === undefined
-                    ? (valIDs.indexOf(source.id) + valIDoffset)
-                    : (funIDs.indexOf(source.id) + funIDoffset)
+                    ? (valIDs.indexOf(source.id) + valIDoffset) // if source is a value
+                    : (funIDs.indexOf(source.id) + funIDoffset) // if source is a function
                 );
                 var sinkIndex = funIDs.indexOf(sink.id) + funIDoffset;
                 newLines.push({
@@ -145,7 +142,7 @@ export default function Workspace(props) {
 
     useEffect(() => {
         displayLayout();
-    }, [functionNodes, valueNodes, lines]);
+    }, []);
 
    //console.log("142: lines.length: "+lines.length);
     //console.log("143: functionNodes.length: "+functionNodes.length);
