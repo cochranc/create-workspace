@@ -89,7 +89,7 @@ var dragShadowColor = 'black';
 var selectedShadowColor = 'blue';
 
 //SLIDING MENU
-var menuHeight = width / 9; 
+var menuHeight = width / 12; 
 var menuCornerWidth = width / 6;
 var buttonWidth = width / 10;
 var valSpaceWidth = width - menuCornerWidth - (2 * buttonWidth);
@@ -99,7 +99,7 @@ var functSpaceWidth = width - menuCornerWidth - (2 * buttonWidth);
 var numFuncts = 6; 
 var functMenuXSpacing = (functSpaceWidth - (numFuncts * functionTotalSideLength)) / (numFuncts + 1);
 var menuYspacing = width * 11/360;
-var menuFunctsXStart = 2 * (buttonWidth - functionRectSideLength) + menuCornerWidth- functionTotalSideLength / 2;
+var menuFunctsXStart = 2 * (buttonWidth - functionRectSideLength) + menuCornerWidth - functionTotalSideLength / 2;
 var menuFunctsXEnd = width - buttonWidth + functionRectSideLength / 2;
 var menuValuesXStart = menuCornerWidth + buttonWidth / 2;
 var menuAnimDuration = 1;
@@ -188,7 +188,7 @@ var RGBoutletColors = ['#C94949','#2D9C2D','#4272DB'];
  var workToolOn = false;
  var deleteToolOn = false;
 
-//MENU BOOLEANS
+//MENU BOOLEANSF
 var valueExpanded = false;
 var functionExpanded = false;
 var tagsOn = true;
