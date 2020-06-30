@@ -7,7 +7,7 @@ import {
   useStrictMode
 } from "react-konva";
 import Konva from 'konva';
-import gui from './mistgui-globals.js';
+import gui from './mistgui-globals.js'
 
 /**
  * 
@@ -42,6 +42,7 @@ function FunNode(props) {
             scaleX: 1.1,
             scaleY: 1.1
         });
+        props.handler(index, e.currentTarget.x(), e.currentTarget.y())
     }
     
     function handleDragEnd(e) {
