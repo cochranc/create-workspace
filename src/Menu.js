@@ -8,19 +8,27 @@ import {
 } from "reactstrap";
 import VariableMenu from "./VariableMenu";
 import FunctionMenu from "./FunctionMenu";
-import { Stage, Layer, Rect, Group, Line, Text } from "react-konva";
+import { Stage, Layer, Rect, Group, Line, Text, Shape } from "react-konva";
 import gui from "./mistgui-globals";
 import FunNode from "./FunNode";
 import MakeMenuButton from "./MakeMenuButton";
-//import tween from './tween';
-
+import { funcGroup } from "./MakeFunctions";
+import {
+  canMoveLeft,
+  canMoveRight,
+  expandFunctionNodes,
+  moveFunctionsButtonLeft,
+  moveFunctionNodesIn
+} from "./tween";
 
 function Menu(props) {
   //keeps track if the menus are open
-  const menuFunctions = [];
 
   const [isValueMenuOpen, setIsValueMenuOpen] = useState(false);
   const [isFunctionMenuOpen, setIsFunctionMenuOpen] = useState(false);
+
+  var leftArrowVisible = false
+  var rightArrowVisible = false
 
   function onClick(clicked) {
     //toggles value menu
@@ -44,112 +52,176 @@ function Menu(props) {
 
   function updateFunNodes(index, x, y) {}
 
-  /**
- * addScrollArrows creates and returns an array of two groups 
- * (left arrow and right arrow)
- * takes "type" (either functions or values)
- */
-// var addScrollArrows = function(type) {
-//     var leftX = (type=='values') ? valuesButton.x() + buttonWidth : 
-//       functionsButton.x() + buttonWidth;
-//     var rightX = (type=='values') ? width - buttonWidth - arrowWidth : 
-//       width - arrowWidth
-//     /* make left arrow group */  
-//     var leftArrow = new Kinetic.Group({
-//       x: leftX,
-//       y: 0,
-//       direction: 'left',
-//       type: type,
-//       visible: false
-//     });
-//     var leftArrowBox = new Kinetic.Rect({
-//       x: 0,
-//       y: 0,
-//       width: arrowWidth,
-//       height: menuHeight,
-//       fill: arrowBoxFill,
-//       opacity: .1
-//     });
-//     leftArrow.add(leftArrowBox);
-//     var leftArrowTri = new Kinetic.Shape({
-//       sceneFunc: function(context) {
-//         context.beginPath();
-//         context.moveTo(0,0);
-//         context.lineTo(triX, -triY);
-//         context.lineTo(triX, triY);
-//         context.closePath();
-//         context.fillStrokeShape(this);
-//       },
-//       x: width/250,
-//       y: menuHeight / 2,
-//       fill: arrowFill,
-//       opacity: .2
-//     });
-//     leftArrow.add(leftArrowTri);
-  
-//     /* make right arrow group */
-//     var rightArrow = new Kinetic.Group({
-//       x: rightX,
-//       y: 0,
-//       direction: 'right',
-//       type: type,
-//       functional: false,
-//       visible: false
-//     });
-//     var rightArrowBox = new Kinetic.Rect({
-//       x: 0,
-//       y: 0,
-//       width: arrowWidth,
-//       height: menuHeight,
-//       fill: arrowBoxFill,
-//       opacity: .1
-//     });
-//     rightArrow.add(rightArrowBox);
-  
-//     var rightArrowTri = new Kinetic.Shape({
-//       sceneFunc: function(context) {
-//         context.beginPath();
-//         context.moveTo(0,0);
-//         context.lineTo(-triX, -triY);
-//         context.lineTo(-triX, triY);
-//         context.closePath();
-//         context.fillStrokeShape(this);
-//       },
-//       x: width / 65,
-//       y: menuHeight / 2,
-//       fill: arrowFill,
-//       opacity: .2
-//     });
-//     rightArrow.add(rightArrowTri);
-  
-//     return {left: leftArrow, right: rightArrow};
-//   };
+  var menuFunctions = [];
+  for (var i = 0; i < gui.funNames.length; i++) {
+    menuFunctions[i] = funcGroup(
+      gui.funNames[i],
+      gui.menuFunctsXStart,
+      gui.menuYspacing
+    );
+  }
 
-//   function handleClick(){
-//     if (!gui.functionExpanded) {
-//       if (!gui.valueExpanded) {
-//         tween.expandFunctionNodes();
-//         gui.functionExpanded = true;
-//         showScrollArrows('functions');
-//         updateArrows('functions');
-//     } // functions and values not expanded
-//     else {
-//       moveValueNodesIn();
-//       moveFunctionsButtonLeft();
-//       tween.expandFunctionNodes();
-//       functionExpanded = true;
-//       showScrollArrows('functions');
-//       updateArrows('functions');
-//       valueExpanded = false;
-//       hideScrollArrows('values');
-//     } // functions not expanded, values expanded
-//   }
-//   else {
-//     moveFunctionNodesIn();
-//     functionExpanded = false;
-//     hideScrollArrows('functions');
-//     } // functions are expanded
-//   };
+  /**
+   * addScrollArrows creates and returns an array of two groups
+   * (left arrow and right arrow)
+   * takes "type" (either functions or values)
+   */
+  var addScrollArrows = function(type) {
+    var leftX =
+      type == "values"
+        ? gui.menuCornerWidth + gui.buttonWidth
+        : gui.menuCornerWidth + gui.buttonWidth + gui.buttonWidth;
+    var rightX =
+      type == "values"
+        ? gui.width - gui.buttonWidth - gui.arrowWidth
+        : gui.width - gui.arrowWidth;
+    /* make left arrow group */
+    var leftArrow = (
+      <Group x={leftX} y={0} direction={"left"} type={type} visible={leftArrowVisible}>
+        <Rect
+          x={0}
+          y={0}
+          width={gui.arrowWidth}
+          height={gui.menuHeight}
+          fill={gui.arrowBoxFill}
+          opacity={0.1}
+        />
+        <Shape
+          sceneFunc={function(context) {
+            context.beginPath();
+            context.moveTo(0, 0);
+            context.lineTo(gui.triX, -gui.triY);
+            context.lineTo(gui.triX, gui.triY);
+            context.closePath();
+            context.fillStrokeShape(this);
+          }}
+          x={gui.width / 250}
+          y={gui.menuHeight / 2}
+          fill={gui.arrowFill}
+          opacity={0.2}
+        />
+      </Group>
+    );
+    /* make right arrow group */
+    var rightArrow = (
+      <Group
+        x={rightX}
+        y={0}
+        direction={"right"}
+        type={type}
+        visible={rightArrowVisible}
+        functional={false}
+      >
+        <Rect
+          x={0}
+          y={0}
+          width={gui.arrowWidth}
+          height={gui.menuHeight}
+          fill={gui.arrowBoxFill}
+          opacity={0.1}
+        />
+        <Shape
+          sceneFunc={function(context) {
+            context.beginPath();
+            context.moveTo(0, 0);
+            context.lineTo(-gui.triX, -gui.triY);
+            context.lineTo(-gui.triX, gui.triY);
+            context.closePath();
+            context.fillStrokeShape(this);
+          }}
+          x={gui.width / 65}
+          y={gui.menuHeight / 2}
+          fill={gui.arrowFill}
+          opacity={0.2}
+        />
+      </Group>
+    );
+    return { left: leftArrow, right: rightArrow };
+  };
+
+  var functionsArrows = addScrollArrows("functions");
+
+  var menuArrowLayer = (
+    <Group>functionsArrows['left'] functionsArrows['right']</Group>
+  );
+
+  /**
+   * showScrollArrows changes visibility of the scroll arrows to true depending
+   * on the type given. type is either 'values' or 'functions'
+   */
+  var showScrollArrows = function(type) {
+    setTimeout(function() {
+      leftArrowVisible = true
+      rightArrowVisible = true
+    }, 1000);
+  };
+
+  /**
+   * hideScrollArrows changes visibility of the scroll arrows to false depending
+   * on the type given. type is either 'values' or 'functions'
+   */
+  var hideScrollArrows = function(type) {
+    leftArrowVisible = false
+    rightArrowVisible = false
+  };
+
+  /**
+   * updateArrows changes the opacity of the arrows based on if they are functional.
+   */
+  var updateArrows = function(type) {
+    setTimeout(function() {
+      if (type == "functions") {
+        var leftArrow = functionsArrows["left"];
+        var rightArrow = functionsArrows["right"];
+        if (canMoveRight("functions", menuFunctions)) {
+          leftArrow.setAttr("functional", true);
+          leftArrow.children[0].setAttr("opacity", 0.3);
+          leftArrow.children[1].setAttr("opacity", 0.5);
+        } // if left functional
+        else {
+          leftArrow.setAttr("functional", false);
+          leftArrow.children[0].setAttr("opacity", 0);
+          leftArrow.children[1].setAttr("opacity", 0);
+        } // else left non-functional
+
+        if (canMoveLeft("functions")) {
+          rightArrow.setAttr("functional", true);
+          rightArrow.children[0].setAttr("opacity", 0.3);
+          rightArrow.children[1].setAttr("opacity", 0.5);
+        } // if right functional
+        else {
+          rightArrow.setAttr("functional", false);
+          rightArrow.children[0].setAttr("opacity", 0);
+          rightArrow.children[1].setAttr("opacity", 0);
+        } // else right non-funcitonal
+      } // else if functions
+    }, 1050);
+  }; // updateArrows
+
+  function handleClick() {
+    if (!gui.functionExpanded) {
+      if (!gui.valueExpanded) {
+        expandFunctionNodes(menuFunctions);
+        gui.functionExpanded = true;
+        showScrollArrows("functions");
+        updateArrows("functions");
+      } // functions and values not expanded
+      else {
+        //moveValueNodesIn();
+        moveFunctionsButtonLeft();
+        expandFunctionNodes();
+        gui.functionExpanded = true;
+        showScrollArrows("functions");
+        updateArrows("functions");
+        gui.valueExpanded = false;
+        hideScrollArrows("values");
+      } // functions not expanded, values expanded
+    } else {
+      moveFunctionNodesIn();
+      gui.functionExpanded = false;
+      hideScrollArrows("functions");
+    } // functions are expanded
+  }
 
   return (
     <Layer width={window.innerWidth} height={gui.menuHeight}>
@@ -188,7 +260,7 @@ function Menu(props) {
           fontSize={gui.menuFontSize}
         />
       </Group>
-      <Group x={gui.menuCornerWidth + gui.buttonWidth} onClick = {onClick}>
+      <Group x={gui.menuCornerWidth + gui.buttonWidth} onClick = {handleClick}>
         <Rect
           x={0}
           y={0}
@@ -217,23 +289,23 @@ function Menu(props) {
           fontSize={gui.menuFontSize}
         />
       </Group>
+      <Group>{menuFunctions.map(node => node)}</Group>
       <Group>
-        {gui.funNames.map((node) => (
-          <FunNode
-            name={node}
-            x={gui.menuFunctsXStart}
-            y={gui.menuYspacing}
-            numInputs={0}
-            numOutlets={0}
-            handler={updateFunNodes}
-            //check={checkState}
-          />
-        ))}
-      </Group>
-      <Group>
-          <MakeMenuButton text = {"Reset Workspace"} x = {gui.menuOffset} y = {gui.menuOffset}/>
-          <MakeMenuButton text = {"Open Workspace"} x = {gui.menuOffset} y = {(2*gui.menuOffset) + gui.menuControlHeight}/>
-          <MakeMenuButton text = {"Save Workspace"} x = {gui.menuOffset} y = {3*gui.menuOffset + (2*gui.menuControlHeight)}/>
+        <MakeMenuButton
+          text={"Reset Workspace"}
+          x={gui.menuOffset}
+          y={gui.menuOffset}
+        />
+        <MakeMenuButton
+          text={"Open Workspace"}
+          x={gui.menuOffset}
+          y={2 * gui.menuOffset + gui.menuControlHeight}
+        />
+        <MakeMenuButton
+          text={"Save Workspace"}
+          x={gui.menuOffset}
+          y={3 * gui.menuOffset + 2 * gui.menuControlHeight}
+        />
       </Group>
     </Layer>
   );
