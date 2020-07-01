@@ -164,6 +164,7 @@ export default function Workspace(props) {
       <Stage width={width} height={height - 200}>
       
         <Layer>
+        <Menu />
           {functionNodes.map((node, index) => (
             <FunNode
               name={node.name}
