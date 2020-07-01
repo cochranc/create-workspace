@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./styles/menu.css";
 import {
   Dropdown,
@@ -11,18 +11,21 @@ import FunctionMenu from "./FunctionMenu";
 import { Stage, Layer, Rect, Group, Line, Text } from "react-konva";
 import gui from "./mistgui-globals";
 import FunNode from "./FunNode";
-
+import MakeMenuButton from "./MakeMenuButton";
+import { funcGroup } from "./MakeFunction";
+//import tween from './tween';
 
 function Menu(props) {
   //keeps track if the menus are open
-  const menuFunctions = [];
 
+  const [tog, setTog] = useState(true);
   const [isValueMenuOpen, setIsValueMenuOpen] = useState(false);
   const [isFunctionMenuOpen, setIsFunctionMenuOpen] = useState(false);
 
   function onClick(clicked) {
+
     //toggles value menu
-    if (clicked == "valueIcon") {
+    if (clicked.currentTarget.attrs.name === "valueIcon") {
       //makes sure two menus aren't open at once
       if (!isValueMenuOpen && isFunctionMenuOpen) {
         setIsFunctionMenuOpen(false);
@@ -31,7 +34,7 @@ function Menu(props) {
     }
 
     //toggles function menu
-    if (clicked == "functionIcon") {
+    if (clicked.currentTarget.attrs.name === "functionIcon") {
       //makes sure two menus aren't open at once
       if (!isFunctionMenuOpen && isValueMenuOpen) {
         setIsValueMenuOpen(false);
@@ -42,40 +45,23 @@ function Menu(props) {
 
   function updateFunNodes(index, x, y) {}
 
-//   function handleClick(){
-//     if (!gui.functionExpanded) {
-//       if (!gui.valueExpanded) {
-//         tween.expandFunctionNodes();
-//         gui.functionExpanded = true;
-//         showScrollArrows('functions');
-//         updateArrows('functions');
-//     } // functions and values not expanded
-//     else {
-//       moveValueNodesIn();
-//       moveFunctionsButtonLeft();
-//       tween.expandFunctionNodes();
-//       functionExpanded = true;
-//       showScrollArrows('functions');
-//       updateArrows('functions');
-//       valueExpanded = false;
-//       hideScrollArrows('values');
-//     } // functions not expanded, values expanded
-//   }
-//   else {
-//     moveFunctionNodesIn();
-//     functionExpanded = false;
-//     hideScrollArrows('functions');
-//     } // functions are expanded
-//   };
 
+
+  function handleClick() {
+    setTog(!tog);
+  }
+
+  
   return (
-    <Layer width={window.innerWidth} height={gui.menuHeight}>
+    <Group width={window.innerWidth} height={gui.menuHeight}>
       <Line
         points={[0, gui.menuHeight, window.innerWidth, gui.menuHeight]}
         stroke={"black"}
         strokeWidth={2}
       />
-      <Group x={gui.menuCornerWidth}>
+      <Group
+        name={"valueIcon"}
+        x={gui.menuCornerWidth}>
         <Rect
           x={0}
           y={0}
@@ -105,7 +91,10 @@ function Menu(props) {
           fontSize={gui.menuFontSize}
         />
       </Group>
-      <Group x={gui.menuCornerWidth + gui.buttonWidth} >
+      <Group
+        name={"functionIcon"}
+        x={gui.menuCornerWidth + gui.buttonWidth}
+        onClick={handleClick}>
         <Rect
           x={0}
           y={0}
@@ -135,19 +124,31 @@ function Menu(props) {
         />
       </Group>
       <Group>
-        {gui.funNames.map((node) => (
-          <FunNode
-            name={node}
-            x={gui.menuFunctsXStart}
-            y={gui.menuYspacing}
-            numInputs={0}
-            numOutlets={0}
-            handler={updateFunNodes}
-            //check={checkState}
-          />
-        ))}
+        {Array.from(new Array(gui.funNames.length),
+        (val, index) => funcGroup(
+          gui.funNames[index],
+          gui.menuFunctsXStart,
+          gui.menuYspacing,
+          tog))}
       </Group>
-    </Layer>
+      <Group>
+        <MakeMenuButton
+          text={"Reset Workspace"}
+          x={gui.menuOffset}
+          y={gui.menuOffset}
+        />
+        <MakeMenuButton
+          text={"Open Workspace"}
+          x={gui.menuOffset}
+          y={2 * gui.menuOffset + gui.menuControlHeight}
+        />
+        <MakeMenuButton
+          text={"Save Workspace"}
+          x={gui.menuOffset}
+          y={3 * gui.menuOffset + 2 * gui.menuControlHeight}
+        />
+      </Group>
+    </Group>
   );
 }
 

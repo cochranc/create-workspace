@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Stage, Layer, Rect, Group, Portal } from "react-konva";
 import MIST from "./mist.js";
 import Menu from "./Menu";
-import FunctionForm from "./FunctionForm";
+import gui from "./mistgui-globals";
 import FunNode from "./FunNode";
 import ValNode from "./ValNode";
 import DrawArrow from "./line";
@@ -50,6 +50,7 @@ export default function Workspace(props) {
         const node = { name: op.name, type: 'fun',
           x: op.x, y: op.y,
           renderFunction: null,
+          lineFrom:[],
           numInputs: 0, numOutlets: 0 };
           tempNodes.push(node);
       }
@@ -83,6 +84,7 @@ export default function Workspace(props) {
           sinkIndex: sinkIndex
         }); // index of sink in functionNodes
         tempNodes[sinkIndex].numInputs += 1;
+        tempNodes[sinkIndex].lineFrom.push(sourceIndex);
       }
       setNodes(tempNodes);
       setLines(newLines);
@@ -95,11 +97,23 @@ export default function Workspace(props) {
     newLst[index].y = y;
     setNodes(newLst);
   }
+
+  function findRenderFunction(index) {
+    const node = nodes[index];
+    var rf = node.renderFunction;
+    if(!rf) {
+      var rf = gui.functions[node.name].prefix + '(';
+      for(var i = 0; i < node.lineFrom.length; i++) {
+        rf += findRenderFunction(node.lineFrom[i]);
+        rf += ',';
+      }
+      rf = rf.substring(0, rf.length - 1) + ')';
+    }
+    return rf;
+  }
   
   function funClicked(index) {
-    //setCurrShape();
-    console.log(nodes[index].numInputs);
-    setCurrText(nodes[index].renderFunction);
+    setCurrText(findRenderFunction(index));
   }
 
   function valClicked(index) {
@@ -114,8 +128,8 @@ export default function Workspace(props) {
     <div id="workspace">
     
       <Stage width={width} height={height}>
-      <Menu />
         <Layer>
+          <Menu />
           {lines.map((line, index) => (
             <DrawArrow
               index={index}
