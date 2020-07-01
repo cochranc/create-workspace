@@ -53,15 +53,15 @@ class DrawArrow extends Component {
     return (
       <Arrow
         ref={ref => (this.arrow = ref)}
-        points={[this.props.sourceX + gui.valueSideLength / 2,
-          this.props.sourceY + gui.valueSideLength / 2,
-          this.props.sinkX + gui.valueSideLength / 2,
-          this.props.sinkY + gui.valueSideLength / 2]}
-        pointerLength={20}
-        pointerWidth={20}
+        points={[this.props.sourceX - 5 * gui.outletXOffset,
+          this.props.sourceY + 1.5 * gui.outletYOffset,
+          this.props.sinkX - 5 * gui.outletXOffset,
+          this.props.sinkY + 1.5 * gui.outletYOffset]}
+        pointerLength={0}
+        pointerWidth={0}
         fill="black"
         stroke="black"
-        strokeWidth={4}
+        strokeWidth={2}
         onMouseDown={this.handleMouseDown}
         onMouseUp={this.handleMouseUp}
         onMouseMove={this.handleMouseMove}

@@ -65,7 +65,7 @@ export default function Workspace(props) {
           x: op.x,
           y: op.y,
           numInputs: 0,
-          numOutlets: 0
+          numOutlets: 2
         };
         funNodes.push(node);
       }
@@ -164,16 +164,6 @@ export default function Workspace(props) {
       <Stage width={width} height={height - 200}>
       <Menu />
         <Layer>
-        
-          {lines.map((line, index) => (
-            <DrawArrow
-              index={index}
-              sourceX={valueNodes[line.sourceIndex].x} // x-coord of the source
-              sourceY={valueNodes[line.sourceIndex].y} // y-coord of the source
-              sinkX={functionNodes[line.sinkIndex].x} // x-coord of the sink
-              sinkY={functionNodes[line.sinkIndex].y} // y-coord of the sink
-            />
-          ))}
           {functionNodes.map((node, index) => (
             <FunNode
               name={node.name}
@@ -193,6 +183,15 @@ export default function Workspace(props) {
               x={node.x}
               y={node.y}
               handler={updateValNodes}
+            />
+          ))} 
+          {lines.map((line, index) => (
+            <DrawArrow
+              index={index}
+              sourceX={valueNodes[line.sourceIndex].x} // x-coord of the source
+              sourceY={valueNodes[line.sourceIndex].y} // y-coord of the source
+              sinkX={functionNodes[line.sinkIndex].x} // x-coord of the sink
+              sinkY={functionNodes[line.sinkIndex].y} // y-coord of the sink
             />
           ))}
         </Layer>

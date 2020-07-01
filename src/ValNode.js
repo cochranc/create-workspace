@@ -23,6 +23,7 @@ function ValNode(props) {
     const scaleY = 1;
     //var showImage = false;
     const [showImage, setShowImage] = useState(false);
+    const numOutlets = props.numOutlets;
 
     function handleDragStart(e) {
         e.target.setAttrs({
@@ -96,6 +97,27 @@ function ValNode(props) {
                     expanded={false}
                 />
             }
+            {[...Array(numOutlets)].map((u, i) =>
+                <Shape
+                    //onclick={handleOnClick}
+                    sceneFunc={function (context) {
+                    context.beginPath();
+                    context.moveTo(0, 0);
+                    context.bezierCurveTo(-gui.bezPoint, -gui.bezPoint, -gui.bezPoint, gui.bezPoint, 0, 0);
+                    context.closePath();
+                    context.fillStrokeShape(this);
+                    }}
+                    name = {'outlet' + (i+1)}
+                    x = {gui.outletXOffset}
+                    y = {(i+1) * gui.outletYOffset + gui.functionHalfStrokeWidth}
+                    fill={gui.outletColor}
+                    opacity={1}
+                    stroke='black'
+                    strokeWidth={1}
+                    lineIn={null}
+                    outletIndex={i}
+                />
+            )}
         </Group>
     );
     
