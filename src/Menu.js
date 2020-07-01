@@ -18,7 +18,7 @@ import { funcGroup } from "./MakeFunction";
 function Menu(props) {
   //keeps track if the menus are open
 
-  const [tog, setTog] = useState(true);
+  const [tog, setTog] = useState(false);
   const [isValueMenuOpen, setIsValueMenuOpen] = useState(false);
   const [isFunctionMenuOpen, setIsFunctionMenuOpen] = useState(false);
 
@@ -45,10 +45,19 @@ function Menu(props) {
 
   function updateFunNodes(index, x, y) {}
 
-
-
   function handleClick() {
     setTog(!tog);
+  }
+
+  function handleMenuFunctions() {
+    return (
+      Array.from(new Array(gui.funNames.length),
+        (val, index) => funcGroup(
+          gui.funNames[index],
+          gui.menuFunctsXStart+100+(index * 80),
+          gui.menuYspacing - 20,
+          tog))
+    )
   }
 
   
@@ -124,12 +133,7 @@ function Menu(props) {
         />
       </Group>
       <Group>
-        {Array.from(new Array(gui.funNames.length),
-        (val, index) => funcGroup(
-          gui.funNames[index],
-          gui.menuFunctsXStart,
-          gui.menuYspacing,
-          tog))}
+        {handleMenuFunctions()}
       </Group>
       <Group>
         <MakeMenuButton
