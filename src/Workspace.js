@@ -162,7 +162,7 @@ export default function Workspace(props) {
     
       <FunctionForm />
       <Stage width={width} height={height - 200}>
-      <Menu />
+      
         <Layer>
           {functionNodes.map((node, index) => (
             <FunNode
