@@ -18,13 +18,14 @@ import { funcGroup } from "./MakeFunction";
 function Menu(props) {
   //keeps track if the menus are open
 
-  const [tog, setTog] = useState(false);
+  const [tog, setTog] = useState(true);
   const [isValueMenuOpen, setIsValueMenuOpen] = useState(false);
   const [isFunctionMenuOpen, setIsFunctionMenuOpen] = useState(false);
 
   function onClick(clicked) {
+
     //toggles value menu
-    if (clicked == "valueIcon") {
+    if (clicked.currentTarget.attrs.name === "valueIcon") {
       //makes sure two menus aren't open at once
       if (!isValueMenuOpen && isFunctionMenuOpen) {
         setIsFunctionMenuOpen(false);
@@ -33,7 +34,7 @@ function Menu(props) {
     }
 
     //toggles function menu
-    if (clicked == "functionIcon") {
+    if (clicked.currentTarget.attrs.name === "functionIcon") {
       //makes sure two menus aren't open at once
       if (!isFunctionMenuOpen && isValueMenuOpen) {
         setIsValueMenuOpen(false);
@@ -44,32 +45,23 @@ function Menu(props) {
 
   function updateFunNodes(index, x, y) {}
 
-  var menuFunctions = [];
 
-  function handleMenuFunctions() {
-    for (var i = 0; i < gui.funNames.length; i++) {
-      menuFunctions[i] = funcGroup(
-        gui.funNames[i],
-        gui.menuFunctsXStart,
-        gui.menuYspacing,
-        tog
-      );
-    }
-  }
 
   function handleClick() {
-    setTog(true);
+    setTog(!tog);
   }
 
   
   return (
-    <Layer width={window.innerWidth} height={gui.menuHeight}>
+    <Group width={window.innerWidth} height={gui.menuHeight}>
       <Line
         points={[0, gui.menuHeight, window.innerWidth, gui.menuHeight]}
         stroke={"black"}
         strokeWidth={2}
       />
-      <Group x={gui.menuCornerWidth}>
+      <Group
+        name={"valueIcon"}
+        x={gui.menuCornerWidth}>
         <Rect
           x={0}
           y={0}
@@ -99,7 +91,10 @@ function Menu(props) {
           fontSize={gui.menuFontSize}
         />
       </Group>
-      <Group x={gui.menuCornerWidth + gui.buttonWidth} onClick={handleClick}>
+      <Group
+        name={"functionIcon"}
+        x={gui.menuCornerWidth + gui.buttonWidth}
+        onClick={handleClick}>
         <Rect
           x={0}
           y={0}
@@ -128,7 +123,14 @@ function Menu(props) {
           fontSize={gui.menuFontSize}
         />
       </Group>
-      <Group>{menuFunctions.map(node => node)}</Group>
+      <Group>
+        {Array.from(new Array(gui.funNames.length),
+        (val, index) => funcGroup(
+          gui.funNames[index],
+          gui.menuFunctsXStart,
+          gui.menuYspacing,
+          tog))}
+      </Group>
       <Group>
         <MakeMenuButton
           text={"Reset Workspace"}
@@ -146,7 +148,7 @@ function Menu(props) {
           y={3 * gui.menuOffset + 2 * gui.menuControlHeight}
         />
       </Group>
-    </Layer>
+    </Group>
   );
 }
 

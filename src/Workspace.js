@@ -162,9 +162,9 @@ export default function Workspace(props) {
     
       <FunctionForm />
       <Stage width={width} height={height - 200}>
-      <Menu />
+      
         <Layer>
-        
+        <Menu />
           {lines.map((line, index) => (
             <DrawArrow
               index={index}
