@@ -126,7 +126,6 @@ export default function Workspace(props) {
 
   return (
     <div id="workspace">
-    
       <Stage width={width} height={height}>
         <Layer>
           <Menu />

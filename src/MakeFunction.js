@@ -59,4 +59,8 @@ export var funcGroup = function makeFunctionGroup(funName, x, y, vis) {
       />
     </Group>
   );
+<<<<<<< HEAD
 };
+=======
+};
+>>>>>>> c6bcbf2e042134947a3676aea660499f4cbde519
