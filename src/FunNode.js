@@ -1,13 +1,9 @@
 import React, { useState } from "react";
-import {
-  Rect,
-  Group,
-  Text,
-  Shape,
-  useStrictMode
-} from "react-konva";
+import { Rect, Group, Text, Shape } from "react-konva";
 import Konva from 'konva';
 import gui from './mistgui-globals.js'
+//import ui from './mistui.js';
+import MIST from "./mist.js";
 
 /**
  * 
@@ -26,10 +22,6 @@ function FunNode(props) {
     const prefix = gui.functions[name].prefix;
     const separator = gui.functions[name].separator;
     const renderFunction = null;
-    const visible = false;
-    const renderLayer = null;
-    const scaleX = 1;
-    const scaleY = 1;
     const numOutlets = props.numOutlets;
     const [showImage, setShowImage] = useState(false);
 
@@ -96,7 +88,11 @@ function FunNode(props) {
                 _useStrictMode
             />
             {showImage
-                ? <Text onClick={() => setShowImage(!showImage)} text={"function image here"}/>
+                ? <Rect
+                    onClick={() => setShowImage(!showImage)}
+                    width={gui.renderSideLength}
+                    height={gui.renderSideLength}
+                />
                 : <Rect
                     onClick={() => setShowImage(!showImage)}
                     name={'imageBox'}

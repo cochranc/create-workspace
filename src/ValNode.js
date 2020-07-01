@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
+import { Rect, Group, Text } from 'react-konva';
 import Konva from 'konva';
-import { Layer, Rect, Group, Text, Line, Shape, useStrictMode } from 'react-konva';
-import './styles/node.css';
-//import gui from './mistgui-yike.js';
 import gui from './mistgui-globals.js';
 
-//import { Stage, Layer, Rect, Text } from 'react-konva';
-
-
-// function nodes - for defined functions
+/**
+ * 
+ * @param {*} props 
+ */
 function ValNode(props) {
     const name = props.name;
     const x = props.x;
@@ -17,11 +15,6 @@ function ValNode(props) {
     const [lineOut, setLineOut] = useState([]);
     const rep = gui.values[name].rep;
     const renderFunction = gui.values[name].rep;
-    const visible = false;
-    const renderLayer = null;
-    const scaleX = 1;
-    const scaleY = 1;
-    //var showImage = false;
     const [showImage, setShowImage] = useState(false);
 
     function handleDragStart(e) {
@@ -33,6 +26,7 @@ function ValNode(props) {
             scaleX: 1.1,
             scaleY: 1.1
         });
+        props.handler(index, e.currentTarget.x(), e.currentTarget.y())
     }
     
     function handleDragEnd(e) {
@@ -59,7 +53,7 @@ function ValNode(props) {
         <Group
             draggable
             onDragStart={handleDragStart} onDragEnd={handleDragEnd}
-            onDrag={handleDrag} onClick={handleClick}
+            onDragMove={handleDrag} onClick={handleClick}
             x={x - gui.functionHalfStrokeWidth}
             y={y}
         >

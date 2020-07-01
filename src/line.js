@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Stage, Layer, Rect, Image, Group, Arrow } from "react-konva";
+import { Line, Arrow } from "react-konva";
 import gui from './mistgui-globals';
 
 class DrawArrow extends Component {
@@ -51,7 +51,7 @@ class DrawArrow extends Component {
 
   render() {
     return (
-      <Arrow
+      <Line
         ref={ref => (this.arrow = ref)}
         points={[this.props.sourceX + gui.valueSideLength / 2,
           this.props.sourceY + gui.valueSideLength / 2,
@@ -61,7 +61,7 @@ class DrawArrow extends Component {
         pointerWidth={20}
         fill="black"
         stroke="black"
-        strokeWidth={4}
+        strokeWidth={3}
         onMouseDown={this.handleMouseDown}
         onMouseUp={this.handleMouseUp}
         onMouseMove={this.handleMouseMove}
