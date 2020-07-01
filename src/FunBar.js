@@ -36,7 +36,7 @@ function FunBar(props) {
                 strokeWidth={.5}
             />
             <Text
-                text={''}
+                text={props.text}
                 x={gui.funBarTextOffset}
                 y={gui.funBarTextOffset}
                 width={gui.funBarTextAreaWidth - gui.funBarTextOffset}

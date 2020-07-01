@@ -34,7 +34,8 @@ export default function Workspace(props) {
   const [layouts, setLayouts] = useState([layout1]);
   const [nodes, setNodes] = useState([]);
   const [lines, setLines] = useState([]);
-
+  const [currShape, setCurrShape] = useState();
+  const [currText, setCurrText] = useState();
   const [history, setHistory] = useState([]);
 
   function displayLayout() {
@@ -48,17 +49,18 @@ export default function Workspace(props) {
         var op = layout.operations[id];
         const node = { name: op.name, type: 'fun',
           x: op.x, y: op.y,
-          numInputs: 0,numOutlets: 0 };
+          renderFunction: null,
+          numInputs: 0, numOutlets: 0 };
           tempNodes.push(node);
       }
       for (id in layout.values) {
         IDindices.push(id);
         var val = layout.values[id];
         const node = { name: val.name, type: 'val',
-          x: val.x, y: val.y };
+          x: val.x, y: val.y,
+          renderFunction: val.name };
           tempNodes.push(node);
       }
-      setNodes(tempNodes);
       let newLines = [...lines];
       for (var j = 0; j < layout.edges.length; j++) {
         var edge = layout.edges[j];
@@ -80,7 +82,9 @@ export default function Workspace(props) {
           sourceIndex: sourceIndex, // index of source in valueNodes
           sinkIndex: sinkIndex
         }); // index of sink in functionNodes
+        tempNodes[sinkIndex].numInputs += 1;
       }
+      setNodes(tempNodes);
       setLines(newLines);
     }
   }
@@ -90,6 +94,16 @@ export default function Workspace(props) {
     newLst[index].x = x;
     newLst[index].y = y;
     setNodes(newLst);
+  }
+  
+  function funClicked(index) {
+    //setCurrShape();
+    console.log(nodes[index].numInputs);
+    setCurrText(nodes[index].renderFunction);
+  }
+
+  function valClicked(index) {
+    setCurrText(nodes[index].renderFunction);
   }
 
   useEffect(() => {
@@ -121,6 +135,7 @@ export default function Workspace(props) {
               numInputs={node.numInputs}
               numOutlets={node.numOutlets}
               handler={updateNodes}
+              clickHandler={funClicked}
             />
             : <ValNode
               name={node.name}
@@ -128,9 +143,11 @@ export default function Workspace(props) {
               x={node.x}
               y={node.y}
               handler={updateNodes}
+              clickHandler={valClicked}
             />
           ))}
-          <FunBar/>
+          <FunBar
+            text={currText}/>
         </Layer>
       </Stage>
     </div>

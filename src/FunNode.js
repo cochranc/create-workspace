@@ -61,11 +61,15 @@ function FunNode(props) {
         props.handler(index, e.currentTarget.x(), e.currentTarget.y())
     }
 
+    function handleClick(e) {
+        props.clickHandler(index);
+    }
+
     return (
         <Group
             draggable
             onDragStart={handleDragStart} onDragEnd={handleDragEnd}
-            onDragMove={handleDrag}
+            onDragMove={handleDrag} onClick={handleClick}
             x={x - gui.functionHalfStrokeWidth}
             y={y}
         >
