@@ -32,8 +32,4 @@ function MakeMenuButton(props) {
   );
 }
 
-<<<<<<< HEAD
-export default MakeMenuButton;
-=======
-export default MakeMenuButton;
->>>>>>> c6bcbf2e042134947a3676aea660499f4cbde519
+ export default MakeMenuButton;
