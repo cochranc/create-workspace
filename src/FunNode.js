@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Rect, Group, Text, Shape, Image } from "react-konva";
 import Konva from 'konva';
-import gui from './mistgui-globals.js'
-//import ui from './mistui.js';
+import Portal from './Portal';
+import gui from './mistgui-globals.js';
+import MISTImage from './MISTImage';
 import MIST from "./mistui.js";
 
 /**
@@ -117,14 +118,16 @@ function FunNode(props) {
                 _useStrictMode
             />
             {showImage
-                ? <Image
-                    onClick={() => setShowImage(!showImage)}
-                    x={gui.functionRectSideLength + gui.functionImageBoxOffset}
-                    y={gui.functionRectSideLength + gui.functionImageBoxOffset}
-                    width={gui.renderSideLength}
-                    height={gui.renderSideLength}
-                    image={image}
-                />
+                ? <Portal>
+                    <MISTImage
+                        onClick={() => setShowImage(!showImage)}
+                        x={gui.functionRectSideLength + gui.functionImageBoxOffset}
+                        y={gui.functionRectSideLength + gui.functionImageBoxOffset}
+                        width={gui.renderSideLength}
+                        height={gui.renderSideLength}
+                        renderFunction={renderFunction}
+                    />
+                </Portal>
                 : <Rect
                     onClick={() => setShowImage(!showImage)}
                     name={'imageBox'}

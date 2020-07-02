@@ -2104,4 +2104,5 @@ var Data = function() {
   
 }
 
-module.exports = MIST;
+export {MIST, gifTime};
+//module.exports = MIST;

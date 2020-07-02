@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Stage, Layer, Rect, Group, Portal } from "react-konva";
-import MIST from "./mist.js";
+import {MIST} from "./mist.js";
 import Menu from "./Menu";
 import gui from "./mistgui-globals";
 import FunNode from "./FunNode";
