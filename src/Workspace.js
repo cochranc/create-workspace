@@ -164,6 +164,15 @@ export default function Workspace(props) {
               handler={updateNodes}
               clickHandler={valClicked}
             />
+          ))} 
+          {lines.map((line, index) => (
+            <DrawArrow
+              index={index}
+              sourceX={valueNodes[line.sourceIndex].x} // x-coord of the source
+              sourceY={valueNodes[line.sourceIndex].y} // y-coord of the source
+              sinkX={functionNodes[line.sinkIndex].x} // x-coord of the sink
+              sinkY={functionNodes[line.sinkIndex].y} // y-coord of the sink
+            />
           ))}
           <FunBar
             text={currText}/>
