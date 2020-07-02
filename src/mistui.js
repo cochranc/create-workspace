@@ -795,4 +795,4 @@ MISTui.removeMenuItem = function(menuid, itemid) {
   parent.removeChild(item);
 } // removeMenuItem
 
-export default ui;
+export default MIST;

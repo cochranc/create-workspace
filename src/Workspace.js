@@ -14,7 +14,7 @@ import { useStrictMode } from "react-konva";
 export default function Workspace(props) {
   //hmm does this actually do anything?
   useStrictMode(true);
-
+  
   //example layouts for testing
   var layout1 = new MIST.Layout();
   var add = layout1.addOp("add", 325, 325);
@@ -113,7 +113,11 @@ export default function Workspace(props) {
   }
   
   function funClicked(index) {
-    setCurrText(findRenderFunction(index));
+    const rf = findRenderFunction(index);
+    var newLst = [...nodes];
+    newLst[index].renderFunction = rf;
+    setNodes(newLst);
+    setCurrText(rf);
   }
 
   function valClicked(index) {
@@ -147,6 +151,7 @@ export default function Workspace(props) {
               y={node.y}
               numInputs={node.numInputs}
               numOutlets={node.numOutlets}
+              renderFunction={node.renderFunction}
               handler={updateNodes}
               clickHandler={funClicked}
             />
@@ -155,6 +160,7 @@ export default function Workspace(props) {
               index={index}
               x={node.x}
               y={node.y}
+              renderFunction={node.renderFunction}
               handler={updateNodes}
               clickHandler={valClicked}
             />

@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import { Rect, Group, Text, Shape } from "react-konva";
+import React, { useState, useEffect } from "react";
+import { Rect, Group, Text, Shape, Image } from "react-konva";
 import Konva from 'konva';
 import gui from './mistgui-globals.js'
 //import ui from './mistui.js';
-import MIST from "./mist.js";
+import MIST from "./mistui.js";
 
 /**
  * 
@@ -16,15 +16,44 @@ function FunNode(props) {
     const y = props.y;
     const numInputs = props.numInputs;
     const maxInputs = gui.functions[name].max;
-    const minInputs = gui.functions[name].min;
+	const minInputs = gui.functions[name].min;
     const [lineOut, setLineOut] = useState([]);
     const rep = gui.functions[name].rep;
     const prefix = gui.functions[name].prefix;
     const separator = gui.functions[name].separator;
-    const renderFunction = null;
+    const renderFunction = props.renderFunction;
     const numOutlets = props.numOutlets;
     const [showImage, setShowImage] = useState(false);
+    const [image, setImage] = useState(null);
+    var exp1 = new MIST.App("plus", new MIST.Val("x"), new MIST.Val("y"));
+    var fun1 = MIST.expToRGB("thing", exp1, {});
+    /*
+      let rCanvas = layers.render.canvas._canvas;
+  let rAnimator;
 
+  /**
+   * renderPopCanvas takes a renderFunction and renders that image on the save screen
+   * at a resolution of (width * (2 / 9))
+   */
+  /*function renderPopCanvas(renderFunction) {
+    rAnimator = new MIST.ui.Animator(renderFunction, [], {}, 
+      rCanvas, function() { });
+    rAnimator.bounds(saveStyle.canvasShiftX, saveStyle.canvasShiftY, 
+                     saveStyle.canvasSide, saveStyle.canvasSide);
+    rAnimator.setResolution(saveStyle.canvasResolution, saveStyle.canvasResolution);
+    rAnimator.frame();
+    }*/
+    
+    useEffect(() => {
+        loadImage();
+      }, [])
+
+    function loadImage() {
+        const img = new window.Image();
+        img.src = "https://konvajs.org/assets/lion.png";
+        img.crossOrigin="Anonymous";
+        setImage(img);
+    }
     function handleDragStart(e) {
         e.target.setAttrs({
           shadowOffset: {
@@ -88,10 +117,13 @@ function FunNode(props) {
                 _useStrictMode
             />
             {showImage
-                ? <Rect
+                ? <Image
                     onClick={() => setShowImage(!showImage)}
+                    x={gui.functionRectSideLength + gui.functionImageBoxOffset}
+                    y={gui.functionRectSideLength + gui.functionImageBoxOffset}
                     width={gui.renderSideLength}
                     height={gui.renderSideLength}
+                    image={image}
                 />
                 : <Rect
                     onClick={() => setShowImage(!showImage)}
