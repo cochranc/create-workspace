@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Rect, Group, Text } from 'react-konva';
+import { Rect, Group, Text, Shape } from 'react-konva';
 import Konva from 'konva';
 import gui from './mistgui-globals.js';
 

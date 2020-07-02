@@ -51,7 +51,7 @@ export default function Workspace(props) {
           x: op.x, y: op.y,
           renderFunction: null,
           lineFrom:[],
-          numInputs: 0, numOutlets: 0 };
+          numInputs: 0, numOutlets: 2 };
           tempNodes.push(node);
       }
       for (id in layout.values) {
@@ -163,15 +163,6 @@ export default function Workspace(props) {
               renderFunction={node.renderFunction}
               handler={updateNodes}
               clickHandler={valClicked}
-            />
-          ))} 
-          {lines.map((line, index) => (
-            <DrawArrow
-              index={index}
-              sourceX={valueNodes[line.sourceIndex].x} // x-coord of the source
-              sourceY={valueNodes[line.sourceIndex].y} // y-coord of the source
-              sinkX={functionNodes[line.sinkIndex].x} // x-coord of the sink
-              sinkY={functionNodes[line.sinkIndex].y} // y-coord of the sink
             />
           ))}
           <FunBar
