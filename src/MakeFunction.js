@@ -1,8 +1,13 @@
 import {Rect, Group, Text } from "react-konva";
 import gui from "./mistgui-globals";
-import React from "react";
+import React, {useState} from "react";
 
-export var funcGroup = function makeFunctionGroup(funName, x, y, vis) {
+export var funcGroup = function makeFunctionGroup(addNode,funName, x, y, vis) {
+
+  function handleDragEnd(e) {
+    addNode(funName, e.currentTarget.x(), e.currentTarget.y());
+  }
+
   return (
     <Group
       name={funName}
@@ -21,6 +26,7 @@ export var funcGroup = function makeFunctionGroup(funName, x, y, vis) {
       scaleX={1}
       scaleY={1}
       draggable
+      onDragEnd = {handleDragEnd}
     >
       <Rect
         name={funName}

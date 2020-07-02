@@ -14,7 +14,7 @@ import { useStrictMode } from "react-konva";
 export default function Workspace(props) {
   //hmm does this actually do anything?
   useStrictMode(true);
-  
+
   //example layouts for testing
   var layout1 = new MIST.Layout();
   var add = layout1.addOp("add", 325, 325);
@@ -47,20 +47,29 @@ export default function Workspace(props) {
       for (var id in layout.operations) {
         IDindices.push(id);
         var op = layout.operations[id];
-        const node = { name: op.name, type: 'fun',
-          x: op.x, y: op.y,
+        const node = {
+          name: op.name,
+          type: "fun",
+          x: op.x,
+          y: op.y,
           renderFunction: null,
-          lineFrom:[],
-          numInputs: 0, numOutlets: 2 };
-          tempNodes.push(node);
+          lineFrom: [],
+          numInputs: 0,
+          numOutlets: 2
+        };
+        tempNodes.push(node);
       }
       for (id in layout.values) {
         IDindices.push(id);
         var val = layout.values[id];
-        const node = { name: val.name, type: 'val',
-          x: val.x, y: val.y,
-          renderFunction: val.name };
-          tempNodes.push(node);
+        const node = {
+          name: val.name,
+          type: "val",
+          x: val.x,
+          y: val.y,
+          renderFunction: val.name
+        };
+        tempNodes.push(node);
       }
       let newLines = [...lines];
       for (var j = 0; j < layout.edges.length; j++) {
@@ -91,6 +100,22 @@ export default function Workspace(props) {
     }
   }
 
+  function pushNode(name, x, y) {
+    var newLst = [...nodes];
+    const node = {
+      name: name,
+      type: "fun",
+      x: x,
+      y: y,
+      renderFunction: null,
+      lineFrom: [],
+      numInputs: 0,
+      numOutlets: 2
+    };
+    newLst.push(node);
+    setNodes(newLst);
+  }
+
   function updateNodes(index, x, y) {
     var newLst = [...nodes];
     newLst[index].x = x;
@@ -101,17 +126,17 @@ export default function Workspace(props) {
   function findRenderFunction(index) {
     const node = nodes[index];
     var rf = node.renderFunction;
-    if(!rf) {
-      var rf = gui.functions[node.name].prefix + '(';
-      for(var i = 0; i < node.lineFrom.length; i++) {
+    if (!rf) {
+      var rf = gui.functions[node.name].prefix + "(";
+      for (var i = 0; i < node.lineFrom.length; i++) {
         rf += findRenderFunction(node.lineFrom[i]);
-        rf += ',';
+        rf += ",";
       }
-      rf = rf.substring(0, rf.length - 1) + ')';
+      rf = rf.substring(0, rf.length - 1) + ")";
     }
     return rf;
   }
-  
+
   function funClicked(index) {
     const rf = findRenderFunction(index);
     var newLst = [...nodes];
@@ -132,7 +157,7 @@ export default function Workspace(props) {
     <div id="workspace">
       <Stage width={width} height={height}>
         <Layer>
-          <Menu />
+          <Menu addNode = {pushNode}/>
           {lines.map((line, index) => (
             <DrawArrow
               index={index}
@@ -142,31 +167,32 @@ export default function Workspace(props) {
               sinkY={nodes[line.sinkIndex].y} // y-coord of the sink
             />
           ))}
-          {nodes.map((node, index) => (
-            (node.type === 'fun')
-            ? <FunNode
-              name={node.name}
-              index={index}
-              x={node.x}
-              y={node.y}
-              numInputs={node.numInputs}
-              numOutlets={node.numOutlets}
-              renderFunction={node.renderFunction}
-              handler={updateNodes}
-              clickHandler={funClicked}
-            />
-            : <ValNode
-              name={node.name}
-              index={index}
-              x={node.x}
-              y={node.y}
-              renderFunction={node.renderFunction}
-              handler={updateNodes}
-              clickHandler={valClicked}
-            />
-          ))}
-          <FunBar
-            text={currText}/>
+          {nodes.map((node, index) =>
+            node.type === "fun" ? (
+              <FunNode
+                name={node.name}
+                index={index}
+                x={node.x}
+                y={node.y}
+                numInputs={node.numInputs}
+                numOutlets={node.numOutlets}
+                renderFunction={node.renderFunction}
+                handler={updateNodes}
+                clickHandler={funClicked}
+              />
+            ) : (
+              <ValNode
+                name={node.name}
+                index={index}
+                x={node.x}
+                y={node.y}
+                renderFunction={node.renderFunction}
+                handler={updateNodes}
+                clickHandler={valClicked}
+              />
+            )
+          )}
+          <FunBar text={currText} />
         </Layer>
       </Stage>
     </div>
