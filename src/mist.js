@@ -1996,9 +1996,8 @@ MIST.renderAt = function(t, exp, context, canvas,
   // Draw and scale
   bufferContext.putImageData(region, 0, 0);
   canvasContext.drawImage(buffer, imgLeft, imgTop, imgWidth, imgHeight);
-  console.log("imgLeft: "+imgLeft);
-//canvasContext.fillStyle = "rgb(200, 0, 0)";
-//canvasContext.fillRect (10,10,75,50);
+  //canvasContext.fillStyle = "rgb(200, 0, 0)";
+  //canvasContext.fillRect (10,10,75,50);
 
 //return t;
 

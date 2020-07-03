@@ -8,8 +8,8 @@ class MISTImage extends Component {
     constructor(props) {
         super(props);
         this.canvasRef = React.createRef();
-        this.exp1 = new MIST.App("plus", new MIST.Val("x"), new MIST.Val("y"));
-        //var fun1 = MIST.expToRGB("thing", this.exp1, {});
+        this.exp1 = new MIST.App("mult", new MIST.Val("x"), new MIST.Val("y"));
+        this.fun1 = MIST.expToRGB("thing", this.exp1, {});
     }
 
     /*loadImage() {
@@ -31,6 +31,42 @@ class MISTImage extends Component {
         ctx.fillStyle = '#4397AC';
         ctx.fillRect(-width / 4, -height / 4, width / 2, height / 2);
         ctx.restore();
+
+        var region = ctx.createImageData(width, height);
+        var deltaX = 2.0/width;
+        var deltaY = 2.0/height;
+        var m = {
+            x: MIST.mouseX,
+            y: MIST.mouseY,
+            X: MIST.clickX,
+            Y: MIST.clickY
+        };
+        var x = -1;
+        var y = -1 - deltaY;
+        for (var i = 0; i < region.data.length; i+= 4) {
+            // When we reach the end of the row, move on to the next row
+            if ((i % (4*width)) == 0)
+                { 
+                    x = -1;
+                    y += deltaY;
+                } // if (i % (4*imgWidth)) == 0
+
+            // Evaluate the function
+            var rgb = this.fun1(x,y,0,m); //t=0
+
+            // Exploration
+            // if (i < 4*imgWidth) { console.log("i",i, "x",x, "y",y, "rgb",rgb); }
+        
+            // Copy the pixels
+            region.data[i+0] = rgb[0];
+            region.data[i+1] = rgb[1];
+            region.data[i+2] = rgb[2];
+            region.data[i+3] = 255;
+        
+            // And advance to the next pixel
+            x += deltaX;
+        }
+        ctx.putImageData(region, 0, 0);
 
         //MIST.renderAt(0, this.exp1, ctx, canvas, width, height, 0, 0);
         //exptoRGB causes an error at line 1034. It doesn't recognize stuff
