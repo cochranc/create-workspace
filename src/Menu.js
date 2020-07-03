@@ -29,6 +29,7 @@ function Menu(props) {
   function handleMenuValues() {
     return Array.from(new Array(gui.valNames.length), (val, index) =>
       valGroup(
+        props.addNode,
         gui.valNames[index],
         gui.menuFunctsXStart + 200 + index * 80,
         gui.menuYspacing - 20,

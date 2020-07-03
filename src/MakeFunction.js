@@ -1,11 +1,30 @@
-import {Rect, Group, Text } from "react-konva";
+import { Rect, Group, Text } from "react-konva";
 import gui from "./mistgui-globals";
-import React, {useState} from "react";
+import React, { useState } from "react";
+import Konva from "konva";
 
-export var funcGroup = function makeFunctionGroup(addNode,funName, x, y, vis) {
+export var funcGroup = function makeFunctionGroup(addNode, funName, x, y, vis) {
+  function handleDragStart(e) {
+    e.target.setAttrs({
+      shadowOffset: {
+        x: 15,
+        y: 15
+      },
+      scaleX: 1.1,
+      scaleY: 1.1
+    });
+  }
 
   function handleDragEnd(e) {
-    addNode(funName, e.currentTarget.x(), e.currentTarget.y());
+    e.target.to({
+      duration: 0.5,
+      easing: Konva.Easings.ElasticEaseOut,
+      scaleX: 1,
+      scaleY: 1,
+      shadowOffsetX: 5,
+      shadowOffsetY: 5
+    });
+    addNode('fun', funName, e.currentTarget.x(), e.currentTarget.y());
   }
 
   return (
@@ -26,7 +45,8 @@ export var funcGroup = function makeFunctionGroup(addNode,funName, x, y, vis) {
       scaleX={1}
       scaleY={1}
       draggable
-      onDragEnd = {handleDragEnd}
+      onDragStart = {handleDragStart}
+      onDragEnd={handleDragEnd}
     >
       <Rect
         name={funName}

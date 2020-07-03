@@ -100,17 +100,17 @@ export default function Workspace(props) {
     }
   }
 
-  function pushNode(name, x, y) {
+  function pushNode(type,name, x, y) {
     var newLst = [...nodes];
     const node = {
       name: name,
-      type: "fun",
+      type: type,
       x: x,
       y: y,
-      renderFunction: null,
+      renderFunction: type === 'fun'? null : name,
       lineFrom: [],
       numInputs: 0,
-      numOutlets: 2
+      numOutlets: type === 'fun'? 2 : 0 
     };
     newLst.push(node);
     setNodes(newLst);
