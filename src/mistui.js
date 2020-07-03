@@ -119,6 +119,7 @@ MIST.ui.animator.frame = function() {
 
 
   if (MIST.ui.animator.on) {
+    console.log("MIST.ui.animator.on");
     MIST.ui.animator.time = MIST.render(MIST.ui.animator.exp, context,
         MIST.ui.animator.canvas, 200, 200);   
   }
@@ -216,7 +217,7 @@ MIST.ui.Animator = function(exp, params, context, canvas, log) {
   this.time = { t:0, m:0, h:0, d:0 };
 
   this.simTime = mist.gifTime();
-
+  
   // Set up the bounds (which also sets up the render width and height)
   this.bounds(0, 0, canvas.width, canvas.height);
 

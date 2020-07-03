@@ -37,8 +37,6 @@ function Menu(props) {
     );
   }
 
-  console.log(handleMenuValues());
-
   function handleValueClick() {
     if (funcTog === false) {
       setValTog(!valTog);

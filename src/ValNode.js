@@ -27,7 +27,6 @@ function ValNode(props) {
             scaleX: 1.1,
             scaleY: 1.1
         });
-        props.handler(index, e.currentTarget.x(), e.currentTarget.y())
     }
     
     function handleDragEnd(e) {
@@ -39,7 +38,6 @@ function ValNode(props) {
             shadowOffsetX: 5,
             shadowOffsetY: 5
         });
-        props.handler(index, e.currentTarget.x(), e.currentTarget.y())
     }
 
     function handleDrag(e) {
@@ -55,7 +53,7 @@ function ValNode(props) {
             draggable
             onDragStart={handleDragStart} onDragEnd={handleDragEnd}
             onDragMove={handleDrag} onClick={handleClick}
-            x={x - gui.functionHalfStrokeWidth}
+            x={x}
             y={y}
         >
             <Rect

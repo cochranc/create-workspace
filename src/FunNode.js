@@ -44,7 +44,7 @@ function FunNode(props) {
     rAnimator.setResolution(saveStyle.canvasResolution, saveStyle.canvasResolution);
     rAnimator.frame();
     }*/
-    
+
     useEffect(() => {
         loadImage();
       }, [])
@@ -64,7 +64,6 @@ function FunNode(props) {
             scaleX: 1.1,
             scaleY: 1.1
         });
-        props.handler(index, e.currentTarget.x(), e.currentTarget.y())
     }
     
     function handleDragEnd(e) {
@@ -76,7 +75,6 @@ function FunNode(props) {
             shadowOffsetX: 5,
             shadowOffsetY: 5
         });
-        props.handler(index, e.currentTarget.x(), e.currentTarget.y())
     }
 
     function handleDrag(e) {
@@ -92,7 +90,7 @@ function FunNode(props) {
             draggable
             onDragStart={handleDragStart} onDragEnd={handleDragEnd}
             onDragMove={handleDrag} onClick={handleClick}
-            x={x - gui.functionHalfStrokeWidth}
+            x={x}
             y={y}
         >
             <Rect
@@ -117,12 +115,12 @@ function FunNode(props) {
                 align={'center'}
                 _useStrictMode
             />
-            {showImage
+            {showImage 
                 ? <Portal>
                     <MISTImage
                         onClick={() => setShowImage(!showImage)}
-                        x={gui.functionRectSideLength + gui.functionImageBoxOffset}
-                        y={gui.functionRectSideLength + gui.functionImageBoxOffset}
+                        x={x + gui.functionRectSideLength + gui.functionImageBoxOffset}
+                        y={y + gui.functionRectSideLength + gui.functionImageBoxOffset}
                         width={gui.renderSideLength}
                         height={gui.renderSideLength}
                         renderFunction={renderFunction}
@@ -138,7 +136,6 @@ function FunNode(props) {
                     fill={gui.imageBoxColor}
                     stroke={'black'}
                     strokeWidth={.5}
-                    //visible={false}
                     expanded={false}
                 />
             }
