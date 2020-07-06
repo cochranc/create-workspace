@@ -85,11 +85,16 @@ function FunNode(props) {
         props.clickHandler(index);
     }
 
+    function handleDblClick(e) {
+        props.dblClickHandler(index);
+    }
+
     return (
         <Group
             draggable
             onDragStart={handleDragStart} onDragEnd={handleDragEnd}
             onDragMove={handleDrag} onClick={handleClick}
+            onDblClick={handleDblClick}
             x={x}
             y={y}
         >

@@ -34,6 +34,7 @@ export default function Workspace(props) {
   const [layouts, setLayouts] = useState([layout1]);
   const [nodes, setNodes] = useState([]);
   const [lines, setLines] = useState([]);
+  const [newSource, setnNewSource] = useState(null);
   const [currShape, setCurrShape] = useState();
   const [currText, setCurrText] = useState();
   const [history, setHistory] = useState([]);
@@ -124,6 +125,13 @@ export default function Workspace(props) {
     setCurrText(nodes[index].renderFunction);
   }
 
+  function dblClicked(index) {
+    if(newSource && nodes[index].type === 'fun') { // a line coming out of source
+      console.log("new line from node"+nodes[newSource]+"to node"+nodes[index]);
+      
+    }
+  }
+
   useEffect(() => {
     displayLayout();
   }, []);
@@ -154,6 +162,7 @@ export default function Workspace(props) {
               renderFunction={node.renderFunction}
               handler={updateNodes}
               clickHandler={funClicked}
+              dblClickHandler={dblClicked}
             />
             : <ValNode
               name={node.name}
@@ -163,6 +172,7 @@ export default function Workspace(props) {
               renderFunction={node.renderFunction}
               handler={updateNodes}
               clickHandler={valClicked}
+              dblClickHandler={dblClicked}
             />
           ))}
           <FunBar
