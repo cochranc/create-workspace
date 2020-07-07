@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from "react";
-import { Rect, Group, Text, Shape, Image } from "react-konva";
+import React, { useState } from "react";
+import { Rect, Group, Text, Shape } from "react-konva";
 import Konva from 'konva';
 import Portal from './Portal';
 import gui from './mistgui-globals.js';
 import MISTImage from './MISTImage';
-import MIST from "./mistui.js";
 
 /**
  * 

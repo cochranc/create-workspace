@@ -18,7 +18,7 @@ function ValNode(props) {
     const rep = gui.values[name].rep;
     const renderFunction = gui.values[name].rep;
     const [showImage, setShowImage] = useState(false);
-    const numOutlets = props.numOutlets;
+    const numOutlets = 0;
 
     function handleDragStart(e) {
         e.target.setAttrs({
@@ -69,8 +69,10 @@ function ValNode(props) {
                 width={gui.valueSideLength}
                 height={gui.valueSideLength}
                 fill={gui.values[name].color}
+                lineJoin={'round'}
                 rotation={45}
-                //lineJoin={'round'}
+                stroke={gui.values[name].color}
+                strokeWidth={gui.functionStrokeWidth}
                 _useStrictMode
             />
             <Text
@@ -79,7 +81,7 @@ function ValNode(props) {
                 fill={'black'}
                 fontSize={gui.nodeFontSize}
                 x={0}
-                y={gui.valueSideLength / 2}
+                y={gui.valueSideLength/2.2}
                 width={gui.functionRectSideLength}
                 align={'center'}
                 _useStrictMode

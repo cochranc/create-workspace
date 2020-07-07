@@ -17,18 +17,18 @@ export default function Workspace(props) {
   
   //example layouts for testing
   var layout1 = new MIST.Layout();
-  var add = layout1.addOp("add", 325, 325);
-  var x = layout1.addVal("x", 250, 450);
-  var y = layout1.addVal("y", 400, 450);
+  var add = layout1.addOp("add", 300, 325);
+  var x = layout1.addVal("x", 150, 250);
+  var y = layout1.addVal("y", 150, 400);
   layout1.addEdge(x, add, 0);
   layout1.addEdge(y, add, 1);
-  var mult = layout1.addOp("multiply", 450, 300);
-  var k = layout1.addVal("x", 450, 175);
+  var mult = layout1.addOp("multiply", 500, 300);
+  var k = layout1.addVal("x", 450, 450);
   layout1.addEdge(add, mult, 2);
   layout1.addEdge(k, mult, 3);
-  var sin = layout1.addOp("sine", 550, 350);
+  var sin = layout1.addOp("sine", 675, 350);
   layout1.addEdge(mult, sin, 4);
-  var square = layout1.addOp("square", 650, 250);
+  var square = layout1.addOp("square", 850, 250);
   layout1.addEdge(sin, square, 5);
 
   const [layouts, setLayouts] = useState([layout1]);
@@ -135,12 +135,27 @@ export default function Workspace(props) {
     setNodes(newNodes);
   }
 
-  function updateNodes(index, x, y) {
+  function updatePosition(index, x, y) {
     var newLst = [...nodes];
     newLst[index].x = x;
     newLst[index].y = y;
     setNodes(newLst);
   }
+
+  function removeLine(index) {
+    const source = lines[index].sourceIndex;
+    const sink = lines[index].sinkIndex;
+    var newNodes = [...nodes];
+    newNodes[source].hasLine = false;
+    newNodes[sink].numInputs -= 1;
+    newNodes[sink].lineFrom.splice(newNodes[sink].lineFrom.indexOf(source), 1);
+    newNodes[sink].renderFunction = null;
+    setNodes(newNodes);
+    var newLst = [...lines];
+    newLst.splice(index, 1);
+    setLines(newLst);
+  }
+
   /**
    * Finds and sets the render function of the node of given index.
    * @param {int} index 
@@ -148,7 +163,7 @@ export default function Workspace(props) {
   function findRenderFunction(index) {
     const node = nodes[index];
     var rf = node.renderFunction;
-    if(!rf) {
+    if(!rf && node.lineFrom.length > 0) {
       var rf = gui.functions[node.name].prefix + '(';
       for(var i = 0; i < node.lineFrom.length; i++) {
         rf += findRenderFunction(node.lineFrom[i]);
@@ -165,7 +180,8 @@ export default function Workspace(props) {
    * @param {int} index 
    */
   function funClicked(index) {
-    if(newSource && nodes[index].type === 'fun' &&
+    console.log("newSource: "+newSource);
+    if(newSource != null && nodes[index].type === 'fun' &&
       nodes[index].numInputs < gui.functions[nodes[index].name].max) { // a line coming out of source
       //console.log("new line from node"+nodes[newSource].name+"to node"+nodes[index].name);
       pushLine(newSource, index);
@@ -199,8 +215,11 @@ export default function Workspace(props) {
     if(!tempLine && !nodes[index].hasLine) {
       setNewSource(index);
       window.addEventListener("mousemove", updateMousePosition);
-      setTempLine({sourceX: nodes[index].x, sourceY: nodes[index].y,
-        mouseX: mousePosition.x, mouseY: mousePosition.y});
+      setMousePosition({
+        x: nodes[index].x + gui.functionRectSideLength / 2,
+        y: nodes[index].y + gui.functionRectSideLength / 2
+      });
+      setTempLine({sourceX: nodes[index].x, sourceY: nodes[index].y});
     }
   }
 
@@ -225,16 +244,20 @@ export default function Workspace(props) {
           <Menu addNode = {pushNode}/>
           {lines.map((line, index) => (
             <DrawArrow
-              sourceX={nodes[line.sourceIndex].x} // x-coord of the source
-              sourceY={nodes[line.sourceIndex].y} // y-coord of the source
+              index={index}
+              sourceX={nodes[line.sourceIndex].x + gui.functionRectSideLength / 2} // x-coord of the source
+              sourceY={nodes[line.sourceIndex].y + gui.functionRectSideLength / 2} // y-coord of the source
               sinkX={nodes[line.sinkIndex].x - 4 * gui.outletXOffset} // x-coord of the sink
-              sinkY={nodes[line.sinkIndex].y + 1.5 * gui.outletYOffset} // y-coord of the sink
+              sinkY={nodes[line.sinkIndex].y
+                + (nodes[line.sinkIndex].lineFrom.indexOf(line.sourceIndex) + 1) * gui.outletYOffset
+                + gui.functionHalfStrokeWidth} // y-coord of the sink
+              removeLine={removeLine}
             />
           ))}
           {tempLine &&
             <DrawArrow
-              sourceX={tempLine.sourceX}
-              sourceY={tempLine.sourceY}
+              sourceX={tempLine.sourceX + gui.functionRectSideLength / 2}
+              sourceY={tempLine.sourceY + gui.functionRectSideLength / 2}
               sinkX={mousePosition.x}
               sinkY={mousePosition.y}
             />
@@ -249,7 +272,7 @@ export default function Workspace(props) {
               numInputs={node.numInputs}
               numOutlets={node.numOutlets}
               findRF={findRenderFunction}
-              handler={updateNodes}
+              handler={updatePosition}
               clickHandler={funClicked}
               dblClickHandler={dblClicked}
             />
@@ -259,7 +282,7 @@ export default function Workspace(props) {
               x={node.x}
               y={node.y}
               renderFunction={node.renderFunction}
-              handler={updateNodes}
+              handler={updatePosition}
               clickHandler={valClicked}
               dblClickHandler={dblClicked}
             />
