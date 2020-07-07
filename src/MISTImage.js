@@ -12,13 +12,6 @@ class MISTImage extends Component {
         this.fun = MIST.expToRGB("thing", this.exp, {});
     }
 
-    /*loadImage() {
-        const img = new window.Image();
-        img.src = "https://konvajs.org/assets/lion.png";
-        img.crossOrigin="Anonymous";
-        this.state.image = img;
-    }*/
-
     componentDidMount() {
         const canvas = this.canvasRef.current;
         const ctx = canvas.getContext('2d');
@@ -72,12 +65,12 @@ class MISTImage extends Component {
         //exptoRGB causes an error at line 1034. It doesn't recognize stuff
         //like "[object HTMLCanvasElement]"
 
-        var animator = new MIST.ui.Animator("sum(x,y)", [], ctx, 
+        /*var animator = new MIST.ui.Animator("sum(x,y)", [], ctx, 
             this.canvasRef.current, function() { });
         animator.bounds(this.props.x,this.props.y,this.props.width,this.props.height);
         animator.setResolution(this.props.width,this.props.height);
         animator.frame();
-        animator.start();
+        animator.start();*/
     }
 
     render () {

@@ -131,6 +131,9 @@ export default function Workspace(props) {
     var newNodes = [...nodes];
     newNodes[source].hasLine = true;
     newNodes[sink].numInputs += 1; // updating the number of inputs for sink node
+    if(newNodes[sink].numInputs > newNodes[sink].numOutlets) {
+      newNodes[sink].numOutlets += 1;
+    }
     newNodes[sink].lineFrom.push(source);
     setNodes(newNodes);
   }
@@ -148,6 +151,9 @@ export default function Workspace(props) {
     var newNodes = [...nodes];
     newNodes[source].hasLine = false;
     newNodes[sink].numInputs -= 1;
+    if(newNodes[sink].numOutlets > gui.functions[newNodes[sink].name].min) {
+      newNodes[sink].numOutlets -= 1;
+    }
     newNodes[sink].lineFrom.splice(newNodes[sink].lineFrom.indexOf(source), 1);
     newNodes[sink].renderFunction = null;
     setNodes(newNodes);
@@ -226,7 +232,7 @@ export default function Workspace(props) {
   /**
    * Called when the background is clicked.
    */
-  function stageClicked(e) {
+  function bgClicked(e) {
     console.log("stage clicked, target: "+e.target);
     setNewSource(null);
     setTempLine(null);
@@ -239,9 +245,16 @@ export default function Workspace(props) {
 
   return (
     <div id="workspace">
-      <Stage width={width} height={height} onClick={stageClicked}>
+      <Stage width={width} height={height} onClick={bgClicked}>
         <Layer>
           <Menu addNode = {pushNode}/>
+          <Rect
+            y={gui.menuHeight}
+            width={width}
+            height={height}
+            //fill={'white'}
+            //onClick={bgClicked}
+          />
           {lines.map((line, index) => (
             <DrawArrow
               index={index}
