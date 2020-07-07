@@ -104,7 +104,7 @@ function FunNode(props) {
                 x={gui.functionHalfStrokeWidth}
                 y={gui.functionHalfStrokeWidth}
                 width={gui.functionRectSideLength}
-                height={(props.numInputs === 0)
+                height={(props.numInputs <= gui.functions[props.name].min)
                     ? gui.functionRectSideLength
                     : gui.functionRectSideLength +
                     (props.numInputs - gui.functions[props.name].min) * gui.outletYOffset}
@@ -120,7 +120,7 @@ function FunNode(props) {
                 fill={'black'}
                 fontSize={gui.nodeFontSize}
                 x={0}
-                y={(numInputs === 0)
+                y={(props.numInputs <= gui.functions[props.name].min)
                     ? gui.functionTotalSideLength / 2 - gui.functionHalfStrokeWidth
                     : (gui.functionTotalSideLength + (props.numInputs - gui.functions[props.name].min) * gui.outletYOffset) / 2 -
                     gui.functionHalfStrokeWidth}
@@ -143,7 +143,7 @@ function FunNode(props) {
                     onClick={() => setShowImage(!showImage)}
                     name={'imageBox'}
                     x={gui.functionRectSideLength + gui.functionImageBoxOffset}
-                    y={(numInputs === 0)
+                    y={(props.numInputs <= gui.functions[props.name].min)
                         ? gui.functionRectSideLength + gui.functionImageBoxOffset
                         : gui.functionRectSideLength + gui.functionImageBoxOffset +
                         (props.numInputs - gui.functions[props.name].min) * gui.outletYOffset}

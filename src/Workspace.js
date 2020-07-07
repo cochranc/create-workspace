@@ -134,7 +134,7 @@ export default function Workspace(props) {
     var newNodes = [...nodes];
     newNodes[source].hasLine = true;
     newNodes[sink].numInputs += 1; // updating the number of inputs for sink node
-    if(newNodes[sink].numInputs > newNodes[sink].numOutlets) {
+    if(newNodes[sink].numInputs >= newNodes[sink].numOutlets) {
       newNodes[sink].numOutlets += 1;
     }
     newNodes[sink].lineFrom.push(source);
@@ -246,15 +246,36 @@ export default function Workspace(props) {
     setTempLine(null);
     window.removeEventListener("mousemove", updateMousePosition);
   }
-  
+
   useEffect(() => {
     displayLayout();
   }, []);
 
   return (
     <div id="workspace">
-      <Stage width={width} height={height} onClick={bgClicked}>
+      <Stage width={width} height={height}>
+        <Layer
+          
+        />
         <Layer>
+          <Group onClick={bgClicked}>
+            <Rect
+              y={gui.menuHeight}
+              width={width}
+              height={height-gui.menuHeight}
+              fill={'white'}
+              
+            />
+            {tempLine &&
+            <DrawArrow
+              sourceX={tempLine.sourceX + gui.functionRectSideLength / 2}
+              sourceY={tempLine.sourceY + gui.functionRectSideLength / 2}
+              sinkX={mousePosition.x}
+              sinkY={mousePosition.y}
+            />
+            }
+          </Group>
+          
           <Menu addNode = {pushNode} clearNode={clearNode}/>
           {(nodes.length !== 0)
           ? (lines.map((line, index) => (
@@ -270,14 +291,7 @@ export default function Workspace(props) {
             />
           )))
           : null}
-          {tempLine &&
-            <DrawArrow
-              sourceX={tempLine.sourceX + gui.functionRectSideLength / 2}
-              sourceY={tempLine.sourceY + gui.functionRectSideLength / 2}
-              sinkX={mousePosition.x}
-              sinkY={mousePosition.y}
-            />
-          }
+          
           {nodes.map((node, index) => (
             (node.type === 'fun')
             ? <FunNode
