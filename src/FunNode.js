@@ -112,6 +112,7 @@ function FunNode(props) {
                 lineJoin={'round'}
                 stroke={gui.functions[name].color}
                 strokeWidth={gui.functionStrokeWidth}
+                shadowBlur = {5}
                 _useStrictMode
             />
             <Text

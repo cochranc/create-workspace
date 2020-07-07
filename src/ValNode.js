@@ -73,6 +73,7 @@ function ValNode(props) {
                 rotation={45}
                 stroke={gui.values[name].color}
                 strokeWidth={gui.functionStrokeWidth}
+                shadowBlur = {5}
                 _useStrictMode
             />
             <Text
