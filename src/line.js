@@ -53,10 +53,12 @@ class DrawArrow extends Component {
     return (
       <Line
         ref={ref => (this.arrow = ref)}
-        points={[this.props.sourceX - 5 * gui.outletXOffset,
+        points={[
+          this.props.sourceX - 5 * gui.outletXOffset,
           this.props.sourceY + 1.5 * gui.outletYOffset,
-          this.props.sinkX - 5 * gui.outletXOffset,
-          this.props.sinkY + 1.5 * gui.outletYOffset]}
+          this.props.sinkX,
+          this.props.sinkY
+        ]}
         pointerLength={0}
         pointerWidth={0}
         fill="black"

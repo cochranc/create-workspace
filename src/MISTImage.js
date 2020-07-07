@@ -8,8 +8,8 @@ class MISTImage extends Component {
     constructor(props) {
         super(props);
         this.canvasRef = React.createRef();
-        this.exp1 = new MIST.App("mult", new MIST.Val("x"), new MIST.Val("y"));
-        this.fun1 = MIST.expToRGB("thing", this.exp1, {});
+        this.exp = MIST.parse(props.renderFunction);
+        this.fun = MIST.expToRGB("thing", this.exp, {});
     }
 
     /*loadImage() {
@@ -52,7 +52,7 @@ class MISTImage extends Component {
                 } // if (i % (4*imgWidth)) == 0
 
             // Evaluate the function
-            var rgb = this.fun1(x,y,0,m); //t=0
+            var rgb = this.fun(x,y,0,m); //t=0
 
             // Exploration
             // if (i < 4*imgWidth) { console.log("i",i, "x",x, "y",y, "rgb",rgb); }

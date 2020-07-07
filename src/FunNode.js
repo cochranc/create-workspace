@@ -8,7 +8,7 @@ import MIST from "./mistui.js";
 
 /**
  * 
- * @param {name, index, x, y, numInputs, numOutlets} props 
+ * @param props 
  */
 function FunNode(props) {
     const name = props.name;
@@ -22,12 +22,10 @@ function FunNode(props) {
     const rep = gui.functions[name].rep;
     const prefix = gui.functions[name].prefix;
     const separator = gui.functions[name].separator;
-    const renderFunction = props.renderFunction;
+    const renderFunction = props.findRF(index);
     const numOutlets = props.numOutlets;
     const [showImage, setShowImage] = useState(false);
     const [image, setImage] = useState(null);
-    var exp1 = new MIST.App("plus", new MIST.Val("x"), new MIST.Val("y"));
-    var fun1 = MIST.expToRGB("thing", exp1, {});
     /*
       let rCanvas = layers.render.canvas._canvas;
   let rAnimator;
@@ -45,16 +43,6 @@ function FunNode(props) {
     rAnimator.frame();
     }*/
 
-    useEffect(() => {
-        loadImage();
-      }, [])
-
-    function loadImage() {
-        const img = new window.Image();
-        img.src = "https://konvajs.org/assets/lion.png";
-        img.crossOrigin="Anonymous";
-        setImage(img);
-    }
     function handleDragStart(e) {
         e.target.setAttrs({
           shadowOffset: {

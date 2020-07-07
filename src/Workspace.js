@@ -34,7 +34,9 @@ export default function Workspace(props) {
   const [layouts, setLayouts] = useState([layout1]);
   const [nodes, setNodes] = useState([]);
   const [lines, setLines] = useState([]);
-  const [newSource, setnNewSource] = useState(null);
+  const [newSource, setNewSource] = useState(null);
+  const [mousePosition, setMousePosition] = useState({ x: null, y: null });
+  const [tempLine, setTempLine] = useState(null);
   const [currShape, setCurrShape] = useState();
   const [currText, setCurrText] = useState();
   const [history, setHistory] = useState([]);
@@ -52,7 +54,7 @@ export default function Workspace(props) {
           x: op.x, y: op.y,
           renderFunction: null,
           lineFrom:[],
-          numInputs: 0, numOutlets: 2 };
+          numInputs: 0, numOutlets: gui.functions[op.name].min };
           tempNodes.push(node);
       }
       for (id in layout.values) {
@@ -60,7 +62,8 @@ export default function Workspace(props) {
         var val = layout.values[id];
         const node = { name: val.name, type: 'val',
           x: val.x, y: val.y,
-          renderFunction: val.name };
+          renderFunction: val.name,
+          hasLine: false };
           tempNodes.push(node);
       }
       let newLines = [...lines];
@@ -81,9 +84,10 @@ export default function Workspace(props) {
         var sourceIndex = IDindices.indexOf(source.id) + IDoffset;
         var sinkIndex = IDindices.indexOf(sink.id) + IDoffset;
         newLines.push({
-          sourceIndex: sourceIndex, // index of source in valueNodes
+          sourceIndex: sourceIndex,
           sinkIndex: sinkIndex
-        }); // index of sink in functionNodes
+        });
+        tempNodes[sourceIndex].hasLine = true;
         tempNodes[sinkIndex].numInputs += 1;
         tempNodes[sinkIndex].lineFrom.push(sourceIndex);
       }
@@ -92,13 +96,55 @@ export default function Workspace(props) {
     }
   }
 
+  function pushNode(type, name, x, y) {
+    var newLst = [...nodes];
+    const node = {
+      name: name,
+      type: type,
+      x: x,
+      y: y,
+      renderFunction: type === 'fun'? null : name,
+      hasLine: type === 'val'? false : null,
+      lineFrom: [],
+      numInputs: 0,
+      numOutlets: type === 'fun'? gui.functions[name].min : 0
+    };
+    newLst.push(node);
+    setNodes(newLst);
+  }
+
+  /**
+   * Pushes a new line to 'lines'. Updates information for the sink node.
+   * @param {int} source 
+   * @param {int} sink 
+   */
+  function pushLine(source, sink) {
+    console.log("pushLine")
+    console.log("source: "+nodes[source].name);
+    console.log("sink: "+nodes[sink].name);
+    let newLines = [...lines];
+    newLines.push({
+      sourceIndex: source,
+      sinkIndex: sink
+    });
+    setLines(newLines);
+    var newNodes = [...nodes];
+    newNodes[source].hasLine = true;
+    newNodes[sink].numInputs += 1; // updating the number of inputs for sink node
+    newNodes[sink].lineFrom.push(source);
+    setNodes(newNodes);
+  }
+
   function updateNodes(index, x, y) {
     var newLst = [...nodes];
     newLst[index].x = x;
     newLst[index].y = y;
     setNodes(newLst);
   }
-
+  /**
+   * Finds and sets the render function of the node of given index.
+   * @param {int} index 
+   */
   function findRenderFunction(index) {
     const node = nodes[index];
     var rf = node.renderFunction;
@@ -113,23 +159,59 @@ export default function Workspace(props) {
     return rf;
   }
   
+  /**
+   * When a function gets clicked, it's either with the intention of displaying the function
+   * or making a line.
+   * @param {int} index 
+   */
   function funClicked(index) {
-    const rf = findRenderFunction(index);
-    var newLst = [...nodes];
-    newLst[index].renderFunction = rf;
-    setNodes(newLst);
-    setCurrText(rf);
+    if(newSource && nodes[index].type === 'fun' &&
+      nodes[index].numInputs < gui.functions[nodes[index].name].max) { // a line coming out of source
+      //console.log("new line from node"+nodes[newSource].name+"to node"+nodes[index].name);
+      pushLine(newSource, index);
+    }
+    else {
+      const rf = findRenderFunction(index);
+      var newLst = [...nodes];
+      newLst[index].renderFunction = rf;
+      setNodes(newLst);
+      setCurrText(rf);
+    }
   }
 
+  /**
+   * Called when a node is clicked.
+   * @param {int} index 
+   */
   function valClicked(index) {
     setCurrText(nodes[index].renderFunction);
   }
 
+  function updateMousePosition(e) {
+    setMousePosition({ x: e.clientX, y: e.clientY });
+  };
+
+  /**
+   * Called when a node is double-clicked.
+   * @param {int} index 
+   */
   function dblClicked(index) {
-    if(newSource && nodes[index].type === 'fun') { // a line coming out of source
-      console.log("new line from node"+nodes[newSource]+"to node"+nodes[index]);
-      
+    if(!tempLine && !nodes[index].hasLine) {
+      setNewSource(index);
+      window.addEventListener("mousemove", updateMousePosition);
+      setTempLine({sourceX: nodes[index].x, sourceY: nodes[index].y,
+        mouseX: mousePosition.x, mouseY: mousePosition.y});
     }
+  }
+
+  /**
+   * Called when the background is clicked.
+   */
+  function stageClicked(e) {
+    console.log("stage clicked, target: "+e.target);
+    setNewSource(null);
+    setTempLine(null);
+    window.removeEventListener("mousemove", updateMousePosition);
   }
 
   useEffect(() => {
@@ -138,18 +220,25 @@ export default function Workspace(props) {
 
   return (
     <div id="workspace">
-      <Stage width={width} height={height}>
+      <Stage width={width} height={height} onClick={stageClicked}>
         <Layer>
-          <Menu />
+          <Menu addNode = {pushNode}/>
           {lines.map((line, index) => (
             <DrawArrow
-              index={index}
               sourceX={nodes[line.sourceIndex].x} // x-coord of the source
               sourceY={nodes[line.sourceIndex].y} // y-coord of the source
-              sinkX={nodes[line.sinkIndex].x} // x-coord of the sink
-              sinkY={nodes[line.sinkIndex].y} // y-coord of the sink
+              sinkX={nodes[line.sinkIndex].x - 4 * gui.outletXOffset} // x-coord of the sink
+              sinkY={nodes[line.sinkIndex].y + 1.5 * gui.outletYOffset} // y-coord of the sink
             />
           ))}
+          {tempLine &&
+            <DrawArrow
+              sourceX={tempLine.sourceX}
+              sourceY={tempLine.sourceY}
+              sinkX={mousePosition.x}
+              sinkY={mousePosition.y}
+            />
+          }
           {nodes.map((node, index) => (
             (node.type === 'fun')
             ? <FunNode
@@ -159,7 +248,7 @@ export default function Workspace(props) {
               y={node.y}
               numInputs={node.numInputs}
               numOutlets={node.numOutlets}
-              renderFunction={node.renderFunction}
+              findRF={findRenderFunction}
               handler={updateNodes}
               clickHandler={funClicked}
               dblClickHandler={dblClicked}

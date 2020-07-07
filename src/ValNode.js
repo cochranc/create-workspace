@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Rect, Group, Text, Shape } from 'react-konva';
 import Konva from 'konva';
+import Portal from './Portal';
 import gui from './mistgui-globals.js';
+import MISTImage from './MISTImage';
 
 /**
  * 
- * @param {*} props 
+ * @param props 
  */
 function ValNode(props) {
     const name = props.name;
@@ -83,7 +85,16 @@ function ValNode(props) {
                 _useStrictMode
             />
             {showImage
-                ? <Text onClick={() => setShowImage(!showImage)} text={"function image here"}/>
+                ? <Portal>
+                    <MISTImage
+                        onClick={() => setShowImage(!showImage)}
+                        x={x + gui.valueImageBoxOffset}
+                        y={y + gui.valueImageBoxOffset}
+                        width={gui.renderSideLength}
+                        height={gui.renderSideLength}
+                        renderFunction={renderFunction}
+                    />
+                </Portal>
                 : <Rect
                     onClick={() => setShowImage(!showImage)}
                     name={'imageBox'}
