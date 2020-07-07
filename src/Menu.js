@@ -214,6 +214,7 @@ function Menu(props) {
           text={"Reset Workspace"}
           x={gui.menuOffset}
           y={gui.menuOffset}
+          clearNode={props.clearNode}
         />
         <MakeMenuButton
           text={"Open Workspace"}

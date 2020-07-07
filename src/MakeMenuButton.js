@@ -4,8 +4,15 @@ import Konva from "konva";
 import gui from "./mistgui-globals.js";
 
 function MakeMenuButton(props) {
+
+  function handleClick() {
+    if(props.text === "Reset Workspace") {
+      props.clearNode();
+    }
+  }
+
   return (
-    <Group x={props.x} y={props.y}>
+    <Group x={props.x} y={props.y} onClick={handleClick}>
       <Rect
         x={0}
         y={0}

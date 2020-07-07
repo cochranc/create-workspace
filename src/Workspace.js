@@ -221,7 +221,7 @@ export default function Workspace(props) {
    * @param {int} index 
    */
   function dblClicked(index) {
-    if(!tempLine && !nodes[index].hasLine) {
+    if(!tempLine) {
       setNewSource(index);
       window.addEventListener("mousemove", updateMousePosition);
       setMousePosition({
@@ -230,6 +230,11 @@ export default function Workspace(props) {
       });
       setTempLine({sourceX: nodes[index].x, sourceY: nodes[index].y});
     }
+  }
+
+  function clearNode() {
+    setNodes([]);
+    setLines([]);
   }
 
   /**
@@ -241,7 +246,7 @@ export default function Workspace(props) {
     setTempLine(null);
     window.removeEventListener("mousemove", updateMousePosition);
   }
-
+  
   useEffect(() => {
     displayLayout();
   }, []);
@@ -250,8 +255,9 @@ export default function Workspace(props) {
     <div id="workspace">
       <Stage width={width} height={height} onClick={bgClicked}>
         <Layer>
-          <Menu addNode = {pushNode}/>
-          {lines.map((line, index) => (
+          <Menu addNode = {pushNode} clearNode={clearNode}/>
+          {(nodes.length !== 0)
+          ? (lines.map((line, index) => (
             <DrawArrow
               index={index}
               sourceX={nodes[line.sourceIndex].x + gui.functionRectSideLength / 2} // x-coord of the source
@@ -262,7 +268,8 @@ export default function Workspace(props) {
                 + gui.functionHalfStrokeWidth} // y-coord of the sink
               removeLine={removeLine}
             />
-          ))}
+          )))
+          : null}
           {tempLine &&
             <DrawArrow
               sourceX={tempLine.sourceX + gui.functionRectSideLength / 2}

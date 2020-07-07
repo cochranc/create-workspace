@@ -79,6 +79,21 @@ function FunNode(props) {
     return (
         <Group
             draggable
+            dragBoundFunc={function(pos) {
+                if(pos.x < 10) {
+                    return {y:pos.y, x:0};
+                }
+                else if(pos.x > window.innerWidth - 10) {
+                    return {y:pos.y, x:window.innerWidth}
+                }
+                else if(pos.y < 10) {
+                    return {x:pos.x, y:0}
+                }
+                else if(pos.y > window.innerHeight - 10) {
+                    return {x:pos.x, y:window.innerHeight}
+                }
+                else { return pos }
+            }}
             onDragStart={handleDragStart} onDragEnd={handleDragEnd}
             onDragMove={handleDrag} onClick={handleClick}
             onDblClick={handleDblClick}
@@ -89,7 +104,10 @@ function FunNode(props) {
                 x={gui.functionHalfStrokeWidth}
                 y={gui.functionHalfStrokeWidth}
                 width={gui.functionRectSideLength}
-                height={gui.functionRectSideLength}
+                height={(props.numInputs === 0)
+                    ? gui.functionRectSideLength
+                    : gui.functionRectSideLength +
+                    (props.numInputs - gui.functions[props.name].min) * gui.outletYOffset}
                 fill={gui.functions[name].color}
                 lineJoin={'round'}
                 stroke={gui.functions[name].color}
@@ -102,7 +120,10 @@ function FunNode(props) {
                 fill={'black'}
                 fontSize={gui.nodeFontSize}
                 x={0}
-                y={gui.functionTotalSideLength / 2 - gui.functionHalfStrokeWidth}
+                y={(numInputs === 0)
+                    ? gui.functionTotalSideLength / 2 - gui.functionHalfStrokeWidth
+                    : (gui.functionTotalSideLength + (props.numInputs - gui.functions[props.name].min) * gui.outletYOffset) / 2 -
+                    gui.functionHalfStrokeWidth}
                 width={gui.functionTotalSideLength}
                 align={'center'}
                 _useStrictMode
@@ -122,7 +143,10 @@ function FunNode(props) {
                     onClick={() => setShowImage(!showImage)}
                     name={'imageBox'}
                     x={gui.functionRectSideLength + gui.functionImageBoxOffset}
-                    y={gui.functionRectSideLength + gui.functionImageBoxOffset}
+                    y={(numInputs === 0)
+                        ? gui.functionRectSideLength + gui.functionImageBoxOffset
+                        : gui.functionRectSideLength + gui.functionImageBoxOffset +
+                        (props.numInputs - gui.functions[props.name].min) * gui.outletYOffset}
                     width={gui.imageBoxSideLength}
                     height={gui.imageBoxSideLength}
                     fill={gui.imageBoxColor}
