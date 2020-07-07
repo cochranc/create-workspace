@@ -156,7 +156,28 @@ function FunNode(props) {
                     expanded={false}
                 />
             }
-            {[...Array(numOutlets)].map((u, i) =>
+            {(name === "rgb")
+            ? ["red", "green", "blue"].map((u, i) =>
+                <Shape
+                    sceneFunc={function (context) {
+                    context.beginPath();
+                    context.moveTo(0, 0);
+                    context.bezierCurveTo(-gui.bezPoint, -gui.bezPoint, -gui.bezPoint, gui.bezPoint, 0, 0);
+                    context.closePath();
+                    context.fillStrokeShape(this);
+                    }}
+                    name = {'outlet' + (i+1)}
+                    x = {gui.outletXOffset}
+                    y = {(i+1) * gui.outletYOffset + gui.functionHalfStrokeWidth}
+                    fill={u}
+                    opacity={1}
+                    stroke='black'
+                    strokeWidth={1}
+                    lineIn={null}
+                    outletIndex={i}
+                />
+            )
+            : [...Array(numOutlets)].map((u, i) =>
                 <Shape
                     sceneFunc={function (context) {
                     context.beginPath();
