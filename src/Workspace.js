@@ -35,6 +35,7 @@ export default function Workspace(props) {
   const [nodes, setNodes] = useState([]);
   const [lines, setLines] = useState([]);
   const [newSource, setNewSource] = useState(null);
+  const [mouseListenerOn, setMouseListenerOn] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: null, y: null });
   const [tempLine, setTempLine] = useState(null);
   const [currShape, setCurrShape] = useState();
@@ -190,7 +191,7 @@ export default function Workspace(props) {
    */
   function funClicked(index) {
     console.log("newSource: "+newSource);
-    if(newSource != null && nodes[index].type === 'fun' &&
+    if(newSource != null && newSource != index && nodes[index].type === 'fun' &&
       nodes[index].numInputs < gui.functions[nodes[index].name].max) { // a line coming out of source
       //console.log("new line from node"+nodes[newSource].name+"to node"+nodes[index].name);
       pushLine(newSource, index);
@@ -212,8 +213,9 @@ export default function Workspace(props) {
     setCurrText(nodes[index].renderFunction);
   }
 
-  function updateMousePosition(e) {
-    setMousePosition({ x: e.clientX, y: e.clientY });
+  function updateMousePosition(x, y) {
+    //console.log("updateMousePosition; x:"+x+" y:"+y);
+    setMousePosition({ x: x, y: y });
   };
 
   /**
@@ -223,7 +225,7 @@ export default function Workspace(props) {
   function dblClicked(index) {
     if(!tempLine) {
       setNewSource(index);
-      window.addEventListener("mousemove", updateMousePosition);
+      setMouseListenerOn(true);
       setMousePosition({
         x: nodes[index].x + gui.functionRectSideLength / 2,
         y: nodes[index].y + gui.functionRectSideLength / 2
@@ -241,10 +243,9 @@ export default function Workspace(props) {
    * Called when the background is clicked.
    */
   function bgClicked(e) {
-    console.log("stage clicked, target: "+e.target);
     setNewSource(null);
     setTempLine(null);
-    window.removeEventListener("mousemove", updateMousePosition);
+    setMouseListenerOn(false);
   }
 
   useEffect(() => {
@@ -253,12 +254,16 @@ export default function Workspace(props) {
 
   return (
     <div id="workspace">
-      <Stage width={width} height={height}>
-        <Layer
-          
-        />
+      <Stage width={width} height={height}
+        onClick={bgClicked}
+        onMouseMove={(e) => {
+          if(mouseListenerOn) {
+            updateMousePosition(e.evt.clientX, e.evt.clientY);
+          }
+        }}
+      >
         <Layer>
-          <Group onClick={bgClicked}>
+          <Group>
             <Rect
               y={gui.menuHeight}
               width={width}
