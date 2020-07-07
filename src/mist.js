@@ -138,7 +138,7 @@ function getArgs(args, start)
 {
   if (!start) { start = 0; }
   var arglen = args.length - start;
-  console.log("arglen: "+arglen);
+  //console.log("arglen: "+arglen);
   if ((arglen == 1) && (args[start] instanceof Array)) {
     return args[start];
   } // if there's only one argument, and it's an array.
@@ -386,10 +386,10 @@ MIST.validate = function(name, exp, context) {
 MIST.App = function(operation) {
   this.class = "MIST.App";
   this.operation = operation;
-  console.log("MIST.App called getArgs with arguments... ");
-  for(var i=0; i<arguments.length;i++) {
+  //console.log("MIST.App called getArgs with arguments... ");
+  /*for(var i=0; i<arguments.length;i++) {
     console.log(arguments[i]);
-  }
+  }*/
   this.operands = getArgs(arguments,1);
 
   // Validate the operands
@@ -1005,6 +1005,7 @@ MIST.expToRGB = function(name,exp,env) {
   var tmp = [];
    // Contexts as objects
   for (var c in env) {
+    //console.log("1008");
     tmp.push("var " + c + " = " + env[c].toString());
   }
   var envCode = tmp.join(";");
@@ -1018,7 +1019,6 @@ MIST.expToRGB = function(name,exp,env) {
   if (type == MIST.TYPE.RGB) {
     var code = "(function(x,y,t,m,p) { " + envCode +
         "; return (" + exp.toString() + ").map(r2c); })";
-     //console.log(code);
     return eval(code);
   }
   // For B&W functions
@@ -1031,7 +1031,6 @@ MIST.expToRGB = function(name,exp,env) {
     var code = "(function(x,y,t,m,p) { " + envCode +
         "; var _tmp_ = r2c(-" + exp.toString() +
         "); return [_tmp_, _tmp_, _tmp_]; })";
-    //console.log(code);
     return eval(code);
   }
   else {
@@ -1943,9 +1942,10 @@ MIST.renderAt = function(t, exp, context, canvas,
   var canvasContext = canvas.getContext("2d");
   var bufferContext = buffer.getContext("2d");
 
+  //console.log("canvasContext: "+canvasContext);
+
   // Set up the image data
   var region = bufferContext.createImageData(renderWidth,renderHeight);
-
   // Set up the mouse (we don't want it changing while rendering).
   var m = {
     x: MIST.mouseX,
@@ -1956,13 +1956,16 @@ MIST.renderAt = function(t, exp, context, canvas,
 
   // Build the function
   var fun = MIST.expToRGB("untitled image", exp, context);
+  console.log("1959");
   // Set up our main variables
   var x = -1;
   var y = -1 - deltaY;
-
   // Loop through all of the pixels
   for (var i = 0; i < region.data.length; i+= 4)
     {
+      if(i%16===0) {
+        console.log("i:"+i);
+      }
       // When we reach the end of the row, move on to the next row
       if ((i % (4*renderWidth)) == 0)
         { 
@@ -1993,9 +1996,8 @@ MIST.renderAt = function(t, exp, context, canvas,
   // Draw and scale
   bufferContext.putImageData(region, 0, 0);
   canvasContext.drawImage(buffer, imgLeft, imgTop, imgWidth, imgHeight);
-
-//canvasContext.fillStyle = "rgb(200, 0, 0)";
-//canvasContext.fillRect (10,10,75,50);
+  //canvasContext.fillStyle = "rgb(200, 0, 0)";
+  //canvasContext.fillRect (10,10,75,50);
 
 //return t;
 
@@ -2104,4 +2106,5 @@ var Data = function() {
   
 }
 
-module.exports = MIST;
+export {MIST, gifTime};
+//module.exports = MIST;

@@ -21,7 +21,7 @@ var functionMultColor = '#5EC783';
 var functionSingleColor = '#77C9E2';
 var functionRGBcolor = '#AE88D6';
 
-var valueSideLength = functionTotalSideLength / 1.414;
+var valueSideLength = functionTotalSideLength / 1.8; //1.414;
 var valueMenuColor = '#F2937C';
 var valueMenuColorLight = '#FDE6DD';
 var valueXYColor = '#EFDC5C';
@@ -66,7 +66,7 @@ var values = {
 var imageBoxSideLength = width / 80;
 var imageBoxColor = 'white';
 var functionImageBoxOffset = width / 300;
-var valueImageBoxOffset = width / 31;
+var valueImageBoxOffset = width / 34;
 var renderSideLength = width / 18;
 
 var editableTextWidth = width / 15;

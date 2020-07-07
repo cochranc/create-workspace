@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from "react";
-import { Rect, Group, Text, Shape, Image } from "react-konva";
+import React, { useState } from "react";
+import { Rect, Group, Text, Shape } from "react-konva";
 import Konva from 'konva';
-import gui from './mistgui-globals.js'
-//import ui from './mistui.js';
-import MIST from "./mistui.js";
+import Portal from './Portal';
+import gui from './mistgui-globals.js';
+import MISTImage from './MISTImage';
 
 /**
  * 
- * @param {name, index, x, y, numInputs, numOutlets} props 
+ * @param props 
  */
 function FunNode(props) {
     const name = props.name;
@@ -21,12 +21,10 @@ function FunNode(props) {
     const rep = gui.functions[name].rep;
     const prefix = gui.functions[name].prefix;
     const separator = gui.functions[name].separator;
-    const renderFunction = props.renderFunction;
+    const renderFunction = props.findRF(index);
     const numOutlets = props.numOutlets;
     const [showImage, setShowImage] = useState(false);
     const [image, setImage] = useState(null);
-    var exp1 = new MIST.App("plus", new MIST.Val("x"), new MIST.Val("y"));
-    var fun1 = MIST.expToRGB("thing", exp1, {});
     /*
       let rCanvas = layers.render.canvas._canvas;
   let rAnimator;
@@ -43,17 +41,7 @@ function FunNode(props) {
     rAnimator.setResolution(saveStyle.canvasResolution, saveStyle.canvasResolution);
     rAnimator.frame();
     }*/
-    
-    useEffect(() => {
-        loadImage();
-      }, [])
 
-    function loadImage() {
-        const img = new window.Image();
-        img.src = "https://konvajs.org/assets/lion.png";
-        img.crossOrigin="Anonymous";
-        setImage(img);
-    }
     function handleDragStart(e) {
         e.target.setAttrs({
           shadowOffset: {
@@ -63,7 +51,6 @@ function FunNode(props) {
             scaleX: 1.1,
             scaleY: 1.1
         });
-        props.handler(index, e.currentTarget.x(), e.currentTarget.y())
     }
     
     function handleDragEnd(e) {
@@ -75,7 +62,6 @@ function FunNode(props) {
             shadowOffsetX: 5,
             shadowOffsetY: 5
         });
-        props.handler(index, e.currentTarget.x(), e.currentTarget.y())
     }
 
     function handleDrag(e) {
@@ -86,12 +72,17 @@ function FunNode(props) {
         props.clickHandler(index);
     }
 
+    function handleDblClick(e) {
+        props.dblClickHandler(index);
+    }
+
     return (
         <Group
             draggable
             onDragStart={handleDragStart} onDragEnd={handleDragEnd}
             onDragMove={handleDrag} onClick={handleClick}
-            x={x - gui.functionHalfStrokeWidth}
+            onDblClick={handleDblClick}
+            x={x}
             y={y}
         >
             <Rect
@@ -116,15 +107,17 @@ function FunNode(props) {
                 align={'center'}
                 _useStrictMode
             />
-            {showImage
-                ? <Image
-                    onClick={() => setShowImage(!showImage)}
-                    x={gui.functionRectSideLength + gui.functionImageBoxOffset}
-                    y={gui.functionRectSideLength + gui.functionImageBoxOffset}
-                    width={gui.renderSideLength}
-                    height={gui.renderSideLength}
-                    image={image}
-                />
+            {showImage 
+                ? <Portal>
+                    <MISTImage
+                        onClick={() => setShowImage(!showImage)}
+                        x={x + gui.functionRectSideLength + gui.functionImageBoxOffset}
+                        y={y + gui.functionRectSideLength + gui.functionImageBoxOffset}
+                        width={gui.renderSideLength}
+                        height={gui.renderSideLength}
+                        renderFunction={renderFunction}
+                    />
+                </Portal>
                 : <Rect
                     onClick={() => setShowImage(!showImage)}
                     name={'imageBox'}
@@ -135,7 +128,6 @@ function FunNode(props) {
                     fill={gui.imageBoxColor}
                     stroke={'black'}
                     strokeWidth={.5}
-                    //visible={false}
                     expanded={false}
                 />
             }

@@ -29,6 +29,7 @@ function Menu(props) {
   function handleMenuValues() {
     return Array.from(new Array(gui.valNames.length), (val, index) =>
       valGroup(
+        props.addNode,
         gui.valNames[index],
         gui.menuFunctsXStart + 200 + index * 80,
         gui.menuYspacing - 20,
@@ -36,8 +37,6 @@ function Menu(props) {
       )
     );
   }
-
-  console.log(handleMenuValues());
 
   function handleValueClick() {
     if (funcTog === false) {
@@ -66,6 +65,7 @@ function Menu(props) {
   function handleMenuFunctions() {
     return Array.from(new Array(gui.funNames.length), (val, index) =>
       funcGroup(
+        props.addNode,
         gui.funNames[index],
         gui.menuFunctsXStart + 100 + index * 80,
         gui.menuYspacing - 20,

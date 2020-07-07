@@ -1,11 +1,12 @@
 import React, { Component } from "react";
-import { Line, Arrow } from "react-konva";
+import { Line, Group, Text } from "react-konva";
 import gui from './mistgui-globals';
 
 class DrawArrow extends Component {
   state = {
     isDrawing: false,
-    mode: "brush"
+    mode: "brush",
+    shadow: false
   };
 
   componentDidMount() {
@@ -18,15 +19,12 @@ class DrawArrow extends Component {
   }
 
   handleMouseDown = () => {
-    console.log("MOUS DOWN", this.arrow);
 
     this.setState({ isDrawing: true });
 
     // TODO: improve
     const stage = this.arrow.parent.parent;
     this.lastPointerPosition = stage.getPointerPosition();
-
-    console.log(this.lastPointerPosition);
 
     this.setState({
       posX: this.lastPointerPosition.x,
@@ -49,23 +47,53 @@ class DrawArrow extends Component {
     }
   };
 
+  handleMouseOver = () => {
+    this.setState({shadow: true});
+  }
+
+  handleMouseOut = () => {
+    this.setState({shadow: false});
+  }
+
   render() {
     return (
-      <Line
-        ref={ref => (this.arrow = ref)}
-        points={[this.props.sourceX - 5 * gui.outletXOffset,
-          this.props.sourceY + 1.5 * gui.outletYOffset,
-          this.props.sinkX - 5 * gui.outletXOffset,
-          this.props.sinkY + 1.5 * gui.outletYOffset]}
-        pointerLength={0}
-        pointerWidth={0}
-        fill="black"
-        stroke="black"
-        strokeWidth={3}
-        onMouseDown={this.handleMouseDown}
-        onMouseUp={this.handleMouseUp}
-        onMouseMove={this.handleMouseMove}
-      />
+      <Group>
+        <Line
+          ref={ref => (this.arrow = ref)}
+          points={[
+            this.props.sourceX,
+            this.props.sourceY,
+            this.props.sinkX,
+            this.props.sinkY
+          ]}
+          pointerLength={0}
+          pointerWidth={0}
+          fill="black"
+          stroke="black"
+          shadowColor={"red"}
+          shadowBlur={5}
+          shadowEnabled={this.state.shadow}
+          strokeWidth={3}
+          //onMouseDown={this.handleMouseDown}
+          //onMouseUp={this.handleMouseUp}
+          onMouseMove={this.handleMouseMove}
+          onMouseOver={this.handleMouseOver}
+          onMouseOut={this.handleMouseOut}
+        />
+        <Text
+          x={this.props.sourceX + (this.props.sinkX - this.props.sourceX) * (2/3)}
+          y={this.props.sourceY + (this.props.sinkY - this.props.sourceY) * (2/3)}
+          text={"del."}
+          fill={"red"}
+          visible={this.state.shadow}
+          shadowColor={"red"}
+          shadowBlur={5}
+          onMouseOver={this.handleMouseOver}
+          onMouseOut={this.handleMouseOut}
+          onClick={() => this.props.removeLine(this.props.index)}
+        />
+      </Group>
+
     );
   }
 }

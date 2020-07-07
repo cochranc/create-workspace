@@ -1,8 +1,31 @@
 import React from "react";
 import gui from "./mistgui-globals";
 import { Group, Rect, Text } from "react-konva";
+import Konva from "konva";
 
-export var valGroup = function(valName, x, y, vis) {
+export var valGroup = function(addNode,valName, x, y, vis) {
+  function handleDragStart(e) {
+    e.target.setAttrs({
+      shadowOffset: {
+        x: 15,
+        y: 15
+      },
+      scaleX: 1.1,
+      scaleY: 1.1
+    });
+  }
+
+  function handleDragEnd(e) {
+    e.target.to({
+      duration: 0.5,
+      easing: Konva.Easings.ElasticEaseOut,
+      scaleX: 1,
+      scaleY: 1,
+      shadowOffsetX: 5,
+      shadowOffsetY: 5
+    });
+    addNode('val', valName, e.currentTarget.x(), e.currentTarget.y());
+  }
   return (
     <Group
       name={valName}
@@ -15,6 +38,9 @@ export var valGroup = function(valName, x, y, vis) {
       renderLayer={null}
       scaleX={1}
       scaleY={1}
+      draggable
+      onDragStart = {handleDragStart}
+      onDragEnd = {handleDragEnd}
     >
       <Rect
         x={gui.functionRectSideLength / 2}

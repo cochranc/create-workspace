@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Rect, Group, Text, Shape } from 'react-konva';
 import Konva from 'konva';
+import Portal from './Portal';
 import gui from './mistgui-globals.js';
+import MISTImage from './MISTImage';
 
 /**
  * 
- * @param {*} props 
+ * @param props 
  */
 function ValNode(props) {
     const name = props.name;
@@ -16,7 +18,7 @@ function ValNode(props) {
     const rep = gui.values[name].rep;
     const renderFunction = gui.values[name].rep;
     const [showImage, setShowImage] = useState(false);
-    const numOutlets = props.numOutlets;
+    const numOutlets = 0;
 
     function handleDragStart(e) {
         e.target.setAttrs({
@@ -27,7 +29,6 @@ function ValNode(props) {
             scaleX: 1.1,
             scaleY: 1.1
         });
-        props.handler(index, e.currentTarget.x(), e.currentTarget.y())
     }
     
     function handleDragEnd(e) {
@@ -39,7 +40,6 @@ function ValNode(props) {
             shadowOffsetX: 5,
             shadowOffsetY: 5
         });
-        props.handler(index, e.currentTarget.x(), e.currentTarget.y())
     }
 
     function handleDrag(e) {
@@ -50,12 +50,17 @@ function ValNode(props) {
         props.clickHandler(index);
     }
 
+    function handleDblClick(e) {
+        props.dblClickHandler(index);
+    }
+
     return (
         <Group
             draggable
             onDragStart={handleDragStart} onDragEnd={handleDragEnd}
             onDragMove={handleDrag} onClick={handleClick}
-            x={x - gui.functionHalfStrokeWidth}
+            onDblClick={handleDblClick}
+            x={x}
             y={y}
         >
             <Rect
@@ -64,8 +69,10 @@ function ValNode(props) {
                 width={gui.valueSideLength}
                 height={gui.valueSideLength}
                 fill={gui.values[name].color}
+                lineJoin={'round'}
                 rotation={45}
-                //lineJoin={'round'}
+                stroke={gui.values[name].color}
+                strokeWidth={gui.functionStrokeWidth}
                 _useStrictMode
             />
             <Text
@@ -74,13 +81,22 @@ function ValNode(props) {
                 fill={'black'}
                 fontSize={gui.nodeFontSize}
                 x={0}
-                y={gui.valueSideLength / 2}
+                y={gui.valueSideLength/2.2}
                 width={gui.functionRectSideLength}
                 align={'center'}
                 _useStrictMode
             />
             {showImage
-                ? <Text onClick={() => setShowImage(!showImage)} text={"function image here"}/>
+                ? <Portal>
+                    <MISTImage
+                        onClick={() => setShowImage(!showImage)}
+                        x={x + gui.valueImageBoxOffset}
+                        y={y + gui.valueImageBoxOffset}
+                        width={gui.renderSideLength}
+                        height={gui.renderSideLength}
+                        renderFunction={renderFunction}
+                    />
+                </Portal>
                 : <Rect
                     onClick={() => setShowImage(!showImage)}
                     name={'imageBox'}
