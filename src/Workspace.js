@@ -14,7 +14,7 @@ import { useStrictMode } from "react-konva";
 export default function Workspace(props) {
   //hmm does this actually do anything?
   useStrictMode(true);
-  
+
   //example layouts for testing
   var layout1 = new MIST.Layout();
   var add = layout1.addOp("add", 300, 325);
@@ -50,8 +50,11 @@ export default function Workspace(props) {
       for (var id in layout.operations) {
         IDindices.push(id);
         var op = layout.operations[id];
-        const node = { name: op.name, type: 'fun',
-          x: op.x, y: op.y,
+        const node = {
+          name: op.name,
+          type: "fun",
+          x: op.x,
+          y: op.y,
           renderFunction: null,
           lineFrom:[],
           numInputs: 0, numOutlets: gui.functions[op.name].min };
@@ -173,9 +176,9 @@ export default function Workspace(props) {
       var rf = gui.functions[node.name].prefix + '(';
       for(var i = 0; i < node.lineFrom.length; i++) {
         rf += findRenderFunction(node.lineFrom[i]);
-        rf += ',';
+        rf += ",";
       }
-      rf = rf.substring(0, rf.length - 1) + ')';
+      rf = rf.substring(0, rf.length - 1) + ")";
     }
     return rf;
   }
@@ -248,13 +251,6 @@ export default function Workspace(props) {
       <Stage width={width} height={height} onClick={bgClicked}>
         <Layer>
           <Menu addNode = {pushNode}/>
-          <Rect
-            y={gui.menuHeight}
-            width={width}
-            height={height}
-            //fill={'white'}
-            //onClick={bgClicked}
-          />
           {lines.map((line, index) => (
             <DrawArrow
               index={index}
