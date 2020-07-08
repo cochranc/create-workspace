@@ -7,7 +7,7 @@ function MakeMenuButton(props) {
 
   function handleClick() {
     if(props.text === "Reset Workspace") {
-      props.clearNode();
+      props.handleClick();
     }
   }
 
@@ -19,16 +19,29 @@ function MakeMenuButton(props) {
         width={gui.menuCornerWidth - 2 * gui.menuOffset}
         height={gui.menuControlHeight}
         fill={gui.menuControlColor}
-        stroke={"black"}
-        strokeWidth={0.5}
         shadowColor={"black"}
         shadowEnabled={false}
       />
+      {/*<Shape
+        sceneFunc={function (context) {
+          context.beginPath();
+          context.moveTo(gui.menuCornerWidth - 2 * gui.menuOffset, 0);
+          context.bezierCurveTo(
+            gui.menuCornerWidth - gui.menuOffset, 10,
+            gui.menuCornerWidth - gui.menuOffset, gui.menuControlHeight - 10,
+            gui.menuCornerWidth - 2 * gui.menuOffset, gui.menuControlHeight);
+          context.closePath();
+          context.fillStrokeShape(this);
+        }}
+        x={0}
+        y={0}
+        fill={'red'}
+      />*/}
       <Text
         x={0}
         y={gui.menuTextOffset}
         width={gui.menuCornerWidth - 2 * gui.menuOffset}
-        height={gui.menuControlHeight - gui.menuTextOffset}
+        height={gui.menuControlHeight}
         text={props.text}
         align={"center"}
         fill={gui.menuControlTextColor}

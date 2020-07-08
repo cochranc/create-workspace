@@ -82,7 +82,7 @@ var variableWidth = Math.cos(Math.PI/6)*variableRadius;
 var outletXOffset = width / 400;
 var outletYOffset = functionRectSideLength / 3;
 var outletColor =  '#C4C4C4';
-var outletColor2 =  '#888888';
+var outletColor2 =  '#808080';
 
 var lineStrokeWidth = 2;
 
@@ -114,7 +114,7 @@ var triY = width / 60;
 
 //CORNER BUTTONS
 var menuOffset = 10;
-var menuControlHeight = menuHeight / 5;
+var menuControlHeight = (menuHeight - 4 * menuOffset) / 3;
 var menuControlColor = '#7FA7E7';
 var menuControlSelect = '#9EBDF0'; 
 var menuControlTextColor = 'black';
