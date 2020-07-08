@@ -95,7 +95,8 @@ export default function Workspace(props) {
         var sinkIndex = IDindices.indexOf(sink.id) + IDoffset;
         newLines.push({
           sourceIndex: sourceIndex,
-          sinkIndex: sinkIndex
+          sinkIndex: sinkIndex,
+          outletIndex: tempNodes[sinkIndex].lineFrom.length
         });
         tempNodes[sourceIndex].hasLine = true;
         tempNodes[sinkIndex].numInputs += 1;
@@ -135,7 +136,8 @@ export default function Workspace(props) {
     let newLines = [...lines];
     newLines.push({
       sourceIndex: source,
-      sinkIndex: sink
+      sinkIndex: sink,
+      outletIndex: nodes[sink].lineFrom.length
     });
     setLines(newLines);
     var newNodes = [...nodes];
@@ -160,16 +162,26 @@ export default function Workspace(props) {
   function removeLine(index) {
     const source = lines[index].sourceIndex;
     const sink = lines[index].sinkIndex;
+    const outletIndex = lines[index].outletIndex;
     var newNodes = [...nodes];
     newNodes[source].hasLine = false;
     newNodes[sink].numInputs -= 1;
     if (newNodes[sink].numOutlets > gui.functions[newNodes[sink].name].min) {
       newNodes[sink].numOutlets -= 1;
     }
-    newNodes[sink].lineFrom.splice(newNodes[sink].lineFrom.indexOf(source), 1);
+    newNodes[sink].lineFrom.splice(outletIndex, 1);
+    //subtract 1 from every outletIndex of every line going into sink
+    var newLst = [...lines].map((line, i) => {
+      console.log("line source:"+nodes[line.sourceIndex].name+" outletIndex:"+line.outletIndex);
+
+      if(line.sink === sink && line.outletIndex > outletIndex) {
+        console.log("modifying outlet indices");
+        return {sourceIndex: line.sourceIndex, sinkIndex: line.sinkIndex, outletIndex: line.outletIndex-1};
+      }
+      return line;
+    });
     newNodes[sink].renderFunction = null;
     setNodes(newNodes);
-    var newLst = [...lines];
     newLst.splice(index, 1);
     setLines(newLst);
   }
@@ -198,15 +210,12 @@ export default function Workspace(props) {
    * @param {int} index
    */
   function funClicked(index) {
-    console.log("newSource: " + newSource);
     if (
       newSource != null &&
       newSource != index &&
-      nodes[index].type === "fun" &&
       nodes[index].numInputs < gui.functions[nodes[index].name].max
     ) {
       // a line coming out of source
-      //console.log("new line from node"+nodes[newSource].name+"to node"+nodes[index].name);
       pushLine(newSource, index);
     } else {
       const rf = findRenderFunction(index);
@@ -283,7 +292,6 @@ export default function Workspace(props) {
               width={width}
               height={height-gui.menuHeight}
               fill={'#FAFBFF'}
-              
             />
             {tempLine &&
             <DrawArrow
@@ -292,19 +300,10 @@ export default function Workspace(props) {
               sinkX={mousePosition.x}
               sinkY={mousePosition.y}
             />
-            }{tempLine && (
-              <DrawArrow
-                sourceX={tempLine.sourceX + gui.functionRectSideLength / 2}
-                sourceY={tempLine.sourceY + gui.functionRectSideLength / 2}
-                sinkX={mousePosition.x}
-                sinkY={mousePosition.y}
-              />
-            )}
+            }
           </Group>
-
           <Menu addNode={pushNode} clearNode={clearNode} />
-          {nodes.length !== 0
-            ? lines.map((line, index) => (
+          {nodes.length !== 0 && lines.map((line, index) => (
                 <DrawArrow
                   index={index}
                   sourceX={
@@ -314,18 +313,13 @@ export default function Workspace(props) {
                     nodes[line.sourceIndex].y + gui.functionRectSideLength / 2
                   } // y-coord of the source
                   sinkX={nodes[line.sinkIndex].x - 4 * gui.outletXOffset} // x-coord of the sink
-                  sinkY={
-                    nodes[line.sinkIndex].y +
-                    (nodes[line.sinkIndex].lineFrom.indexOf(line.sourceIndex) +
-                      0) *
-                      gui.outletYOffset +
-                    17
-                  } // y-coord of the sink
+                  sinkY={nodes[line.sinkIndex].y +
+                    line.outletIndex *
+                    gui.outletYOffset + 17} // y-coord of the sink
                   removeLine={removeLine}
                 />
-              ))
-            : null}
-
+            ))
+          }
           {nodes.map((node, index) =>
             node.type === "fun" ? (
               <FunNode
