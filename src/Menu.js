@@ -210,22 +210,14 @@ function Menu(props) {
         </Group>
       )}
       <Group>
-        <MakeMenuButton
-          text={"Reset Workspace"}
-          x={gui.menuOffset}
-          y={gui.menuOffset}
-          clearNode={props.clearNode}
-        />
-        <MakeMenuButton
-          text={"Open Workspace"}
-          x={gui.menuOffset}
-          y={2 * gui.menuOffset + gui.menuControlHeight}
-        />
-        <MakeMenuButton
-          text={"Save Workspace"}
-          x={gui.menuOffset}
-          y={3 * gui.menuOffset + 2 * gui.menuControlHeight}
-        />
+        {[{name: "Reset Workspace", func: props.clearNode}, {name: "Open Workspace"}, {name: "Save Workspace"}].map((u, i) =>
+          <MakeMenuButton
+            text={u.name}
+            x={0}//gui.menuOffset}
+            y={(i+1)*gui.menuOffset + i*gui.menuControlHeight}
+            handleClick={u.func}
+          />
+        )}
       </Group>
     </Group>
   );

@@ -31,7 +31,7 @@ export default function Workspace(props) {
   var square = layout1.addOp("square", 850, 250);
   layout1.addEdge(sin, square, 5);
 
-  const [layouts, setLayouts] = useState([layout1]);
+  const [layouts, setLayouts] = useState([]);
   const [nodes, setNodes] = useState([]);
   const [lines, setLines] = useState([]);
   const [newSource, setNewSource] = useState(null);
@@ -281,10 +281,18 @@ export default function Workspace(props) {
             <Rect
               y={gui.menuHeight}
               width={width}
-              height={height - gui.menuHeight}
-              fill={"white"}
+              height={height-gui.menuHeight}
+              fill={'#FAFBFF'}
+              
             />
-            {tempLine && (
+            {tempLine &&
+            <DrawArrow
+              sourceX={tempLine.sourceX + gui.functionRectSideLength / 2}
+              sourceY={tempLine.sourceY + gui.functionRectSideLength / 2}
+              sinkX={mousePosition.x}
+              sinkY={mousePosition.y}
+            />
+            }{tempLine && (
               <DrawArrow
                 sourceX={tempLine.sourceX + gui.functionRectSideLength / 2}
                 sourceY={tempLine.sourceY + gui.functionRectSideLength / 2}
