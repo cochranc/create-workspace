@@ -73,7 +73,10 @@ function ValNode(props) {
                 rotation={45}
                 stroke={gui.values[name].color}
                 strokeWidth={gui.functionStrokeWidth}
-                shadowBlur = {5}
+                shadowColor={'gray'}
+                shadowBlur = {2}
+                shadowOffsetX={1}
+                shadowOffsetY={1}
                 _useStrictMode
             />
             <Text
@@ -106,15 +109,15 @@ function ValNode(props) {
                     width={gui.imageBoxSideLength}
                     height={gui.imageBoxSideLength}
                     fill={gui.imageBoxColor}
-                    stroke={'black'}
-                    strokeWidth={.5}
-                    //visible={false}
                     expanded={false}
+                    shadowColor={"gray"}
+                    shadowBlur={2}
+                    shadowOffsetX={1}
+                    shadowOffsetY={1}
                 />
             }
             {[...Array(numOutlets)].map((u, i) =>
                 <Shape
-                    //onclick={handleOnClick}
                     sceneFunc={function (context) {
                     context.beginPath();
                     context.moveTo(0, 0);

@@ -82,6 +82,7 @@ var variableWidth = Math.cos(Math.PI/6)*variableRadius;
 var outletXOffset = width / 400;
 var outletYOffset = functionRectSideLength / 3;
 var outletColor =  '#C4C4C4';
+var outletColor2 =  '#888888';
 
 var lineStrokeWidth = 2;
 
@@ -142,8 +143,8 @@ var funBarIconTextWidth = width / 18;
 var funBarIconTextY = funBarHeight - (funBarOffset * 1.3);
 
 //SAVE SCREEN
-var popRectColor = '#e8e8e8'
-var popRectWidth = width * .4;
+var popRectColor = 'white';//'#e8e8e8';
+var popRectWidth = width * .35;
 var popRectHeight = height * .85;
 var popSaveGroupX = (width - popRectWidth) / 2;
 var popSaveGroupY = (height - popRectHeight) / 2;
@@ -154,9 +155,9 @@ var popCanvasShiftX = popSaveGroupX + (popRectWidth - popCanvasSide) / 2;
 var popCanvasShiftY = popSaveGroupY + (popRectWidth - popCanvasSide) / 2;
 
 var popTextShiftX = (popRectWidth - popCanvasSide) / 2;
-var popTextShiftY = ((popRectWidth - popCanvasSide) / 1.5) + popCanvasSide;
+var popTextShiftY = popCanvasShiftY/1.2 + popCanvasSide;
 var popTextWidth = popCanvasSide;
-var popTextFontSize = width / 56.25;
+var popTextFontSize = width / 70;
 var popTextHeight = 2 * popTextFontSize;
 
 var nameTextShift = width / 18;
@@ -224,7 +225,7 @@ export default {width, height, globalFont, functionFont, currentWorkspace, funct
     globalScale, funNames, functions, valNames, values, imageBoxSideLength, imageBoxColor,
     functionImageBoxOffset, valueImageBoxOffset, renderSideLength, editableTextWidth,
     editableTextHeight, editableTextFont, variableColor, variableStrokeColor, variableRadius,
-    variableTextColor, variableWidth, outletXOffset, outletYOffset, outletColor,
+    variableTextColor, variableWidth, outletXOffset, outletYOffset, outletColor, outletColor2,
     lineStrokeWidth, dragShadowColor, selectedShadowColor, menuHeight, menuCornerWidth,
     buttonWidth, valSpaceWidth, numVals, valMenuXSpacing, functSpaceWidth, numFuncts,
     functMenuXSpacing, menuYspacing, menuFunctsXStart, menuFunctsXEnd, menuValuesXStart,

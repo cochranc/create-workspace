@@ -79,11 +79,15 @@ function Menu(props) {
   
   return (
     <Group width={window.innerWidth} height={gui.menuHeight}>
-      <Line
+      <Rect
+        width={window.innerWidth} height={gui.menuHeight}
+        fill={'white'} shadowColor={'black'} shadowBlur={5}
+      />
+      {/*<Line
         points={[0, gui.menuHeight, window.innerWidth, gui.menuHeight]}
         stroke={"black"}
         strokeWidth={2}
-      />
+      />*/}
       {isValueMenuOpen ? (
         <Group>
           <Rect
@@ -123,8 +127,6 @@ function Menu(props) {
             width={gui.buttonWidth}
             height={gui.menuHeight}
             fill={gui.valueMenuColorLight}
-            stroke={"black"}
-            strokeWidth={2}
           />
           <Rect
             x={gui.buttonWidth / 2}
@@ -186,8 +188,6 @@ function Menu(props) {
             width={gui.buttonWidth}
             height={gui.menuHeight}
             fill={gui.functionColorLight}
-            stroke={"black"}
-            strokeWidth={2}
           />
           <Rect
             x={gui.buttonWidth / 2 - gui.functionRectSideLength / 2}

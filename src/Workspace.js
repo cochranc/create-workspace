@@ -290,8 +290,8 @@ export default function Workspace(props) {
               sourceY={nodes[line.sourceIndex].y + gui.functionRectSideLength / 2} // y-coord of the source
               sinkX={nodes[line.sinkIndex].x - 4 * gui.outletXOffset} // x-coord of the sink
               sinkY={nodes[line.sinkIndex].y
-                + (nodes[line.sinkIndex].lineFrom.indexOf(line.sourceIndex) + 1) * gui.outletYOffset
-                + gui.functionHalfStrokeWidth} // y-coord of the sink
+                + (nodes[line.sinkIndex].lineFrom.indexOf(line.sourceIndex) + 0) * gui.outletYOffset
+                + 17} // y-coord of the sink
               removeLine={removeLine}
             />
           )))

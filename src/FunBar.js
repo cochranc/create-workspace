@@ -7,11 +7,14 @@ import {
   useStrictMode
 } from "react-konva";
 import Konva from 'konva';
+import Portal from './Portal';
 import gui from './mistgui-globals.js';
+import MISTImage from './MISTImage';
 
 function FunBar(props) {
 
-
+    const [imageButtonClicked, setImageButtonClicked] = useState(false);
+    
     return (
         <Group
             x={0}
@@ -23,8 +26,7 @@ function FunBar(props) {
                 width={gui.funBarWidth}
                 height={gui.funBarHeight}
                 fill={gui.funBarBackgroundColor}
-                stroke={'black'}
-                strokeWidth={1}
+                //shadowColor={'black'} shadowBlur={5}
             />
             <Rect
                 x={gui.funBarOffset}
@@ -32,8 +34,6 @@ function FunBar(props) {
                 width={gui.funBarTextAreaWidth}
                 height={gui.funBarTextAreaHeight}
                 fill={'white'}
-                stroke={'black'}
-                strokeWidth={.5}
             />
             <Text
                 text={props.text}
@@ -63,10 +63,10 @@ function FunBar(props) {
                     width={gui.funBarIconTextWidth}
                     height={gui.funBarTextAreaHeight}
                     fill={gui.functionColorLight}
-                    stroke={'grey'}
-                    strokeWidth={1}
+                    shadowBlur={2}
+                    shadowOffsetX={1}
+                    shadowOffsetY={1}
                     shadowColor={'black'}
-                    shadowEnabled={false}
                 />
                 <Text
                     text={'function'}
@@ -90,20 +90,63 @@ function FunBar(props) {
                 width={gui.funBarIconTextWidth}
                 height={gui.funBarTextAreaHeight}
                 fill={gui.valueMenuColorLight}
-                stroke={'grey'}
-                strokeWidth={1}
+                //shadowColor={'black'}
+                shadowBlur={2}
+                shadowOffsetX={1}
+                shadowOffsetY={1}
                 shadowColor={'black'}
-                shadowEnabled={false}
             />
-            <Text
+            {imageButtonClicked //temp; remove ! later
+                ? <Portal>
+                        <div
+                            style={{
+                                position: 'absolute',
+                                top: 0, left: 0, width: gui.width, height: gui.height,
+                                backgroundColor: 'black', opacity: 0.7
+                            }}
+                        />
+                        <div
+                            style={{
+                                position: 'absolute',
+                                top: gui.popSaveGroupY, left: gui.popSaveGroupX,
+                                width: gui.popRectWidth, height: gui.popRectHeight,
+                                borderRadius: 25,
+                                backgroundColor: gui.popRectColor
+                            }}
+                        />
+                        <MISTImage
+                            onClick={() => setImageButtonClicked(false)}
+                            x={gui.popCanvasShiftX} y={gui.popCanvasShiftY}
+                            width={gui.popCanvasSide} height={gui.popCanvasSide}
+                            renderFunction={props.text}
+                        />
+                        <div
+                            style={{
+                                position: 'absolute',
+                                top: gui.popTextShiftY, left: gui.popSaveGroupX + gui.popTextShiftX,
+                                fontSize: gui.popTextFontSize, fontFamily: gui.functionFont,
+                                textAlign: 'center',
+                                width: gui.popTextWidth, height: gui.popTextHeight
+                            }}
+                        >
+                            <p>{props.text}</p>
+                        </div>
+                        
+                </Portal>
+                : <Text
                 text={'image'}
                 x={0}
                 y={gui.funBarOffset}
                 width={gui.funBarIconTextWidth}
                 align={'center'}
-                fill={'grey'}
+                fill={props.text ? 'black' : 'gray'}
                 fontSize={gui.funBarFontSize}
-            />
+                onClick={() => {
+                    if(props.text) {
+                        setImageButtonClicked(true);
+                    }
+                }}
+                />}
         </Group>
     </Group>
     )

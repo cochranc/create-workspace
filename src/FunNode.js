@@ -104,15 +104,18 @@ function FunNode(props) {
                 x={gui.functionHalfStrokeWidth}
                 y={gui.functionHalfStrokeWidth}
                 width={gui.functionRectSideLength}
-                height={(props.numInputs <= gui.functions[props.name].min)
+                height={(props.numInputs <= 3)
                     ? gui.functionRectSideLength
                     : gui.functionRectSideLength +
-                    (props.numInputs - gui.functions[props.name].min) * gui.outletYOffset}
+                    (props.numInputs - 3) * gui.outletYOffset}
                 fill={gui.functions[name].color}
                 lineJoin={'round'}
                 stroke={gui.functions[name].color}
                 strokeWidth={gui.functionStrokeWidth}
-                shadowBlur = {5}
+                shadowColor={'gray'}
+                shadowBlur = {2}
+                shadowOffsetX={1}
+                shadowOffsetY={1}
                 _useStrictMode
             />
             <Text
@@ -121,9 +124,9 @@ function FunNode(props) {
                 fill={'black'}
                 fontSize={gui.nodeFontSize}
                 x={0}
-                y={(props.numInputs <= gui.functions[props.name].min)
+                y={(props.numInputs <= 3)
                     ? gui.functionTotalSideLength / 2 - gui.functionHalfStrokeWidth
-                    : (gui.functionTotalSideLength + (props.numInputs - gui.functions[props.name].min) * gui.outletYOffset) / 2 -
+                    : (gui.functionTotalSideLength + (props.numInputs - 3) * gui.outletYOffset) / 2 -
                     gui.functionHalfStrokeWidth}
                 width={gui.functionTotalSideLength}
                 align={'center'}
@@ -144,15 +147,17 @@ function FunNode(props) {
                     onClick={() => setShowImage(!showImage)}
                     name={'imageBox'}
                     x={gui.functionRectSideLength + gui.functionImageBoxOffset}
-                    y={(props.numInputs <= gui.functions[props.name].min)
+                    y={(props.numInputs <= 3)
                         ? gui.functionRectSideLength + gui.functionImageBoxOffset
                         : gui.functionRectSideLength + gui.functionImageBoxOffset +
-                        (props.numInputs - gui.functions[props.name].min) * gui.outletYOffset}
+                        (props.numInputs - 3) * gui.outletYOffset}
                     width={gui.imageBoxSideLength}
                     height={gui.imageBoxSideLength}
                     fill={gui.imageBoxColor}
-                    stroke={'black'}
-                    strokeWidth={.5}
+                    shadowColor={"gray"}
+                    shadowBlur={2}
+                    shadowOffsetX={1}
+                    shadowOffsetY={1}
                     expanded={false}
                 />
             }
@@ -168,11 +173,16 @@ function FunNode(props) {
                     }}
                     name = {'outlet' + (i+1)}
                     x = {gui.outletXOffset}
-                    y = {(i+1) * gui.outletYOffset + gui.functionHalfStrokeWidth}
-                    fill={u}
+                    y = {(i) * gui.outletYOffset + 17}
+                    fillRadialGradientStartPoint={{ x: -19, y: -5 }}
+                    fillRadialGradientStartRadius={3}
+                    fillRadialGradientEndPoint={{ x: -15, y: -5 }}
+                    fillRadialGradientEndRadius={15}
+                    fillRadialGradientColorStops={[0, u, 1, 'dark'+u]}
+                    //fill={u}
+                    shadowColor={"gray"}
+                    shadowBlur={2}
                     opacity={1}
-                    stroke='black'
-                    strokeWidth={1}
                     lineIn={null}
                     outletIndex={i}
                 />
@@ -188,11 +198,16 @@ function FunNode(props) {
                     }}
                     name = {'outlet' + (i+1)}
                     x = {gui.outletXOffset}
-                    y = {(i+1) * gui.outletYOffset + gui.functionHalfStrokeWidth}
-                    fill={gui.outletColor}
+                    y = {(i) * gui.outletYOffset + 17}
+                    fillRadialGradientStartPoint={{ x: -19, y: -5 }}
+                    fillRadialGradientStartRadius={3}
+                    fillRadialGradientEndPoint={{ x: -15, y: -5 }}
+                    fillRadialGradientEndRadius={15}
+                    fillRadialGradientColorStops={[0, gui.outletColor, 1, gui.outletColor2]}
+                    //fill={gui.outletColor}
+                    //shadowColor={"gray"}
+                    //shadowBlur={2}
                     opacity={1}
-                    stroke='black'
-                    strokeWidth={1}
                     lineIn={null}
                     outletIndex={i}
                 />

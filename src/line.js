@@ -68,12 +68,12 @@ class DrawArrow extends Component {
           ]}
           pointerLength={0}
           pointerWidth={0}
-          fill="black"
+          //fill="black"
           stroke="black"
           shadowColor={"red"}
           shadowBlur={5}
           shadowEnabled={this.state.shadow}
-          strokeWidth={3}
+          strokeWidth={2}
           //onMouseDown={this.handleMouseDown}
           //onMouseUp={this.handleMouseUp}
           onMouseMove={this.handleMouseMove}

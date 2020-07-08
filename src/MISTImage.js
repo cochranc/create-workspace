@@ -81,8 +81,7 @@ class MISTImage extends Component {
                 top: this.props.y,
                 left: this.props.x,
                 width: this.props.width,
-                height: this.props.height,
-                border: '1px solid black'
+                height: this.props.height
             }}
             onClick={this.props.onClick}
         />;
