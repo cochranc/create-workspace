@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Stage, Layer, Rect, Group, Portal } from "react-konva";
-import {MIST} from "./mist.js";
+import { MIST } from "./mist.js";
 import Menu from "./Menu";
 import gui from "./mistgui-globals";
 import FunNode from "./FunNode";
@@ -57,18 +57,24 @@ export default function Workspace(props) {
           x: op.x,
           y: op.y,
           renderFunction: null,
-          lineFrom:[],
-          numInputs: 0, numOutlets: gui.functions[op.name].min };
-          tempNodes.push(node);
+          lineFrom: [],
+          numInputs: 0,
+          numOutlets: gui.functions[op.name].min
+        };
+        tempNodes.push(node);
       }
       for (id in layout.values) {
         IDindices.push(id);
         var val = layout.values[id];
-        const node = { name: val.name, type: 'val',
-          x: val.x, y: val.y,
+        const node = {
+          name: val.name,
+          type: "val",
+          x: val.x,
+          y: val.y,
           renderFunction: val.name,
-          hasLine: false };
-          tempNodes.push(node);
+          hasLine: false
+        };
+        tempNodes.push(node);
       }
       let newLines = [...lines];
       for (var j = 0; j < layout.edges.length; j++) {
@@ -107,11 +113,11 @@ export default function Workspace(props) {
       type: type,
       x: x,
       y: y,
-      renderFunction: type === 'fun'? null : name,
-      hasLine: type === 'val'? false : null,
+      renderFunction: type === "fun" ? null : name,
+      hasLine: type === "val" ? false : null,
       lineFrom: [],
       numInputs: 0,
-      numOutlets: type === 'fun'? gui.functions[name].min : 0
+      numOutlets: type === "fun" ? gui.functions[name].min : 0
     };
     newLst.push(node);
     setNodes(newLst);
@@ -119,13 +125,13 @@ export default function Workspace(props) {
 
   /**
    * Pushes a new line to 'lines'. Updates information for the sink node.
-   * @param {int} source 
-   * @param {int} sink 
+   * @param {int} source
+   * @param {int} sink
    */
   function pushLine(source, sink) {
-    console.log("pushLine")
-    console.log("source: "+nodes[source].name);
-    console.log("sink: "+nodes[sink].name);
+    console.log("pushLine");
+    console.log("source: " + nodes[source].name);
+    console.log("sink: " + nodes[sink].name);
     let newLines = [...lines];
     newLines.push({
       sourceIndex: source,
@@ -135,8 +141,10 @@ export default function Workspace(props) {
     var newNodes = [...nodes];
     newNodes[source].hasLine = true;
     newNodes[sink].numInputs += 1; // updating the number of inputs for sink node
-    if(newNodes[sink].numInputs >= newNodes[sink].numOutlets) {
-      newNodes[sink].numOutlets += 1;
+    if (newNodes[sink].numInputs >= newNodes[sink].numOutlets) {
+      if (gui.functions[newNodes[sink].name].color === gui.functionMultColor) {
+        newNodes[sink].numOutlets += 1;
+      }
     }
     newNodes[sink].lineFrom.push(source);
     setNodes(newNodes);
@@ -155,7 +163,7 @@ export default function Workspace(props) {
     var newNodes = [...nodes];
     newNodes[source].hasLine = false;
     newNodes[sink].numInputs -= 1;
-    if(newNodes[sink].numOutlets > gui.functions[newNodes[sink].name].min) {
+    if (newNodes[sink].numOutlets > gui.functions[newNodes[sink].name].min) {
       newNodes[sink].numOutlets -= 1;
     }
     newNodes[sink].lineFrom.splice(newNodes[sink].lineFrom.indexOf(source), 1);
@@ -168,14 +176,14 @@ export default function Workspace(props) {
 
   /**
    * Finds and sets the render function of the node of given index.
-   * @param {int} index 
+   * @param {int} index
    */
   function findRenderFunction(index) {
     const node = nodes[index];
     var rf = node.renderFunction;
-    if(!rf && node.lineFrom.length > 0) {
-      var rf = gui.functions[node.name].prefix + '(';
-      for(var i = 0; i < node.lineFrom.length; i++) {
+    if (!rf && node.lineFrom.length > 0) {
+      var rf = gui.functions[node.name].prefix + "(";
+      for (var i = 0; i < node.lineFrom.length; i++) {
         rf += findRenderFunction(node.lineFrom[i]);
         rf += ",";
       }
@@ -183,20 +191,24 @@ export default function Workspace(props) {
     }
     return rf;
   }
-  
+
   /**
    * When a function gets clicked, it's either with the intention of displaying the function
    * or making a line.
-   * @param {int} index 
+   * @param {int} index
    */
   function funClicked(index) {
-    console.log("newSource: "+newSource);
-    if(newSource != null && newSource != index && nodes[index].type === 'fun' &&
-      nodes[index].numInputs < gui.functions[nodes[index].name].max) { // a line coming out of source
+    console.log("newSource: " + newSource);
+    if (
+      newSource != null &&
+      newSource != index &&
+      nodes[index].type === "fun" &&
+      nodes[index].numInputs < gui.functions[nodes[index].name].max
+    ) {
+      // a line coming out of source
       //console.log("new line from node"+nodes[newSource].name+"to node"+nodes[index].name);
       pushLine(newSource, index);
-    }
-    else {
+    } else {
       const rf = findRenderFunction(index);
       var newLst = [...nodes];
       newLst[index].renderFunction = rf;
@@ -207,7 +219,7 @@ export default function Workspace(props) {
 
   /**
    * Called when a node is clicked.
-   * @param {int} index 
+   * @param {int} index
    */
   function valClicked(index) {
     setCurrText(nodes[index].renderFunction);
@@ -216,21 +228,21 @@ export default function Workspace(props) {
   function updateMousePosition(x, y) {
     //console.log("updateMousePosition; x:"+x+" y:"+y);
     setMousePosition({ x: x, y: y });
-  };
+  }
 
   /**
    * Called when a node is double-clicked.
-   * @param {int} index 
+   * @param {int} index
    */
   function dblClicked(index) {
-    if(!tempLine) {
+    if (!tempLine) {
       setNewSource(index);
       setMouseListenerOn(true);
       setMousePosition({
         x: nodes[index].x + gui.functionRectSideLength / 2,
         y: nodes[index].y + gui.functionRectSideLength / 2
       });
-      setTempLine({sourceX: nodes[index].x, sourceY: nodes[index].y});
+      setTempLine({ sourceX: nodes[index].x, sourceY: nodes[index].y });
     }
   }
 
@@ -254,10 +266,12 @@ export default function Workspace(props) {
 
   return (
     <div id="workspace">
-      <Stage width={width} height={height}
+      <Stage
+        width={width}
+        height={height}
         onClick={bgClicked}
-        onMouseMove={(e) => {
-          if(mouseListenerOn) {
+        onMouseMove={e => {
+          if (mouseListenerOn) {
             updateMousePosition(e.evt.clientX, e.evt.clientY);
           }
         }}
@@ -267,63 +281,71 @@ export default function Workspace(props) {
             <Rect
               y={gui.menuHeight}
               width={width}
-              height={height-gui.menuHeight}
-              fill={'white'}
-              
+              height={height - gui.menuHeight}
+              fill={"white"}
             />
-            {tempLine &&
-            <DrawArrow
-              sourceX={tempLine.sourceX + gui.functionRectSideLength / 2}
-              sourceY={tempLine.sourceY + gui.functionRectSideLength / 2}
-              sinkX={mousePosition.x}
-              sinkY={mousePosition.y}
-            />
-            }
+            {tempLine && (
+              <DrawArrow
+                sourceX={tempLine.sourceX + gui.functionRectSideLength / 2}
+                sourceY={tempLine.sourceY + gui.functionRectSideLength / 2}
+                sinkX={mousePosition.x}
+                sinkY={mousePosition.y}
+              />
+            )}
           </Group>
-          
-          <Menu addNode = {pushNode} clearNode={clearNode}/>
-          {(nodes.length !== 0)
-          ? (lines.map((line, index) => (
-            <DrawArrow
-              index={index}
-              sourceX={nodes[line.sourceIndex].x + gui.functionRectSideLength / 2} // x-coord of the source
-              sourceY={nodes[line.sourceIndex].y + gui.functionRectSideLength / 2} // y-coord of the source
-              sinkX={nodes[line.sinkIndex].x - 4 * gui.outletXOffset} // x-coord of the sink
-              sinkY={nodes[line.sinkIndex].y
-                + (nodes[line.sinkIndex].lineFrom.indexOf(line.sourceIndex) + 0) * gui.outletYOffset
-                + 17} // y-coord of the sink
-              removeLine={removeLine}
-            />
-          )))
-          : null}
-          
-          {nodes.map((node, index) => (
-            (node.type === 'fun')
-            ? <FunNode
-              name={node.name}
-              index={index}
-              x={node.x}
-              y={node.y}
-              numInputs={node.numInputs}
-              numOutlets={node.numOutlets}
-              findRF={findRenderFunction}
-              handler={updatePosition}
-              clickHandler={funClicked}
-              dblClickHandler={dblClicked}
-            />
-            : <ValNode
-              name={node.name}
-              index={index}
-              x={node.x}
-              y={node.y}
-              renderFunction={node.renderFunction}
-              handler={updatePosition}
-              clickHandler={valClicked}
-              dblClickHandler={dblClicked}
-            />
-          ))}
-          <FunBar
-            text={currText}/>
+
+          <Menu addNode={pushNode} clearNode={clearNode} />
+          {nodes.length !== 0
+            ? lines.map((line, index) => (
+                <DrawArrow
+                  index={index}
+                  sourceX={
+                    nodes[line.sourceIndex].x + gui.functionRectSideLength / 2
+                  } // x-coord of the source
+                  sourceY={
+                    nodes[line.sourceIndex].y + gui.functionRectSideLength / 2
+                  } // y-coord of the source
+                  sinkX={nodes[line.sinkIndex].x - 4 * gui.outletXOffset} // x-coord of the sink
+                  sinkY={
+                    nodes[line.sinkIndex].y +
+                    (nodes[line.sinkIndex].lineFrom.indexOf(line.sourceIndex) +
+                      0) *
+                      gui.outletYOffset +
+                    17
+                  } // y-coord of the sink
+                  removeLine={removeLine}
+                />
+              ))
+            : null}
+
+          {nodes.map((node, index) =>
+            node.type === "fun" ? (
+              <FunNode
+                name={node.name}
+                index={index}
+                x={node.x}
+                y={node.y}
+                numInputs={node.numInputs}
+                numOutlets={node.numOutlets}
+                findRF={findRenderFunction}
+                handler={updatePosition}
+                clickHandler={funClicked}
+                dblClickHandler={dblClicked}
+              />
+            ) : (
+              <ValNode
+                name={node.name}
+                index={index}
+                x={node.x}
+                y={node.y}
+                renderFunction={node.renderFunction}
+                handler={updatePosition}
+                clickHandler={valClicked}
+                dblClickHandler={dblClicked}
+              />
+            )
+          )}
+          <FunBar text={currText} />
         </Layer>
       </Stage>
     </div>
