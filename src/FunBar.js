@@ -10,10 +10,13 @@ import Konva from 'konva';
 import Portal from './Portal';
 import gui from './mistgui-globals.js';
 import MISTImage from './MISTImage';
+import './styles/FunBar.css';
 
 function FunBar(props) {
 
     const [imageButtonClicked, setImageButtonClicked] = useState(false);
+
+    
     
     return (
         <Group
@@ -108,14 +111,13 @@ function FunBar(props) {
                         <div
                             style={{
                                 position: 'absolute',
-                                top: gui.popSaveGroupY, left: gui.popSaveGroupX,
+                                top: ( 0.5 * gui.popSaveGroupY) , left: gui.popSaveGroupX,
                                 width: gui.popRectWidth, height: gui.popRectHeight,
                                 borderRadius: 25,
                                 backgroundColor: gui.popRectColor
                             }}
                         />
                         <MISTImage
-                            onClick={() => setImageButtonClicked(false)}
                             x={gui.popCanvasShiftX} y={gui.popCanvasShiftY}
                             width={gui.popCanvasSide} height={gui.popCanvasSide}
                             renderFunction={props.text}
@@ -130,6 +132,41 @@ function FunBar(props) {
                             }}
                         >
                             <p>{props.text}</p>
+                        </div>
+                        <div
+                            style = {{
+                                position : 'absolute',
+                                top : (0.8 * gui.popSaveGroupY),
+                                left : gui.popTextShiftX + gui.popSaveGroupX,
+                                fontSize: gui.popTextFontSize, fontFamily: gui.functionFont,
+                                width : (gui.popTextWidth),
+                                height : (gui.popTextHeight),
+                                textAlign : 'center'
+                            }}>
+                            <form>
+                            <input type = {"text"} placeholder = {"Enter Name Of Image"} style={{
+                                    width:  (0.7 * gui.popTextWidth),
+                                    height: (0.7 * gui.popTextHeight),
+                                    border: '2px solid #008CBA'
+                            }} />
+                            </form>
+                        </div>
+                        <div style = {{
+                            position : 'absolute',
+                                top : (gui.popSaveGroupY + gui.popCanvasSide + gui.popTextHeight * 2),
+                                left : gui.popTextShiftX + gui.popSaveGroupX,
+                                fontSize: gui.popTextFontSize, fontFamily: gui.functionFont,
+                                width : (gui.popTextWidth),
+                                height : (gui.popTextHeight),
+                                textAlign : 'center',
+                        }}>
+                            {["Cancel", "Download", "Save"].map((u,i) => {
+                                return <button class="button button2" onClick={() => {
+                                    if(u==='Cancel') {
+                                    setImageButtonClicked(false)}
+                                }
+                                }>{u}</button>
+                            })}
                         </div>
                         
                 </Portal>
