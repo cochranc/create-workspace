@@ -5,16 +5,34 @@ import gui from "./mistgui-globals.js";
 
 function MakeMenuButton(props) {
 
-  function handleClick() {
-    if(props.text === "Reset Workspace") {
-      props.handleClick();
-    }
+  const [click, setClick] = useState(true);
+
+  function handleMouse(e) {
+    e.target.to({
+      duration : 0.2,
+      shadowBlur : 2,
+      shadowColor : 'blue'
+    })
   }
 
+  function handleMouseOut(e) {
+    e.target.to({
+      duration : 0.2,
+      shadowBlur : 0
+    })
+  }
+
+  function handleClick(e) {
+    if(props.text === "Reset Workspace") {
+        props.handleClick();
+      }
+    }
+  
+
   return (
-    <Group x={props.x} y={props.y} onClick={handleClick}>
+    <Group x={props.x} y={props.y} onClick={handleClick} onMouseOver={handleMouse} onMouseOut = {handleMouseOut}>
       <Rect
-        x={0}
+        x={5}
         y={0}
         width={gui.menuCornerWidth - 2 * gui.menuOffset}
         height={gui.menuControlHeight}
@@ -22,21 +40,6 @@ function MakeMenuButton(props) {
         shadowColor={"black"}
         shadowEnabled={false}
       />
-      {/*<Shape
-        sceneFunc={function (context) {
-          context.beginPath();
-          context.moveTo(gui.menuCornerWidth - 2 * gui.menuOffset, 0);
-          context.bezierCurveTo(
-            gui.menuCornerWidth - gui.menuOffset, 10,
-            gui.menuCornerWidth - gui.menuOffset, gui.menuControlHeight - 10,
-            gui.menuCornerWidth - 2 * gui.menuOffset, gui.menuControlHeight);
-          context.closePath();
-          context.fillStrokeShape(this);
-        }}
-        x={0}
-        y={0}
-        fill={'red'}
-      />*/}
       <Text
         x={0}
         y={gui.menuTextOffset}
