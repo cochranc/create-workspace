@@ -2,6 +2,7 @@ import React from "react";
 import gui from "./mistgui-globals";
 import { Group, Rect, Text } from "react-konva";
 import Konva from "konva";
+import { Spring, animated } from 'react-spring/renderprops-konva';
 
 export var valGroup = function(addNode,valName, x, y, vis) {
   function handleDragStart(e) {
@@ -42,7 +43,13 @@ export var valGroup = function(addNode,valName, x, y, vis) {
       onDragStart = {handleDragStart}
       onDragEnd = {handleDragEnd}
     >
-      <Rect
+    <Spring
+    native
+    from = {{x : x}} 
+    to = {{
+      x : vis? x : 300
+    }}>
+      <animated.Rect
         x={gui.functionRectSideLength / 2}
         y={0}
         width={gui.valueSideLength}
@@ -51,7 +58,7 @@ export var valGroup = function(addNode,valName, x, y, vis) {
         rotation={45}
         name={valName}
       />
-
+    </Spring>
       <Text
         text={gui.values[valName].rep}
         fontFamily={gui.globalFont}

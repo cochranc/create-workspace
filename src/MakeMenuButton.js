@@ -17,7 +17,7 @@ function MakeMenuButton(props) {
 
   function handleMouseOut(e) {
     e.target.to({
-      duration : 0.2,
+      duration : 0.1,
       shadowBlur : 0
     })
   }

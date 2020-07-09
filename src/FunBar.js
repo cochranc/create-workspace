@@ -128,7 +128,8 @@ function FunBar(props) {
                                 top: gui.popTextShiftY, left: gui.popSaveGroupX + gui.popTextShiftX,
                                 fontSize: gui.popTextFontSize, fontFamily: gui.functionFont,
                                 textAlign: 'center',
-                                width: gui.popTextWidth, height: gui.popTextHeight
+                                width: gui.popTextWidth, height: gui.popTextHeight,
+                                overflow: 'auto'
                             }}
                         >
                             <p>{props.text}</p>
