@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { Rect, Group, Text, Shape } from "react-konva";
+import { Rect, Group, Text, Shape, Image } from "react-konva";
 import Konva from 'konva';
 import Portal from './Portal';
 import gui from './mistgui-globals.js';
 import MISTImage from './MISTImage';
+import useImage from 'use-image';
 
 /**
  * 
@@ -25,22 +26,16 @@ function FunNode(props) {
     const numOutlets = props.numOutlets;
     const [showImage, setShowImage] = useState(false);
     const [image, setImage] = useState(null);
-    /*
-      let rCanvas = layers.render.canvas._canvas;
-  let rAnimator;
-
-  /**
-   * renderPopCanvas takes a renderFunction and renders that image on the save screen
-   * at a resolution of (width * (2 / 9))
-   */
-  /*function renderPopCanvas(renderFunction) {
-    rAnimator = new MIST.ui.Animator(renderFunction, [], {}, 
-      rCanvas, function() { });
-    rAnimator.bounds(saveStyle.canvasShiftX, saveStyle.canvasShiftY, 
-                     saveStyle.canvasSide, saveStyle.canvasSide);
-    rAnimator.setResolution(saveStyle.canvasResolution, saveStyle.canvasResolution);
-    rAnimator.frame();
-    }*/
+    const [mainRectState, setMainRectState] = useState('none');
+    const Trashcan = () => {
+        const [image] = useImage(require('./x.png'));
+        return <Image image={image}
+            x={50} y={-7} width={20} height={20}
+            visible={mainRectState==='hover' || mainRectState==='trash'}
+            onMouseOver={() => setMainRectState('trash')}
+            onMouseOut={() => setMainRectState('none')}
+        />;
+    }
 
     function handleDragStart(e) {
         e.target.setAttrs({
@@ -69,11 +64,36 @@ function FunNode(props) {
     }
 
     function handleClick(e) {
-        props.clickHandler(index);
+        if(e.target.attrs.name) {
+            props.outletClicked(index, parseInt(e.target.attrs.name.substring(6))-1);
+        }
+        else { props.funClicked(index); }
     }
 
     function handleDblClick(e) {
         props.dblClickHandler(index);
+    }
+
+    function outletHovered(e) {
+        e.target.to({
+            duration: 0.3,
+            easing: Konva.Easings.ElasticEaseOut,
+            scaleX: 1.2,
+            scaleY: 1.2,
+            shadowOffsetX: 5,
+            shadowOffsetY: 5
+        });
+    }
+
+    function outletExited(e) {
+        e.target.to({
+            duration: 0.3,
+            easing: Konva.Easings.ElasticEaseOut,
+            scaleX: 1,
+            scaleY: 1,
+            shadowOffsetX: 5,
+            shadowOffsetY: 5
+        });
     }
 
     return (
@@ -97,36 +117,58 @@ function FunNode(props) {
             onDragStart={handleDragStart} onDragEnd={handleDragEnd}
             onDragMove={handleDrag} onClick={handleClick}
             onDblClick={handleDblClick}
+            onMouseOver={(e) => {
+                if(e.target.attrs.name && e.target.attrs.name.substring(0, 1) === "o") {
+                    outletHovered(e);
+                }
+                if(e.target.attrs.name && e.target.attrs.name.substring(0, 1) === "m") {
+                    setMainRectState('hover');
+                }
+            }}
+            onMouseOut={(e) => {
+                if(e.target.attrs.name && e.target.attrs.name.substring(0, 1) === "o") {
+                    outletExited(e);
+                }
+                if(e.target.attrs.name && e.target.attrs.name.substring(0, 1) === "m") {
+                    setMainRectState('none');
+                }
+            }}
             x={x}
             y={y}
         >
             <Rect
+                name={"mainRect"}
                 x={gui.functionHalfStrokeWidth}
                 y={gui.functionHalfStrokeWidth}
                 width={gui.functionRectSideLength}
-                height={(props.numInputs <= 3)
+                height={(props.numOutlets <= 3)
                     ? gui.functionRectSideLength
                     : gui.functionRectSideLength +
-                    (props.numInputs - 3) * gui.outletYOffset}
+                    (props.numOutlets - 3) * gui.outletYOffset}
                 fill={gui.functions[name].color}
                 lineJoin={'round'}
                 stroke={gui.functions[name].color}
                 strokeWidth={gui.functionStrokeWidth}
-                shadowColor={'gray'}
-                shadowBlur = {2}
-                shadowOffsetX={1}
-                shadowOffsetY={1}
+                shadowColor={(mainRectState === 'none') && 'gray' || 
+                    (mainRectState === 'hover') && 'cyan' ||
+                    (mainRectState === 'clicked') && 'cyan' ||
+                    (mainRectState === 'trash') && 'red'
+                }
+                shadowBlur = {mainRectState === 'hover' ? 5 : 2}
+                shadowOffsetX={mainRectState === 'none' ? 1 : 0}
+                shadowOffsetY={mainRectState === 'none' ? 1 : 0}
                 _useStrictMode
             />
+            {/*<Trashcan/>*/}
             <Text
                 text={rep}
                 fontFamily={gui.globalFont}
                 fill={'black'}
                 fontSize={gui.nodeFontSize}
                 x={0}
-                y={(props.numInputs <= 3)
+                y={(props.numOutlets <= 3)
                     ? gui.functionTotalSideLength / 2 - gui.functionHalfStrokeWidth
-                    : (gui.functionTotalSideLength + (props.numInputs - 3) * gui.outletYOffset) / 2 -
+                    : (gui.functionTotalSideLength + (props.numOutlets - 3) * gui.outletYOffset) / 2 -
                     gui.functionHalfStrokeWidth}
                 width={gui.functionTotalSideLength}
                 align={'center'}
@@ -147,10 +189,10 @@ function FunNode(props) {
                     onClick={() => setShowImage(!showImage)}
                     name={'imageBox'}
                     x={gui.functionRectSideLength + gui.functionImageBoxOffset}
-                    y={(props.numInputs <= 3)
+                    y={(props.numOutlets <= 3)
                         ? gui.functionRectSideLength + gui.functionImageBoxOffset
                         : gui.functionRectSideLength + gui.functionImageBoxOffset +
-                        (props.numInputs - 3) * gui.outletYOffset}
+                        (props.numOutlets - 3) * gui.outletYOffset}
                     width={gui.imageBoxSideLength}
                     height={gui.imageBoxSideLength}
                     fill={gui.imageBoxColor}

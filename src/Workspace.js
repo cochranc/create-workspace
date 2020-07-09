@@ -31,7 +31,7 @@ export default function Workspace(props) {
   var square = layout1.addOp("square", 850, 250);
   layout1.addEdge(sin, square, 5);
 
-  const [layouts, setLayouts] = useState([]);
+  const [layouts, setLayouts] = useState([layout1]);
   const [nodes, setNodes] = useState([]);
   const [lines, setLines] = useState([]);
   const [newSource, setNewSource] = useState(null);
@@ -59,7 +59,8 @@ export default function Workspace(props) {
           renderFunction: null,
           lineFrom: [],
           numInputs: 0,
-          numOutlets: gui.functions[op.name].min
+          numOutlets: gui.functions[op.name].min,
+          activeOutlets: Array(gui.functions[op.name].min).fill(false)
         };
         tempNodes.push(node);
       }
@@ -93,14 +94,22 @@ export default function Workspace(props) {
         }
         var sourceIndex = IDindices.indexOf(source.id) + IDoffset;
         var sinkIndex = IDindices.indexOf(sink.id) + IDoffset;
+        var outletIndex = tempNodes[sinkIndex].lineFrom.length;
         newLines.push({
           sourceIndex: sourceIndex,
           sinkIndex: sinkIndex,
-          outletIndex: tempNodes[sinkIndex].lineFrom.length
+          outletIndex: outletIndex
         });
         tempNodes[sourceIndex].hasLine = true;
         tempNodes[sinkIndex].numInputs += 1;
         tempNodes[sinkIndex].lineFrom.push(sourceIndex);
+        if(tempNodes[sinkIndex].numOutlets === outletIndex) {
+          tempNodes[sinkIndex].numOutlets += 1;
+          tempNodes[sinkIndex].activeOutlets.push(true);
+        }
+        else {
+          tempNodes[sinkIndex].activeOutlets[outletIndex] = true;
+        }
       }
       setNodes(tempNodes);
       setLines(newLines);
@@ -118,7 +127,8 @@ export default function Workspace(props) {
       hasLine: type === "val" ? false : null,
       lineFrom: [],
       numInputs: 0,
-      numOutlets: type === "fun" ? gui.functions[name].min : 0
+      numOutlets: type === "fun" ? gui.functions[name].min : 0,
+      activeOutlets: type === "fun" ? Array(gui.functions[name].min).fill(false) : null
     };
     newLst.push(node);
     setNodes(newLst);
@@ -129,24 +139,21 @@ export default function Workspace(props) {
    * @param {int} source
    * @param {int} sink
    */
-  function pushLine(source, sink) {
-    console.log("pushLine");
-    console.log("source: " + nodes[source].name);
-    console.log("sink: " + nodes[sink].name);
+  function pushLine(source, sink, outletIndex) {
     let newLines = [...lines];
     newLines.push({
       sourceIndex: source,
       sinkIndex: sink,
-      outletIndex: nodes[sink].lineFrom.length
+      outletIndex: outletIndex
     });
     setLines(newLines);
     var newNodes = [...nodes];
     newNodes[source].hasLine = true;
     newNodes[sink].numInputs += 1; // updating the number of inputs for sink node
-    if (newNodes[sink].numInputs >= newNodes[sink].numOutlets) {
-      if (gui.functions[newNodes[sink].name].color === gui.functionMultColor) {
-        newNodes[sink].numOutlets += 1;
-      }
+    if(newNodes[sink].numInputs >= newNodes[sink].numOutlets &&
+      gui.functions[newNodes[sink].name].color === gui.functionMultColor) {
+      newNodes[sink].numOutlets += 1;
+      newNodes[sink].activeOutlets.push(false);
     }
     newNodes[sink].lineFrom.push(source);
     setNodes(newNodes);
@@ -165,21 +172,15 @@ export default function Workspace(props) {
     const outletIndex = lines[index].outletIndex;
     var newNodes = [...nodes];
     newNodes[source].hasLine = false;
+    newNodes[sink].activeOutlets[outletIndex] = false;
     newNodes[sink].numInputs -= 1;
-    if (newNodes[sink].numOutlets > gui.functions[newNodes[sink].name].min) {
+    ////TO-DO: only remove an outlet if there's more than one free outlet at the bottom
+    /*if (newNodes[sink].numOutlets > gui.functions[newNodes[sink].name].min) {
       newNodes[sink].numOutlets -= 1;
-    }
+    }*/
     newNodes[sink].lineFrom.splice(outletIndex, 1);
     //subtract 1 from every outletIndex of every line going into sink
-    var newLst = [...lines].map((line, i) => {
-      console.log("line source:"+nodes[line.sourceIndex].name+" outletIndex:"+line.outletIndex);
-
-      if(line.sink === sink && line.outletIndex > outletIndex) {
-        console.log("modifying outlet indices");
-        return {sourceIndex: line.sourceIndex, sinkIndex: line.sinkIndex, outletIndex: line.outletIndex-1};
-      }
-      return line;
-    });
+    var newLst = [...lines];
     newNodes[sink].renderFunction = null;
     setNodes(newNodes);
     newLst.splice(index, 1);
@@ -205,25 +206,18 @@ export default function Workspace(props) {
   }
 
   /**
-   * When a function gets clicked, it's either with the intention of displaying the function
-   * or making a line.
+   * When a function node gets clicked, its render function gets displayed in FunBar
    * @param {int} index
    */
   function funClicked(index) {
-    if (
-      newSource != null &&
-      newSource != index &&
-      nodes[index].numInputs < gui.functions[nodes[index].name].max
-    ) {
-      // a line coming out of source
-      pushLine(newSource, index);
-    } else {
-      const rf = findRenderFunction(index);
-      var newLst = [...nodes];
-      newLst[index].renderFunction = rf;
-      setNodes(newLst);
-      setCurrText(rf);
+    for(var i=0; i<nodes[index].lineFrom.length; i++) {
+      console.log(nodes[nodes[index].lineFrom[i]].name);
     }
+    const rf = findRenderFunction(index);
+    var newLst = [...nodes];
+    newLst[index].renderFunction = rf;
+    setNodes(newLst);
+    setCurrText(rf);
   }
 
   /**
@@ -252,6 +246,19 @@ export default function Workspace(props) {
         y: nodes[index].y + gui.functionRectSideLength / 2
       });
       setTempLine({ sourceX: nodes[index].x, sourceY: nodes[index].y });
+    }
+  }
+
+  function outletClicked(sinkIndex, outletIndex) {
+    console.log("outletClicked, sinkIndex: "+sinkIndex+" outletIndex: "+outletIndex);
+    if (
+      newSource != null &&
+      newSource != sinkIndex &&
+      nodes[sinkIndex].activeOutlets[outletIndex] === false &&
+      nodes[sinkIndex].numInputs < gui.functions[nodes[sinkIndex].name].max
+    ) {
+      // a line coming out of source
+      pushLine(newSource, sinkIndex, outletIndex);
     }
   }
 
@@ -331,7 +338,8 @@ export default function Workspace(props) {
                 numOutlets={node.numOutlets}
                 findRF={findRenderFunction}
                 handler={updatePosition}
-                clickHandler={funClicked}
+                funClicked={funClicked}
+                outletClicked={outletClicked}
                 dblClickHandler={dblClicked}
               />
             ) : (

@@ -13,7 +13,8 @@
     "react-konva": "^16.13.0-3",
     "react-script-tag": "^1.1.2",
     "react-scripts": "3.4.1",
-    "reactstrap": "^8.4.1"
+    "reactstrap": "^8.4.1",
+    "use-image": "^1.0.6"
   },
   "scripts": {
     "start": "react-scripts start",
