@@ -33,7 +33,7 @@ export var valGroup = function(addNode,valName, x, y, vis) {
       x={x}
       y={y}
       lineOut={[]}
-      visible={vis}
+      visible={true}
       renderFunction={gui.values[valName].rep}
       rep={gui.values[valName].rep}
       renderLayer={null}
@@ -45,30 +45,42 @@ export var valGroup = function(addNode,valName, x, y, vis) {
     >
     <Spring
     native
-    from = {{x : x}} 
+    from = {{x : -300, width : 0, height : 0}} 
     to = {{
-      x : vis? x : 300
+      x : gui.functionRectSideLength / 2,
+      width : gui.valueSideLength,
+      height : gui.valueSideLength 
     }}>
-      <animated.Rect
-        x={gui.functionRectSideLength / 2}
+      {props => (<animated.Rect
+        {...props}
+        //x={gui.functionRectSideLength / 2}
         y={0}
-        width={gui.valueSideLength}
-        height={gui.valueSideLength}
+        //width={gui.valueSideLength}
+        //height={gui.valueSideLength}
         fill={gui.values[valName].color}
         rotation={45}
         name={valName}
-      />
+      />)}
     </Spring>
-      <Text
+    <Spring 
+    native
+    from = {{x : -300, fontSize : 0}} 
+    to = {{
+      x : 0,
+      fontSize : gui.nodeFontSize
+    }}>
+     {props => (<animated.Text
+        {...props}
         text={gui.values[valName].rep}
         fontFamily={gui.globalFont}
         fill={"black"}
-        fontSize={gui.nodeFontSize}
-        x={0}
+        //fontSize={gui.nodeFontSize}
+        //x={0}
         y={gui.valueSideLength / 2}
         width={gui.functionRectSideLength}
         align={"center"}
-      />
+      />)}
+      </Spring>
     </Group>
   );
 };

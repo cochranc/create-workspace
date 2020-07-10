@@ -2,6 +2,7 @@ import { Rect, Group, Text } from "react-konva";
 import gui from "./mistgui-globals";
 import React, { useState } from "react";
 import Konva from "konva";
+import { Spring, animated } from 'react-spring/renderprops-konva';
 
 export var funcGroup = function makeFunctionGroup(addNode, funName, x, y, vis) {
   function handleDragStart(e) {
@@ -48,29 +49,36 @@ export var funcGroup = function makeFunctionGroup(addNode, funName, x, y, vis) {
       onDragStart = {handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <Rect
+    <Spring native 
+    from = {{x:-300, width : 0, height : 0}}
+    to = {{x : gui.functionHalfStrokeWidth, width : gui.functionRectSideLength, height : gui.functionRectSideLength}}>
+      {props => (<animated.Rect
+        {...props}
         name={funName}
-        x={gui.functionHalfStrokeWidth}
+        //x={gui.functionHalfStrokeWidth}
         y={gui.functionHalfStrokeWidth}
-        width={gui.functionRectSideLength}
-        height={gui.functionRectSideLength}
+        //width={gui.functionRectSideLength}
+        //height={gui.functionRectSideLength}
         fill={gui.functions[funName].color}
         lineJoin={"round"}
         stroke={gui.functions[funName].color}
         strokeWidth={gui.functionStrokeWidth}
-      />
-
-      <Text
+      />)}
+      </Spring>
+      <Spring native from = {{x : -300, fontSize : 0}}
+      to = {{x : 0, fontSize : gui.nodeFontSize}}>
+      {props => (<animated.Text
+        {...props}
         text={gui.functions[funName].rep}
         fontFamily={gui.globalFont}
         fill={"black"}
-        fontSize={gui.nodeFontSize}
-        x={0}
+        //fontSize={gui.nodeFontSize}
+        //x={0}
         y={gui.functionTotalSideLength / 2 - gui.functionHalfStrokeWidth}
         width={gui.functionTotalSideLength}
         align={"center"}
-      />
-
+      />)}
+      </Spring>
       <Rect
         name={"imageBox"}
         x={gui.functionRectSideLength + gui.functionImageBoxOffset}

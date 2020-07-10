@@ -14,6 +14,7 @@ import FunNode from "./FunNode";
 import MakeMenuButton from "./MakeMenuButton";
 import { funcGroup } from "./MakeFunction";
 import { valGroup } from "./MakeValue";
+import { Spring, animated } from 'react-spring/renderprops-konva';
 //import tween from './tween';
 
 function Menu(props) {
@@ -23,8 +24,17 @@ function Menu(props) {
   const [valTog, setValTog] = useState(false);
   const [isValueMenuOpen, setIsValueMenuOpen] = useState(false);
   const [isFunctionMenuOpen, setIsFunctionMenuOpen] = useState(false);
+  const [hov, setHov] = useState(false);
 
   function updateFunNodes(index, x, y) {}
+
+  function handleMouse() {
+    setHov(true);
+  }
+
+  function handleMouseOut() {
+    setHov(false);
+  }
 
   function handleMenuValues() {
     return Array.from(new Array(gui.valNames.length), (val, index) =>
@@ -128,14 +138,21 @@ function Menu(props) {
             height={gui.menuHeight}
             fill={gui.valueMenuColorLight}
           />
-          <Rect
+          <Spring native
+        from = {{scaleX: hov? 1 : 1.1, scaleY: hov? 1 : 1.1}}
+        to = {{scaleX: hov? 1.1 : 1, scaleY: hov? 1.1 : 1}}>
+          {props => (<animated.Rect
+            {...props}
             x={gui.buttonWidth / 2}
             y={gui.menuHeight / 6}
             width={gui.valueSideLength}
             height={gui.valueSideLength}
             fill={gui.valueMenuColor}
             rotation={45}
-          />
+            onMouseOver = {handleMouse}
+            onMouseOut = {handleMouseOut}
+          />)}
+          </Spring>
           <Text
             text={"Add a value"}
             x={0}
