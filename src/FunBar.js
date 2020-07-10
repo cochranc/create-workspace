@@ -70,10 +70,11 @@ function FunBar(props) {
                         width={gui.funBarIconTextWidth}
                         height={gui.funBarTextAreaHeight}
                         stroke={'#424874'}
+                        cornerRadius={8}
                     />)}
                 </Spring>
                 <Text
-                    text={'function'}
+                    text={'Function'}
                     x={0}
                     y={gui.funBarOffset}
                     width={gui.funBarIconTextWidth}
@@ -175,7 +176,7 @@ function FunBar(props) {
                         
                 </Portal>
                 : <Text
-                text={'image'}
+                text={'Image'}
                 x={0}
                 y={gui.funBarOffset}
                 width={gui.funBarIconTextWidth}

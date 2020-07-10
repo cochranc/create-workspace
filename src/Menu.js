@@ -92,7 +92,7 @@ function Menu(props) {
         strokeWidth={2}
       />*/}
       
-        <Group>
+        <Group visible={isValueMenuOpen}>
           <Rect
             x={gui.menuFunctsXStart - 150}
             y={0}
@@ -143,7 +143,7 @@ function Menu(props) {
             rotation={45}
           />
           <Text
-            text={"value"}
+            text={"Value"}
             x={0}
             y={(gui.menuHeight / 2.3)}
             width={gui.buttonWidth}
@@ -154,7 +154,7 @@ function Menu(props) {
             fontSize={20}
           />
         </Group>
-        <Group>
+        <Group visible={isFunctionMenuOpen}>
           <Rect
             x={gui.menuFunctsXStart}
             y={0}
@@ -189,20 +189,20 @@ function Menu(props) {
           <Rect
             x={0}
             y={0}
-            width={gui.buttonWidth}
-            height={gui.menuHeight}
+            width={gui.buttonWidth*1.5}
+            height={gui.menuHeight*1.5}
             fill={gui.functionColorLight}
             visible={false}
           />
           <Rect
-            x={gui.buttonWidth / 2 - gui.functionRectSideLength / 2}
+            x={gui.buttonWidth / 2 - gui.functionRectSideLength*.75}
             y={gui.menuHeight / 6}
-            width={gui.functionRectSideLength}
-            height={gui.functionRectSideLength}
+            width={gui.functionRectSideLength*1.5}
+            height={gui.functionRectSideLength*1.5}
             fill={gui.functionColor}
           />
           <Text
-            text={"Add a function"}
+            text={"Function"}
             x={0}
             y={(gui.menuHeight / 2.3)}
             width={gui.buttonWidth}
