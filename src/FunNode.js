@@ -27,15 +27,28 @@ function FunNode(props) {
     const [showImage, setShowImage] = useState(false);
     const [image, setImage] = useState(null);
     const [mainRectState, setMainRectState] = useState('none');
-    const Trashcan = () => {
-        const [image] = useImage(require('./x.png'));
-        return <Image image={image}
-            x={50} y={-7} width={20} height={20}
-            visible={mainRectState==='hover' || mainRectState==='trash'}
-            onMouseOver={() => setMainRectState('trash')}
-            onMouseOut={() => setMainRectState('none')}
+    const [hovered, setHovered] = useState(false);
+    const [trashHovered, setTrashHovered] = useState(false);
+    
+    function Trashcan() {
+        return <Image
+          image={image}
+          x={props.sourceX + (props.sinkX - props.sourceX) * (3/5) - 7}
+          y={props.sourceY + (props.sinkY - props.sourceY) * (3/5) - 7}
+          width={14} height={14}
+          shadowColor={trashHovered ? "red" : "cyan"}
+          shadowBlur={5}
+          visible={hovered}
+          onMouseEnter={() => {
+            setTrashHovered(true);
+          }}
+          onMouseLeave={() => {
+            setTrashHovered(false);
+            setHovered(false);
+          }}
+          onClick={() => props.removeLine(props.index)}
         />;
-    }
+      }
 
     function handleDragStart(e) {
         e.target.setAttrs({
@@ -96,6 +109,24 @@ function FunNode(props) {
         });
     }
 
+    function rectHovered(e) {
+        e.target.to({
+            duration: 0.2,
+            easing: Konva.Easings.ElasticEaseInOut,
+            scaleX: 1.05,
+            scaleY: 1.05
+        });
+    }
+
+    function rectExited(e) {
+        e.target.to({
+            duration: 0.2,
+            easing: Konva.Easings.ElasticEaseInOut,
+            scaleX: 1,
+            scaleY: 1
+        });
+    }
+
     return (
         <Group
             draggable
@@ -117,22 +148,6 @@ function FunNode(props) {
             onDragStart={handleDragStart} onDragEnd={handleDragEnd}
             onDragMove={handleDrag} onClick={handleClick}
             onDblClick={handleDblClick}
-            onMouseOver={(e) => {
-                if(e.target.attrs.name && e.target.attrs.name.substring(0, 1) === "o") {
-                    outletHovered(e);
-                }
-                if(e.target.attrs.name && e.target.attrs.name.substring(0, 1) === "m") {
-                    setMainRectState('hover');
-                }
-            }}
-            onMouseOut={(e) => {
-                if(e.target.attrs.name && e.target.attrs.name.substring(0, 1) === "o") {
-                    outletExited(e);
-                }
-                if(e.target.attrs.name && e.target.attrs.name.substring(0, 1) === "m") {
-                    setMainRectState('none');
-                }
-            }}
             x={x}
             y={y}
         >
@@ -149,15 +164,22 @@ function FunNode(props) {
                 lineJoin={'round'}
                 stroke={gui.functions[name].color}
                 strokeWidth={gui.functionStrokeWidth}
-                shadowColor={(mainRectState === 'none') && 'gray' || 
-                    (mainRectState === 'hover') && 'cyan' ||
-                    (mainRectState === 'clicked') && 'cyan' ||
-                    (mainRectState === 'trash') && 'red'
-                }
-                shadowBlur = {mainRectState === 'hover' ? 5 : 2}
-                shadowOffsetX={mainRectState === 'none' ? 1 : 0}
-                shadowOffsetY={mainRectState === 'none' ? 1 : 0}
-                _useStrictMode
+                shadowColor={!hovered && "gray" || trashHovered && "red" || (hovered && !trashHovered) && "cyan"}
+                shadowBlur = {3}
+                shadowOffsetX={!hovered ? 1 : 0}
+                shadowOffsetY={!hovered ? 1 : 0}
+                onMouseEnter={(e) => {
+                    if(e.target.attrs.name && e.target.attrs.name.substring(0, 1) === "m") {
+                        setHovered(true);
+                        rectHovered(e);
+                    }
+                }}
+                onMouseLeave={(e) => {
+                    if(e.target.attrs.name && e.target.attrs.name.substring(0, 1) === "m") {
+                        setHovered(false);
+                        rectExited(e);
+                    }
+                }}
             />
             {/*<Trashcan/>*/}
             <Text
@@ -227,6 +249,16 @@ function FunNode(props) {
                     opacity={1}
                     lineIn={null}
                     outletIndex={i}
+                    onMouseOver={(e) => {
+                        if(e.target.attrs.name && e.target.attrs.name.substring(0, 1) === "o") {
+                            outletHovered(e);
+                        }
+                    }}
+                    onMouseOut={(e) => {
+                        if(e.target.attrs.name && e.target.attrs.name.substring(0, 1) === "o") {
+                            outletExited(e);
+                        }
+                    }}
                 />
             )
             : [...Array(numOutlets)].map((u, i) =>
@@ -252,6 +284,16 @@ function FunNode(props) {
                     opacity={1}
                     lineIn={null}
                     outletIndex={i}
+                    onMouseOver={(e) => {
+                        if(e.target.attrs.name && e.target.attrs.name.substring(0, 1) === "o") {
+                            outletHovered(e);
+                        }
+                    }}
+                    onMouseOut={(e) => {
+                        if(e.target.attrs.name && e.target.attrs.name.substring(0, 1) === "o") {
+                            outletExited(e);
+                        }
+                    }}
                 />
             )}
         </Group>

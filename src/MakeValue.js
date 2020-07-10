@@ -45,19 +45,22 @@ export var valGroup = function(addNode,valName, x, y, vis) {
     >
     <Spring
     native
-    from = {{x : x}} 
-    to = {{
-      x : vis? x : 300
+    from = {{x : 0}} 
+    to = {{x:x
+      //x : vis? x : 300
     }}>
-      <animated.Rect
-        x={gui.functionRectSideLength / 2}
-        y={0}
-        width={gui.valueSideLength}
-        height={gui.valueSideLength}
-        fill={gui.values[valName].color}
-        rotation={45}
-        name={valName}
-      />
+      {props => (
+        <animated.Rect
+          {...props}
+          //x={gui.functionRectSideLength / 2}
+          y={0}
+          width={gui.valueSideLength}
+          height={gui.valueSideLength}
+          fill={gui.values[valName].color}
+          rotation={45}
+          name={valName}
+        />)
+      }
     </Spring>
       <Text
         text={gui.values[valName].rep}

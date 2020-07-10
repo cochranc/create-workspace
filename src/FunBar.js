@@ -16,8 +16,6 @@ function FunBar(props) {
 
     const [imageButtonClicked, setImageButtonClicked] = useState(false);
 
-    
-    
     return (
         <Group
             x={0}
