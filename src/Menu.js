@@ -24,16 +24,25 @@ function Menu(props) {
   const [valTog, setValTog] = useState(false);
   const [isValueMenuOpen, setIsValueMenuOpen] = useState(false);
   const [isFunctionMenuOpen, setIsFunctionMenuOpen] = useState(false);
-  const [hov, setHov] = useState(false);
+  const [hovVal, setHovVal] = useState(false);
+  const [hovFun, setHovFun] = useState(false);
 
   function updateFunNodes(index, x, y) {}
 
-  function handleMouse() {
-    setHov(true);
+  function handleMouseValue() {
+    setHovVal(true);
   }
 
-  function handleMouseOut() {
-    setHov(false);
+  function handleMouseOutValue() {
+    setHovVal(false);
+  }
+
+  function handleMouseFunction() {
+    setHovFun(true);
+  }
+
+  function handleMouseOutFunction() {
+    setHovFun(false);
   }
 
   function handleMenuValues() {
@@ -139,8 +148,8 @@ function Menu(props) {
             fill={gui.valueMenuColorLight}
           />
           <Spring native
-        from = {{scaleX: hov? 1 : 1.1, scaleY: hov? 1 : 1.1}}
-        to = {{scaleX: hov? 1.1 : 1, scaleY: hov? 1.1 : 1}}>
+        from = {{scaleX: hovVal? 1 : 1.1, scaleY: hovVal? 1 : 1.1}}
+        to = {{scaleX: hovVal? 1.1 : 1, scaleY: hovVal? 1.1 : 1}}>
           {props => (<animated.Rect
             {...props}
             x={gui.buttonWidth / 2}
@@ -149,8 +158,8 @@ function Menu(props) {
             height={gui.valueSideLength}
             fill={gui.valueMenuColor}
             rotation={45}
-            onMouseOver = {handleMouse}
-            onMouseOut = {handleMouseOut}
+            onMouseOver = {handleMouseValue}
+            onMouseOut = {handleMouseOutValue}
           />)}
           </Spring>
           <Text
@@ -206,13 +215,20 @@ function Menu(props) {
             height={gui.menuHeight}
             fill={gui.functionColorLight}
           />
-          <Rect
+          <Spring native
+        from = {{scaleX: hovFun? 1 : 1.1, scaleY: hovFun? 1 : 1.1}}
+        to = {{scaleX: hovFun? 1.1 : 1, scaleY: hovFun? 1.1 : 1}}>
+          {props => (<animated.Rect
+            {...props}
             x={gui.buttonWidth / 2 - gui.functionRectSideLength / 2}
             y={gui.menuHeight / 6}
             width={gui.functionRectSideLength}
             height={gui.functionRectSideLength}
             fill={gui.functionColor}
-          />
+            onMouseOver = {handleMouseFunction}
+            onMouseOut = {handleMouseOutFunction}
+          />)}
+          </Spring>
           <Text
             text={"Add a function"}
             x={0}
