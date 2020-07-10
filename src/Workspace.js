@@ -298,7 +298,7 @@ export default function Workspace(props) {
               y={gui.menuHeight}
               width={width}
               height={height-gui.menuHeight}
-              fill={'#FAFBFF'}
+              fill={'#f0f5ff'}
             />
             {tempLine &&
             <DrawArrow

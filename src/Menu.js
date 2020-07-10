@@ -100,7 +100,7 @@ function Menu(props) {
     <Group width={window.innerWidth} height={gui.menuHeight}>
       <Rect
         width={window.innerWidth} height={gui.menuHeight}
-        fill={'white'} shadowColor={'black'} shadowBlur={5}
+        fill={'#616dBe'} shadowColor={'black'} shadowBlur={5}
       />
       {/*<Line
         points={[0, gui.menuHeight, window.innerWidth, gui.menuHeight]}
@@ -146,6 +146,7 @@ function Menu(props) {
             width={gui.buttonWidth}
             height={gui.menuHeight}
             fill={gui.valueMenuColorLight}
+            visible={false}
           />
           <Spring native
         from = {{scaleX: hovVal? 1 : 1.1, scaleY: hovVal? 1 : 1.1}}
@@ -154,8 +155,8 @@ function Menu(props) {
             {...props}
             x={gui.buttonWidth / 2}
             y={gui.menuHeight / 6}
-            width={gui.valueSideLength}
-            height={gui.valueSideLength}
+            width={gui.valueSideLength * 1.5}
+            height={gui.valueSideLength * 1.5}
             fill={gui.valueMenuColor}
             rotation={45}
             onMouseOver = {handleMouseValue}
@@ -163,15 +164,15 @@ function Menu(props) {
           />)}
           </Spring>
           <Text
-            text={"Add a value"}
+            text={"value"}
             x={0}
-            y={3 * (gui.menuHeight / 4)}
+            y={(gui.menuHeight / 2.3)}
             width={gui.buttonWidth}
             height={gui.menuHeight / 4}
             fill={"black"}
             align={"center"}
             fontFamily={gui.globalFont}
-            fontSize={gui.menuFontSize}
+            fontSize={20}
           />
         </Group>
       )}
@@ -214,6 +215,7 @@ function Menu(props) {
             width={gui.buttonWidth}
             height={gui.menuHeight}
             fill={gui.functionColorLight}
+            visible={false}
           />
           <Spring native
         from = {{scaleX: hovFun? 1 : 1.1, scaleY: hovFun? 1 : 1.1}}
@@ -232,7 +234,7 @@ function Menu(props) {
           <Text
             text={"Add a function"}
             x={0}
-            y={3 * (gui.menuHeight / 4)}
+            y={(gui.menuHeight / 2.3)}
             width={gui.buttonWidth}
             height={gui.menuHeight / 4}
             fill={"black"}

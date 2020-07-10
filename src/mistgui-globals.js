@@ -17,12 +17,12 @@ var functionTotalSideLength = width / 20;
 var functionRectSideLength = functionTotalSideLength - functionStrokeWidth;
 var functionColor = '#3FAAA0';
 var functionColorLight = '#C6F1ED';
-var functionMultColor = '#5EC783';
+var functionMultColor = '#efee9d';
 var functionSingleColor = '#77C9E2';
 var functionRGBcolor = '#AE88D6';
 
 var valueSideLength = functionTotalSideLength / 1.8; //1.414;
-var valueMenuColor = '#F2937C';
+var valueMenuColor = '#ffa931';
 var valueMenuColorLight = '#FDE6DD';
 var valueXYColor = '#EFDC5C';
 var valueTimeColor = '#FD9E54'
@@ -115,7 +115,7 @@ var triY = width / 60;
 //CORNER BUTTONS
 var menuOffset = 10;
 var menuControlHeight = (menuHeight - 4 * menuOffset) / 3;
-var menuControlColor = '#7FA7E7';
+var menuControlColor = '#111d5e';
 var menuControlSelect = '#9EBDF0'; 
 var menuControlTextColor = 'black';
 var menuTextOffset = menuControlHeight / 5;

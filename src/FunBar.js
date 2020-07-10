@@ -11,11 +11,12 @@ import Portal from './Portal';
 import gui from './mistgui-globals.js';
 import MISTImage from './MISTImage';
 import './styles/FunBar.css';
+import { Spring, animated } from 'react-spring/renderprops-konva';
 
 function FunBar(props) {
 
     const [imageButtonClicked, setImageButtonClicked] = useState(false);
-
+    const [imageButtonHovered, setImageButtonHovered] = useState(false);
     
     
     return (
@@ -29,7 +30,6 @@ function FunBar(props) {
                 width={gui.funBarWidth}
                 height={gui.funBarHeight}
                 fill={gui.funBarBackgroundColor}
-                //shadowColor={'black'} shadowBlur={5}
             />
             <Rect
                 x={gui.funBarOffset}
@@ -53,24 +53,25 @@ function FunBar(props) {
                 x={gui.funBarTextAreaWidth + 2 * gui.funBarOffset}
                 y={gui.funBarHeight / 2 - (gui.funBarFontSize / 2)}
                 width={gui.funBarWidth * (3 / 25)}
-                fill={'black'}
+                fill={'white'}
                 fontSize={gui.funBarFontSize}
             />
             <Group
                 x={gui.funBarTextAreaWidth + gui.funBarWidth * (2 / 25) + (gui.funBarOffset)}
                 y={gui.funBarOffset}
             >
-                <Rect
-                    x={0}
-                    y={0}
-                    width={gui.funBarIconTextWidth}
-                    height={gui.funBarTextAreaHeight}
-                    fill={gui.functionColorLight}
-                    shadowBlur={2}
-                    shadowOffsetX={1}
-                    shadowOffsetY={1}
-                    shadowColor={'black'}
-                />
+                <Spring native
+                    from={{fill: !imageButtonHovered ? 'white' : '#f37121'}}
+                    to={{fill: imageButtonHovered ? 'white' : '#f37121'}}>
+                    {props => (<animated.Rect
+                        {...props}
+                        x={0}
+                        y={0}
+                        width={gui.funBarIconTextWidth}
+                        height={gui.funBarTextAreaHeight}
+                        stroke={'#424874'}
+                    />)}
+                </Spring>
                 <Text
                     text={'function'}
                     x={0}
@@ -78,8 +79,10 @@ function FunBar(props) {
                     width={gui.funBarIconTextWidth}
                     height={gui.funBarTextAreaHeight}
                     align={'center'}
-                    fill={'grey'}
+                    fill={!imageButtonHovered ? 'white' : 'grey'}
                     fontSize={gui.funBarFontSize}
+                    onMouseOver={()=>{setImageButtonHovered(true)}}
+                    onMouseOut={()=>{setImageButtonHovered(false)}}
                 />
         </Group>
         <Group
