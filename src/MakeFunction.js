@@ -41,7 +41,7 @@ export var funcGroup = function makeFunctionGroup(addNode, funName, x, y, vis) {
       prefix={gui.functions[funName].prefix}
       separator={gui.functions[funName].separator}
       renderFunction={null}
-      visible={vis}
+      visible={true}
       renderLayer={null}
       scaleX={1}
       scaleY={1}
@@ -50,23 +50,23 @@ export var funcGroup = function makeFunctionGroup(addNode, funName, x, y, vis) {
       onDragEnd={handleDragEnd}
     >
     <Spring native 
-    from = {{x:-300, width : 0, height : 0}}
-    to = {{x : gui.functionHalfStrokeWidth, width : gui.functionRectSideLength, height : gui.functionRectSideLength}}>
+    from = {{x: vis? -300 : gui.functionHalfStrokeWidth, scaleX : vis? 0 : 1, scaleY : vis? 0:1}}
+    to = {{x : vis? gui.functionHalfStrokeWidth : -300, scaleX : vis? 1:0, scaleY : vis? 1:0}}>
       {props => (<animated.Rect
         {...props}
         name={funName}
         //x={gui.functionHalfStrokeWidth}
         y={gui.functionHalfStrokeWidth}
-        //width={gui.functionRectSideLength}
-        //height={gui.functionRectSideLength}
+        width={gui.functionRectSideLength}
+        height={gui.functionRectSideLength}
         fill={gui.functions[funName].color}
         lineJoin={"round"}
         stroke={gui.functions[funName].color}
         strokeWidth={gui.functionStrokeWidth}
       />)}
       </Spring>
-      <Spring native from = {{x : -300, fontSize : 0}}
-      to = {{x : 0, fontSize : gui.nodeFontSize}}>
+      <Spring native from = {{x : vis? -300 : 0, fontSize : vis? 0 : gui.nodeFontSize}}
+      to = {{x : vis? 0 : -300, fontSize : vis? gui.nodeFontSize : 0}}>
       {props => (<animated.Text
         {...props}
         text={gui.functions[funName].rep}

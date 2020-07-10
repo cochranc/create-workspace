@@ -17,19 +17,7 @@ export default function Workspace(props) {
 
   //example layouts for testing
   var layout1 = new MIST.Layout();
-  var add = layout1.addOp("add", 300, 325);
-  var x = layout1.addVal("x", 150, 250);
-  var y = layout1.addVal("y", 150, 400);
-  layout1.addEdge(x, add, 0);
-  layout1.addEdge(y, add, 1);
-  var mult = layout1.addOp("multiply", 500, 300);
-  var k = layout1.addVal("x", 450, 450);
-  layout1.addEdge(add, mult, 2);
-  layout1.addEdge(k, mult, 3);
-  var sin = layout1.addOp("sine", 675, 350);
-  layout1.addEdge(mult, sin, 4);
-  var square = layout1.addOp("square", 850, 250);
-  layout1.addEdge(sin, square, 5);
+  
 
   const [layouts, setLayouts] = useState([layout1]);
   const [nodes, setNodes] = useState([]);
