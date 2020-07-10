@@ -24,26 +24,10 @@ function Menu(props) {
   const [valTog, setValTog] = useState(false);
   const [isValueMenuOpen, setIsValueMenuOpen] = useState(false);
   const [isFunctionMenuOpen, setIsFunctionMenuOpen] = useState(false);
-  const [hovVal, setHovVal] = useState(false);
-  const [hovFun, setHovFun] = useState(false);
+
 
   function updateFunNodes(index, x, y) {}
 
-  function handleMouseValue() {
-    setHovVal(true);
-  }
-
-  function handleMouseOutValue() {
-    setHovVal(false);
-  }
-
-  function handleMouseFunction() {
-    setHovFun(true);
-  }
-
-  function handleMouseOutFunction() {
-    setHovFun(false);
-  }
 
   function handleMenuValues() {
     return Array.from(new Array(gui.valNames.length), (val, index) =>
@@ -107,7 +91,7 @@ function Menu(props) {
         stroke={"black"}
         strokeWidth={2}
       />*/}
-      {isValueMenuOpen ? (
+      
         <Group>
           <Rect
             x={gui.menuFunctsXStart - 150}
@@ -134,12 +118,13 @@ function Menu(props) {
           />
           {handleMenuValues()}
         </Group>
-      ) : (
         <Group
           name={"valueIcon"}
           x={gui.menuCornerWidth}
           onClick={handleValueClick}
+          visible = {!isValueMenuOpen}  
         >
+
           <Rect
             x={0}
             y={0}
@@ -147,10 +132,7 @@ function Menu(props) {
             height={gui.menuHeight}
             fill={gui.valueMenuColorLight}
           />
-          <Spring native
-        from = {{scaleX: hovVal? 1 : 1.1, scaleY: hovVal? 1 : 1.1}}
-        to = {{scaleX: hovVal? 1.1 : 1, scaleY: hovVal? 1.1 : 1}}>
-          {props => (<animated.Rect
+          <Rect
             {...props}
             x={gui.buttonWidth / 2}
             y={gui.menuHeight / 6}
@@ -158,10 +140,7 @@ function Menu(props) {
             height={gui.valueSideLength}
             fill={gui.valueMenuColor}
             rotation={45}
-            onMouseOver = {handleMouseValue}
-            onMouseOut = {handleMouseOutValue}
-          />)}
-          </Spring>
+          />
           <Text
             text={"Add a value"}
             x={0}
@@ -174,8 +153,6 @@ function Menu(props) {
             fontSize={gui.menuFontSize}
           />
         </Group>
-      )}
-      {isFunctionMenuOpen ? (
         <Group>
           <Rect
             x={gui.menuFunctsXStart}
@@ -202,11 +179,11 @@ function Menu(props) {
           />
           {handleMenuFunctions()}
         </Group>
-      ) : (
         <Group
           name={"functionIcon"}
           x={gui.menuCornerWidth + gui.buttonWidth}
           onClick={handleFunctionClick}
+          visible = {!isFunctionMenuOpen}
         >
           <Rect
             x={0}
@@ -215,20 +192,13 @@ function Menu(props) {
             height={gui.menuHeight}
             fill={gui.functionColorLight}
           />
-          <Spring native
-        from = {{scaleX: hovFun? 1 : 1.1, scaleY: hovFun? 1 : 1.1}}
-        to = {{scaleX: hovFun? 1.1 : 1, scaleY: hovFun? 1.1 : 1}}>
-          {props => (<animated.Rect
-            {...props}
+          <Rect
             x={gui.buttonWidth / 2 - gui.functionRectSideLength / 2}
             y={gui.menuHeight / 6}
             width={gui.functionRectSideLength}
             height={gui.functionRectSideLength}
             fill={gui.functionColor}
-            onMouseOver = {handleMouseFunction}
-            onMouseOut = {handleMouseOutFunction}
-          />)}
-          </Spring>
+          />
           <Text
             text={"Add a function"}
             x={0}
@@ -241,7 +211,6 @@ function Menu(props) {
             fontSize={gui.menuFontSize}
           />
         </Group>
-      )}
       <Group>
         {[{name: "Reset Workspace", func: props.clearNode}, {name: "Open Workspace"}, {name: "Save Workspace"}].map((u, i) =>
           <MakeMenuButton

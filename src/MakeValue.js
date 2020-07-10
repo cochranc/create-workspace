@@ -45,11 +45,11 @@ export var valGroup = function(addNode,valName, x, y, vis) {
     >
     <Spring
     native
-    from = {{x : -300, width : 0, height : 0}} 
+    from = {{x :vis? -300 : gui.functionRectSideLength / 2, width : vis? 0 : gui.valueSideLength, height : vis? 0 : gui.valueSideLength}} 
     to = {{
-      x : gui.functionRectSideLength / 2,
-      width : gui.valueSideLength,
-      height : gui.valueSideLength 
+      x : vis? gui.functionRectSideLength / 2 : -300,
+      width : vis? gui.valueSideLength : 0,
+      height : vis? gui.valueSideLength : 0 
     }}>
       {props => (<animated.Rect
         {...props}
@@ -64,10 +64,10 @@ export var valGroup = function(addNode,valName, x, y, vis) {
     </Spring>
     <Spring 
     native
-    from = {{x : -300, fontSize : 0}} 
+    from = {{x : vis? -300 : 0, fontSize : vis? 0 : gui.nodeFontSize}} 
     to = {{
-      x : 0,
-      fontSize : gui.nodeFontSize
+      x : vis? 0:-300,
+      fontSize : vis? gui.nodeFontSize : 0
     }}>
      {props => (<animated.Text
         {...props}
