@@ -14,6 +14,7 @@ import FunNode from "./FunNode";
 import MakeMenuButton from "./MakeMenuButton";
 import { funcGroup } from "./MakeFunction";
 import { valGroup } from "./MakeValue";
+import { Spring, animated } from 'react-spring/renderprops-konva';
 //import tween from './tween';
 
 function Menu(props) {
@@ -24,7 +25,9 @@ function Menu(props) {
   const [isValueMenuOpen, setIsValueMenuOpen] = useState(false);
   const [isFunctionMenuOpen, setIsFunctionMenuOpen] = useState(false);
 
+
   function updateFunNodes(index, x, y) {}
+
 
   function handleMenuValues() {
     return Array.from(new Array(gui.valNames.length), (val, index) =>
@@ -88,7 +91,7 @@ function Menu(props) {
         stroke={"black"}
         strokeWidth={2}
       />*/}
-      {isValueMenuOpen ? (
+      
         <Group>
           <Rect
             x={gui.menuFunctsXStart - 150}
@@ -115,12 +118,13 @@ function Menu(props) {
           />
           {handleMenuValues()}
         </Group>
-      ) : (
         <Group
           name={"valueIcon"}
           x={gui.menuCornerWidth}
           onClick={handleValueClick}
+          visible = {!isValueMenuOpen}  
         >
+
           <Rect
             x={0}
             y={0}
@@ -129,6 +133,7 @@ function Menu(props) {
             fill={gui.valueMenuColorLight}
           />
           <Rect
+            {...props}
             x={gui.buttonWidth / 2}
             y={gui.menuHeight / 6}
             width={gui.valueSideLength}
@@ -148,8 +153,6 @@ function Menu(props) {
             fontSize={gui.menuFontSize}
           />
         </Group>
-      )}
-      {isFunctionMenuOpen ? (
         <Group>
           <Rect
             x={gui.menuFunctsXStart}
@@ -176,11 +179,11 @@ function Menu(props) {
           />
           {handleMenuFunctions()}
         </Group>
-      ) : (
         <Group
           name={"functionIcon"}
           x={gui.menuCornerWidth + gui.buttonWidth}
           onClick={handleFunctionClick}
+          visible = {!isFunctionMenuOpen}
         >
           <Rect
             x={0}
@@ -208,7 +211,6 @@ function Menu(props) {
             fontSize={gui.menuFontSize}
           />
         </Group>
-      )}
       <Group>
         {[{name: "Reset Workspace", func: props.clearNode}, {name: "Open Workspace"}, {name: "Save Workspace"}].map((u, i) =>
           <MakeMenuButton

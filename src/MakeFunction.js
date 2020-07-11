@@ -2,6 +2,7 @@ import { Rect, Group, Text } from "react-konva";
 import gui from "./mistgui-globals";
 import React, { useState } from "react";
 import Konva from "konva";
+import { Spring, animated } from 'react-spring/renderprops-konva';
 
 export var funcGroup = function makeFunctionGroup(addNode, funName, x, y, vis) {
   function handleDragStart(e) {
@@ -40,7 +41,7 @@ export var funcGroup = function makeFunctionGroup(addNode, funName, x, y, vis) {
       prefix={gui.functions[funName].prefix}
       separator={gui.functions[funName].separator}
       renderFunction={null}
-      visible={vis}
+      visible={true}
       renderLayer={null}
       scaleX={1}
       scaleY={1}
@@ -48,9 +49,13 @@ export var funcGroup = function makeFunctionGroup(addNode, funName, x, y, vis) {
       onDragStart = {handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <Rect
+    <Spring native 
+    from = {{x: vis? -300 : gui.functionHalfStrokeWidth, scaleX : vis? 0 : 1, scaleY : vis? 0:1}}
+    to = {{x : vis? gui.functionHalfStrokeWidth : -300, scaleX : vis? 1:0, scaleY : vis? 1:0}}>
+      {props => (<animated.Rect
+        {...props}
         name={funName}
-        x={gui.functionHalfStrokeWidth}
+        //x={gui.functionHalfStrokeWidth}
         y={gui.functionHalfStrokeWidth}
         width={gui.functionRectSideLength}
         height={gui.functionRectSideLength}
@@ -58,19 +63,22 @@ export var funcGroup = function makeFunctionGroup(addNode, funName, x, y, vis) {
         lineJoin={"round"}
         stroke={gui.functions[funName].color}
         strokeWidth={gui.functionStrokeWidth}
-      />
-
-      <Text
+      />)}
+      </Spring>
+      <Spring native from = {{x : vis? -300 : 0, fontSize : vis? 0 : gui.nodeFontSize}}
+      to = {{x : vis? 0 : -300, fontSize : vis? gui.nodeFontSize : 0}}>
+      {props => (<animated.Text
+        {...props}
         text={gui.functions[funName].rep}
         fontFamily={gui.globalFont}
         fill={"black"}
-        fontSize={gui.nodeFontSize}
-        x={0}
+        //fontSize={gui.nodeFontSize}
+        //x={0}
         y={gui.functionTotalSideLength / 2 - gui.functionHalfStrokeWidth}
         width={gui.functionTotalSideLength}
         align={"center"}
-      />
-
+      />)}
+      </Spring>
       <Rect
         name={"imageBox"}
         x={gui.functionRectSideLength + gui.functionImageBoxOffset}
