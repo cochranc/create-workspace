@@ -84,7 +84,7 @@ function Menu(props) {
     <Group width={window.innerWidth} height={gui.menuHeight}>
       <Rect
         width={window.innerWidth} height={gui.menuHeight}
-        fill={'#616dBe'} shadowColor={'black'} shadowBlur={5}
+        fill={'#EEF0FF'} shadowColor={'black'} shadowBlur={5}
       />
       {/*<Line
         points={[0, gui.menuHeight, window.innerWidth, gui.menuHeight]}

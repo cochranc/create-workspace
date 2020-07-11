@@ -163,7 +163,7 @@ function FunNode(props) {
             <Text
                 text={rep}
                 fontFamily={gui.globalFont}
-                fill={'black'}
+                fill={'white'}
                 fontSize={gui.nodeFontSize}
                 x={0}
                 y={(props.numOutlets <= 3)

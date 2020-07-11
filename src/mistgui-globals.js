@@ -17,17 +17,17 @@ var functionTotalSideLength = width / 20;
 var functionRectSideLength = functionTotalSideLength - functionStrokeWidth;
 var functionColor = '#71d9a9';
 var functionColorLight = '#C6F1ED';
-var functionMultColor = '#efee9d';
-var functionSingleColor = '#77C9E2';
-var functionRGBcolor = '#AE88D6';
+var functionMultColor = '#C80442';
+var functionSingleColor = '#A10235';
+var functionRGBcolor = '#6E0E2C';
 
 var valueSideLength = functionTotalSideLength / 1.8; //1.414;
 var valueMenuColor = '#ffa931';
 var valueMenuColorLight = '#FDE6DD';
-var valueXYColor = '#EFDC5C';
-var valueTimeColor = '#FD9E54'
-var valueMouseColor = '#E46868';
-var valueConstantColor = '#F17C9D';
+var valueXYColor = '#ECDE1B';
+var valueTimeColor = '#E2C520'
+var valueMouseColor = '#DDB822';
+var valueConstantColor = '#D8AB24';
 
 var menuFontSize = width/75; //12 when width = 900
 var nodeFontSize = width / 56.25; //16 when width = 900

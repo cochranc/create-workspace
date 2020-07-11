@@ -71,7 +71,7 @@ export var funcGroup = function makeFunctionGroup(addNode, funName, x, y, vis) {
         {...props}
         text={gui.functions[funName].rep}
         fontFamily={gui.globalFont}
-        fill={"black"}
+        fill={"white"}
         //fontSize={gui.nodeFontSize}
         //x={0}
         y={gui.functionTotalSideLength / 2 - gui.functionHalfStrokeWidth}
