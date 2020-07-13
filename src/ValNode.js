@@ -57,6 +57,25 @@ function ValNode(props) {
     return (
         <Group
             draggable
+            dragBoundFunc={function (pos) {
+                if (pos.x < 0 - gui.functionStrokeWidth) {
+                  pos.x = 0;
+                }
+                if (pos.x > window.innerWidth - gui.functionTotalSideLength - gui.functionStrokeWidth) {
+                  pos.x = window.innerWidth - gui.functionTotalSideLength;
+                }
+                if (pos.y < gui.menuHeight) {
+                  pos.y = gui.menuHeight;
+                }
+                if (
+                  pos.y >
+                  window.innerHeight - gui.funBarHeight - gui.functionTotalSideLength
+                ) {
+                  pos.y =
+                    window.innerHeight - gui.funBarHeight - gui.functionTotalSideLength;
+                }
+                return pos;
+              }}
             onDragStart={handleDragStart} onDragEnd={handleDragEnd}
             onDragMove={handleDrag} onClick={handleClick}
             onDblClick={handleDblClick}

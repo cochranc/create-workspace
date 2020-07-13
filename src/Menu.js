@@ -214,7 +214,7 @@ function Menu(props) {
           />
         </Group>
       <Group>
-        {[{name: "Reset Workspace", func: props.clearNode}, {name: "Open Workspace"}, {name: "Save Workspace"}].map((u, i) =>
+        {[{name: "Reset Workspace", func: props.clearWorkspace}, {name: "Open Workspace"}, {name: "Save Workspace"}].map((u, i) =>
           <MakeMenuButton
             text={u.name}
             x={0}//gui.menuOffset}
