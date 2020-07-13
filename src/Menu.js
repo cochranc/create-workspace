@@ -84,7 +84,7 @@ function Menu(props) {
     <Group width={window.innerWidth} height={gui.menuHeight}>
       <Rect
         width={window.innerWidth} height={gui.menuHeight}
-        fill={'#EEF0FF'} shadowColor={'black'} shadowBlur={5}
+        fill={props.bgColor} shadowColor={'black'} shadowBlur={5}
       />
       {/*<Line
         points={[0, gui.menuHeight, window.innerWidth, gui.menuHeight]}
@@ -220,6 +220,7 @@ function Menu(props) {
             x={0}//gui.menuOffset}
             y={(i+1)*gui.menuOffset + i*gui.menuControlHeight}
             handleClick={u.func}
+            buttonColor = {props.wsButtonColor}
           />
         )}
       </Group>

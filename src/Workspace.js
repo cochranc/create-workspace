@@ -47,7 +47,7 @@ export default function Workspace(props) {
  const [currText, setCurrText] = useState();
  const [layouts, setLayouts] = useState([layout1]);
  
- const themes = ['classic', 'dusk'];
+ const themes = ['classic', 'dusk', 'dark'];
  const [themeIndex, setThemeIndex] = useState(0);
  const [theme, setTheme] = useState('dusk');
 
@@ -418,7 +418,8 @@ export default function Workspace(props) {
             width={width}
             height={height-gui.menuHeight}
             fill={(theme === 'classic') && colors.background1 ||
-            (theme === 'dusk') && colors.background2}
+            (theme === 'dusk') && colors.background2 || 
+            (theme === 'dark') && colors.background3}
             />
             {tempLine &&
             <DrawArrow
@@ -427,18 +428,22 @@ export default function Workspace(props) {
             sinkX={mousePosition.x}
             sinkY={mousePosition.y}
             fill={(theme === 'classic') && colors.lineFill1 ||
-            (theme === 'dusk') && colors.lineFill2}
+            (theme === 'dusk') && colors.lineFill2 ||
+            (theme === 'dark') && colors.lineFill3}
             />
             }
             </Group>
             <Menu
             addNode={pushNode} clearWorkspace={clearWorkspace}
             bgColor={(theme === 'classic') && colors.menuBg1 ||
-            (theme === 'dusk') && colors.menuBg2}
+            (theme === 'dusk') && colors.menuBg2 || 
+            (theme === 'dark') && colors.menuBg3}
             wsButtonColor={(theme === 'classic') && colors.wsButtonColor1 ||
-            (theme === 'dusk') && colors.wsButtonColor2}
+            (theme === 'dusk') && colors.wsButtonColor2 || 
+            (theme === 'dark') && colors.wsButtonColor3}
             valueMenuColor={(theme === 'classic') && colors.valueMenuColor1 ||
-            (theme === 'dusk') && colors.valueMenuColor2}
+            (theme === 'dusk') && colors.valueMenuColor2 || 
+            (theme === 'dark') && colors.valueMenuColor3}
             />
             {nodes.length !== 0 && lines.map((line, index) => line &&
             <DrawArrow
@@ -454,9 +459,11 @@ export default function Workspace(props) {
             nodes[line.sinkIndex].y + line.outletIndex * gui.outletYOffset + 17}
             removeLine={removeLine}
             fill={(theme === 'classic') && colors.lineFill1 ||
-            (theme === 'dusk') && colors.lineFill2}
+            (theme === 'dusk') && colors.lineFill2 || 
+            (theme === 'dark') && colors.lineFill3}
             hoverShadowColor={(theme === 'classic') && colors.hoverShadowColor1 ||
-            (theme === 'dusk') && colors.hoverShadowColor2}
+            (theme === 'dusk') && colors.hoverShadowColor2 ||
+            (theme === 'dark') && colors.hoverShadowColor3}
             />
             )}
             {nodes.map((node, index) =>
@@ -494,7 +501,8 @@ export default function Workspace(props) {
             <FunBar
             text={currText}
             bg={(theme === 'classic') && colors.funBarBg1 ||
-            (theme === 'dusk') && colors.funBarBg2}
+            (theme === 'dusk') && colors.funBarBg2 ||
+            (theme === 'dark') && colors.funBarBg3}
             onClick={() => {
             var i = (themeIndex + 1) % themes.length;
             setThemeIndex(i);
@@ -505,7 +513,7 @@ export default function Workspace(props) {
             x={10} y={130}
             width={200} height={50}
             text={"CHANGE THEME"}
-            fill={'black'}
+            fill={(theme === 'dark')? 'white' : 'black'}
             fontSize={14}
             onClick={() => {
             var i = (themeIndex + 1) % themes.length;

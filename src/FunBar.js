@@ -17,6 +17,7 @@ function FunBar(props) {
 
     const [imageButtonClicked, setImageButtonClicked] = useState(false);
     const [imageButtonHovered, setImageButtonHovered] = useState(false);
+    const [functionButtonHovered, setFunctionButtonHovered] = useState(false)
     
     
     return (
@@ -29,7 +30,7 @@ function FunBar(props) {
                 y={0}
                 width={gui.funBarWidth}
                 height={gui.funBarHeight}
-                fill={gui.funBarBackgroundColor}
+                fill={props.bg}
             />
             <Rect
                 x={gui.funBarOffset}
@@ -61,8 +62,8 @@ function FunBar(props) {
                 y={gui.funBarOffset}
             >
                 <Spring native
-                    from={{fill: !imageButtonHovered ? 'white' : '#f37121'}}
-                    to={{fill: imageButtonHovered ? 'white' : '#f37121'}}>
+                    from={{fill: !functionButtonHovered ? 'white' : '#f37121'}}
+                    to={{fill: functionButtonHovered ? 'white' : '#f37121'}}>
                     {props => (<animated.Rect
                         {...props}
                         x={0}
@@ -80,10 +81,10 @@ function FunBar(props) {
                     width={gui.funBarIconTextWidth}
                     height={gui.funBarTextAreaHeight}
                     align={'center'}
-                    fill={!imageButtonHovered ? 'white' : 'grey'}
+                    fill={!functionButtonHovered ? 'white' : 'grey'}
                     fontSize={gui.funBarFontSize}
-                    onMouseOver={()=>{setImageButtonHovered(true)}}
-                    onMouseOut={()=>{setImageButtonHovered(false)}}
+                    onMouseOver={()=>{setFunctionButtonHovered(true)}}
+                    onMouseOut={()=>{setFunctionButtonHovered(false)}}
                 />
         </Group>
         <Group
@@ -102,6 +103,7 @@ function FunBar(props) {
                 shadowOffsetX={1}
                 shadowOffsetY={1}
                 shadowColor={'black'}
+                cornerRadius = {8}
             />
             {imageButtonClicked //temp; remove ! later
                 ? <Portal>
@@ -181,13 +183,15 @@ function FunBar(props) {
                 y={gui.funBarOffset}
                 width={gui.funBarIconTextWidth}
                 align={'center'}
-                fill={props.text ? 'black' : 'gray'}
+                fill={imageButtonHovered ? 'gray' : 'white'}
                 fontSize={gui.funBarFontSize}
                 onClick={() => {
                     if(props.text) {
                         setImageButtonClicked(true);
                     }
                 }}
+                onMouseOver = {() => {setImageButtonHovered(true)}}
+                onMouseOut = {() => {setImageButtonHovered(false)}}
                 />}
         </Group>
     </Group>
