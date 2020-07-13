@@ -25,7 +25,9 @@ export var funcGroup = function makeFunctionGroup(addNode, funName, x, y, vis) {
       shadowOffsetX: 5,
       shadowOffsetY: 5
     });
-    addNode('fun', funName, e.currentTarget.x(), e.currentTarget.y());
+    if(e.currentTarget.y() > gui.menuHeight) {
+      addNode('fun', funName, e.currentTarget.x(), e.currentTarget.y());
+    }
   }
 
   return (
@@ -40,22 +42,36 @@ export var funcGroup = function makeFunctionGroup(addNode, funName, x, y, vis) {
       rep={gui.functions[funName].rep}
       prefix={gui.functions[funName].prefix}
       separator={gui.functions[funName].separator}
-      renderFunction={null}
+      renderFunction={""}
       visible={true}
       renderLayer={null}
       scaleX={1}
       scaleY={1}
       draggable
+      dragBoundFunc={function(pos) {
+        if(pos.x < 0) {
+            pos.x = 0;
+        }
+        if(pos.x > gui.width - gui.functionTotalSideLength) {
+            pos.x = gui.width - gui.functionTotalSideLength;
+        }
+        if(pos.y < gui.menuHeight) {
+            pos.y = gui.menuHeight;
+        }
+        if(pos.y > gui.height - gui.funBarHeight - gui.functionTotalSideLength) {
+            pos.y = gui.height - gui.funBarHeight - gui.functionTotalSideLength;
+        }
+        return pos;
+    }}
       onDragStart = {handleDragStart}
       onDragEnd={handleDragEnd}
     >
     <Spring native 
-    from = {{x: vis? -300 : gui.functionHalfStrokeWidth, scaleX : vis? 0 : 1, scaleY : vis? 0:1}}
+    from = {{x: -300, scaleX : 0, scaleY : 0}}
     to = {{x : vis? gui.functionHalfStrokeWidth : -300, scaleX : vis? 1:0, scaleY : vis? 1:0}}>
       {props => (<animated.Rect
         {...props}
         name={funName}
-        //x={gui.functionHalfStrokeWidth}
         y={gui.functionHalfStrokeWidth}
         width={gui.functionRectSideLength}
         height={gui.functionRectSideLength}
@@ -65,7 +81,7 @@ export var funcGroup = function makeFunctionGroup(addNode, funName, x, y, vis) {
         strokeWidth={gui.functionStrokeWidth}
       />)}
       </Spring>
-      <Spring native from = {{x : vis? -300 : 0, fontSize : vis? 0 : gui.nodeFontSize}}
+      <Spring native from = {{x : -300, fontSize : 0}}
       to = {{x : vis? 0 : -300, fontSize : vis? gui.nodeFontSize : 0}}>
       {props => (<animated.Text
         {...props}

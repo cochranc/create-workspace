@@ -15,7 +15,7 @@ function DrawArrow(props) {
       x={props.sourceX + (props.sinkX - props.sourceX) * (3/5) - 7}
       y={props.sourceY + (props.sinkY - props.sourceY) * (3/5) - 7}
       width={14} height={14}
-      shadowColor={trashHovered ? "red" : "cyan"}
+      shadowColor={trashHovered ? "red" : props.hoverShadowColor}
       shadowBlur={5}
       visible={hovered}
       onMouseEnter={() => {
@@ -47,8 +47,8 @@ function DrawArrow(props) {
         ]}
         pointerLength={0}
         pointerWidth={0}
-        stroke={"black"}
-        shadowColor={trashHovered ? "red" : "cyan"}
+        stroke={props.fill}
+        shadowColor={trashHovered ? "red" : props.hoverShadowColor}
         shadowBlur={5}
         shadowEnabled={hovered}
         strokeWidth={3}
@@ -58,35 +58,3 @@ function DrawArrow(props) {
   )
 }
 export default DrawArrow
-
-
-
-/*   handleMouseDown() {
-
-    setIsDrawing(true);
-
-    // TODO: improve
-    const stage = this.arrow.parent.parent;
-    this.lastPointerPosition = stage.getPointerPosition();
-
-
-    this.setState({
-      posX: this.lastPointerPosition.x,
-      poxY: this.lastPointerPosition.y
-    });
-  };
-
-  handleMouseUp = () => {
-    this.setState({ isDrawing: false });
-  };
-
-  handleMouseMove = () => {
-    if (this.state.isDrawing) {
-      const stage = this.arrow.parent.parent;
-      this.lastPointerPosition = stage.getPointerPosition();
-      var pos = stage.getPointerPosition();
-      var oldPoints = this.arrow.points();
-      this.arrow.points([oldPoints[0], oldPoints[1], pos.x, pos.y]);
-      this.arrow.getLayer().draw();
-    }
-  }; */

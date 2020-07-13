@@ -22,12 +22,14 @@ var functionSingleColor = '#77C9E2';
 var functionRGBcolor = '#AE88D6';
 
 var valueSideLength = functionTotalSideLength / 1.8; //1.414;
+var valueTotalSideLength = valueSideLength * 1.41;
 var valueMenuColor = '#F2937C';
 var valueMenuColorLight = '#FDE6DD';
 var valueXYColor = '#EFDC5C';
 var valueTimeColor = '#FD9E54'
 var valueMouseColor = '#E46868';
 var valueConstantColor = '#F17C9D';
+var valueRectOffset = valueTotalSideLength / 4;
 
 var menuFontSize = width/75; //12 when width = 900
 var nodeFontSize = width / 56.25; //16 when width = 900
@@ -220,8 +222,8 @@ export {width, height}
 export default {width, height, globalFont, functionFont, currentWorkspace, functionStrokeWidth,
     functionHalfStrokeWidth, functionTotalSideLength, functionRectSideLength,
     functionColor, functionColorLight, functionMultColor, functionSingleColor,
-    functionRGBcolor, valueSideLength, valueMenuColor, valueMenuColorLight, valueXYColor,
-    valueTimeColor, valueMouseColor, valueConstantColor, menuFontSize, nodeFontSize,
+    functionRGBcolor, valueTotalSideLength, valueSideLength, valueMenuColor, valueMenuColorLight, valueXYColor,
+    valueTimeColor, valueMouseColor, valueConstantColor, valueRectOffset, menuFontSize, nodeFontSize,
     globalScale, funNames, functions, valNames, values, imageBoxSideLength, imageBoxColor,
     functionImageBoxOffset, valueImageBoxOffset, renderSideLength, editableTextWidth,
     editableTextHeight, editableTextFont, variableColor, variableStrokeColor, variableRadius,

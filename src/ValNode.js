@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { Rect, Group, Text, Shape } from 'react-konva';
+import { Rect, Group, Text, Shape, Image } from 'react-konva';
 import Konva from 'konva';
 import Portal from './Portal';
 import gui from './mistgui-globals.js';
+import valueNodeGlobals from './globals-nodes-values';
 import MISTImage from './MISTImage';
+import useImage from 'use-image';
 
 /**
  * 
@@ -19,6 +21,29 @@ function ValNode(props) {
     const renderFunction = gui.values[name].rep;
     const [showImage, setShowImage] = useState(false);
     const numOutlets = 0;
+    const [hovered, setHovered] = useState(false);
+    const [trashHovered, setTrashHovered] = useState(false);
+    const [image] = useImage(require('./trash.png'));
+    
+    function Trashcan() {
+        return <Image
+          image={image}
+          x={0}//{60}
+          y={0}//-5}
+          width={14} height={14}
+          shadowColor={trashHovered ? "red" : "cyan"}
+          shadowBlur={5}
+          visible={hovered}
+          onMouseEnter={() => {
+            setTrashHovered(true);
+          }}
+          onMouseLeave={() => {
+            setTrashHovered(false);
+            setHovered(false);
+          }}
+          onClick={() => props.removeNode(props.index)}
+        />;
+      }
 
     function handleDragStart(e) {
         e.target.setAttrs({
@@ -56,37 +81,59 @@ function ValNode(props) {
 
     return (
         <Group
+            x={x}
+            y={y}
             draggable
+            dragBoundFunc={function(pos) {
+                if(pos.x < 0) {
+                    pos.x = 0;
+                }
+                if(pos.x > gui.width - gui.functionRectSideLength) {
+                    pos.x = gui.width - gui.functionRectSideLength;
+                }
+                if(pos.y < 0) {
+                    pos.y = 0;
+                }
+                if(pos.y > gui.width - gui.functionRectSideLength) {
+                    pos.y = gui.width - gui.functionRectSideLength;
+                }
+                return pos;
+            }}
             onDragStart={handleDragStart} onDragEnd={handleDragEnd}
             onDragMove={handleDrag} onClick={handleClick}
             onDblClick={handleDblClick}
-            x={x}
-            y={y}
+            onMouseEnter={(e) => {
+                setHovered(true);
+            }}
+            onMouseLeave={(e) => {
+                setHovered(false);
+            }}
         >
             <Rect
-                x={gui.functionRectSideLength/2}
+                x={valueNodeGlobals.rectX}
                 y={0}
-                width={gui.valueSideLength}
-                height={gui.valueSideLength}
+                width={valueNodeGlobals.sideLength}
+                height={valueNodeGlobals.sideLength}
                 fill={gui.values[name].color}
                 lineJoin={'round'}
                 rotation={45}
                 stroke={gui.values[name].color}
                 strokeWidth={gui.functionStrokeWidth}
-                shadowColor={'gray'}
-                shadowBlur = {2}
-                shadowOffsetX={1}
-                shadowOffsetY={1}
-                _useStrictMode
+                shadowEnabled={hovered}
+                shadowColor={trashHovered ? "red" : "cyan"}
+                shadowBlur = {3}
+                shadowOffsetX={!hovered ? 1 : 0}
+                shadowOffsetY={!hovered ? 1 : 0}
             />
+            <Trashcan/>
             <Text
                 text={rep}
                 fontFamily={gui.globalFont}
                 fill={'black'}
                 fontSize={gui.nodeFontSize}
                 x={0}
-                y={gui.valueSideLength/2.2}
-                width={gui.functionRectSideLength}
+                y={valueNodeGlobals.width / 2 - gui.functionHalfStrokeWidth}
+                width={valueNodeGlobals.width}
                 align={'center'}
                 _useStrictMode
             />
@@ -94,20 +141,20 @@ function ValNode(props) {
                 ? <Portal>
                     <MISTImage
                         onClick={() => setShowImage(!showImage)}
-                        x={x + gui.valueImageBoxOffset}
-                        y={y + gui.valueImageBoxOffset}
-                        width={gui.renderSideLength}
-                        height={gui.renderSideLength}
+                        x={x + valueNodeGlobals.imageBoxOffset}
+                        y={y + valueNodeGlobals.mageBoxOffset}
+                        width={valueNodeGlobals.renderSideLength}
+                        height={valueNodeGlobals.renderSideLength}
                         renderFunction={renderFunction}
                     />
                 </Portal>
                 : <Rect
                     onClick={() => setShowImage(!showImage)}
                     name={'imageBox'}
-                    x={gui.valueImageBoxOffset}
-                    y={gui.valueImageBoxOffset}
-                    width={gui.imageBoxSideLength}
-                    height={gui.imageBoxSideLength}
+                    x={valueNodeGlobals.imageBoxOffset}
+                    y={valueNodeGlobals.imageBoxOffset}
+                    width={valueNodeGlobals.imageBoxSideLength}
+                    height={valueNodeGlobals.imageBoxSideLength}
                     fill={gui.imageBoxColor}
                     expanded={false}
                     shadowColor={"gray"}
@@ -116,26 +163,6 @@ function ValNode(props) {
                     shadowOffsetY={1}
                 />
             }
-            {[...Array(numOutlets)].map((u, i) =>
-                <Shape
-                    sceneFunc={function (context) {
-                    context.beginPath();
-                    context.moveTo(0, 0);
-                    context.bezierCurveTo(-gui.bezPoint, -gui.bezPoint, -gui.bezPoint, gui.bezPoint, 0, 0);
-                    context.closePath();
-                    context.fillStrokeShape(this);
-                    }}
-                    name = {'outlet' + (i+1)}
-                    x = {gui.outletXOffset}
-                    y = {(i+1) * gui.outletYOffset + gui.functionHalfStrokeWidth}
-                    fill={gui.outletColor}
-                    opacity={1}
-                    stroke='black'
-                    strokeWidth={1}
-                    lineIn={null}
-                    outletIndex={i}
-                />
-            )}
         </Group>
     );
     
