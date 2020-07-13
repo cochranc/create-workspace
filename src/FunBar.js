@@ -29,7 +29,7 @@ function FunBar(props) {
                 y={0}
                 width={gui.funBarWidth}
                 height={gui.funBarHeight}
-                fill={gui.funBarBackgroundColor}
+                fill={props.bg}
             />
             <Rect
                 x={gui.funBarOffset}

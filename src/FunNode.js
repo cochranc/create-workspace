@@ -22,20 +22,32 @@ function FunNode(props) {
     const rep = gui.functions[name].rep;
     const prefix = gui.functions[name].prefix;
     const separator = gui.functions[name].separator;
-    const renderFunction = props.findRF(index);
+    const renderFunction = props.renderFunction; //props.findRF(index); 
     const numOutlets = props.numOutlets;
     const [showImage, setShowImage] = useState(false);
-    const [image, setImage] = useState(null);
-    const [mainRectState, setMainRectState] = useState('none');
-    const Trashcan = () => {
-        const [image] = useImage(require('./x.png'));
-        return <Image image={image}
-            x={50} y={-7} width={20} height={20}
-            visible={mainRectState==='hover' || mainRectState==='trash'}
-            onMouseOver={() => setMainRectState('trash')}
-            onMouseOut={() => setMainRectState('none')}
+    const [hovered, setHovered] = useState(false);
+    const [trashHovered, setTrashHovered] = useState(false);
+    const [image] = useImage(require('./trash.png'));
+    
+    function Trashcan() {
+        return <Image
+          image={image}
+          x={60}
+          y={-5}
+          width={14} height={14}
+          shadowColor={trashHovered ? "red" : "cyan"}
+          shadowBlur={5}
+          visible={hovered}
+          onMouseEnter={() => {
+            setTrashHovered(true);
+          }}
+          onMouseLeave={() => {
+            setTrashHovered(false);
+            setHovered(false);
+          }}
+          onClick={() => props.removeNode(props.index)}
         />;
-    }
+      }
 
     function handleDragStart(e) {
         e.target.setAttrs({
@@ -61,13 +73,6 @@ function FunNode(props) {
 
     function handleDrag(e) {
         props.handler(index, e.currentTarget.x(), e.currentTarget.y())
-    }
-
-    function handleClick(e) {
-        if(e.target.attrs.name) {
-            props.outletClicked(index, parseInt(e.target.attrs.name.substring(6))-1);
-        }
-        else { props.funClicked(index); }
     }
 
     function handleDblClick(e) {
@@ -98,82 +103,74 @@ function FunNode(props) {
 
     return (
         <Group
-            draggable
-            dragBoundFunc={function(pos) {
-                if(pos.x < 10) {
-                    return {y:pos.y, x:0};
-                }
-                else if(pos.x > window.innerWidth - 10) {
-                    return {y:pos.y, x:window.innerWidth}
-                }
-                else if(pos.y < 10) {
-                    return {x:pos.x, y:0}
-                }
-                else if(pos.y > window.innerHeight - 10) {
-                    return {x:pos.x, y:window.innerHeight}
-                }
-                else { return pos }
-            }}
-            onDragStart={handleDragStart} onDragEnd={handleDragEnd}
-            onDragMove={handleDrag} onClick={handleClick}
-            onDblClick={handleDblClick}
-            onMouseOver={(e) => {
-                if(e.target.attrs.name && e.target.attrs.name.substring(0, 1) === "o") {
-                    outletHovered(e);
-                }
-                if(e.target.attrs.name && e.target.attrs.name.substring(0, 1) === "m") {
-                    setMainRectState('hover');
-                }
-            }}
-            onMouseOut={(e) => {
-                if(e.target.attrs.name && e.target.attrs.name.substring(0, 1) === "o") {
-                    outletExited(e);
-                }
-                if(e.target.attrs.name && e.target.attrs.name.substring(0, 1) === "m") {
-                    setMainRectState('none');
-                }
-            }}
             x={x}
             y={y}
-        >
-            <Rect
-                name={"mainRect"}
-                x={gui.functionHalfStrokeWidth}
-                y={gui.functionHalfStrokeWidth}
-                width={gui.functionRectSideLength}
-                height={(props.numOutlets <= 3)
-                    ? gui.functionRectSideLength
-                    : gui.functionRectSideLength +
-                    (props.numOutlets - 3) * gui.outletYOffset}
-                fill={gui.functions[name].color}
-                lineJoin={'round'}
-                stroke={gui.functions[name].color}
-                strokeWidth={gui.functionStrokeWidth}
-                shadowColor={(mainRectState === 'none') && 'gray' || 
-                    (mainRectState === 'hover') && 'cyan' ||
-                    (mainRectState === 'clicked') && 'cyan' ||
-                    (mainRectState === 'trash') && 'red'
+            draggable
+            dragBoundFunc={function(pos) {
+                if(pos.x < 0) {
+                    pos.x = 0;
                 }
-                shadowBlur = {mainRectState === 'hover' ? 5 : 2}
-                shadowOffsetX={mainRectState === 'none' ? 1 : 0}
-                shadowOffsetY={mainRectState === 'none' ? 1 : 0}
-                _useStrictMode
-            />
-            {/*<Trashcan/>*/}
-            <Text
-                text={rep}
-                fontFamily={gui.globalFont}
-                fill={'black'}
-                fontSize={gui.nodeFontSize}
-                x={0}
-                y={(props.numOutlets <= 3)
-                    ? gui.functionTotalSideLength / 2 - gui.functionHalfStrokeWidth
-                    : (gui.functionTotalSideLength + (props.numOutlets - 3) * gui.outletYOffset) / 2 -
-                    gui.functionHalfStrokeWidth}
-                width={gui.functionTotalSideLength}
-                align={'center'}
-                _useStrictMode
-            />
+                if(pos.x > gui.width - gui.functionTotalSideLength) {
+                    pos.x = gui.width - gui.functionTotalSideLength;
+                }
+                if(pos.y < gui.menuHeight) {
+                    pos.y = gui.menuHeight;
+                }
+                if(pos.y > gui.height - gui.funBarHeight - gui.functionTotalSideLength) {
+                    pos.y = gui.height - gui.funBarHeight - gui.functionTotalSideLength;
+                }
+                return pos;
+            }}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+            onDragMove={handleDrag}
+            onDblClick={handleDblClick}
+            onMouseEnter={(e) => {
+                setHovered(true);
+            }}
+            onMouseLeave={(e) => {
+                setHovered(false);
+            }}
+        >
+            <Group onClick={() => {
+                console.log("onclick");
+                props.funClicked(index);
+            }}>
+                <Rect
+                    name={"mainRect"}
+                    x={gui.functionHalfStrokeWidth}
+                    y={gui.functionHalfStrokeWidth}
+                    width={gui.functionRectSideLength}
+                    height={(props.numOutlets <= 3)
+                        ? gui.functionRectSideLength
+                        : gui.functionRectSideLength +
+                        (props.numOutlets - 3) * gui.outletYOffset}
+                    fill={gui.functions[name].color}
+                    lineJoin={'round'}
+                    stroke={gui.functions[name].color}
+                    strokeWidth={gui.functionStrokeWidth}
+                    shadowEnabled={hovered}
+                    shadowColor={trashHovered ? "red" : "cyan"}
+                    shadowBlur = {3}
+                    shadowOffsetX={!hovered ? 1 : 0}
+                    shadowOffsetY={!hovered ? 1 : 0}
+                />
+                <Text
+                    text={rep}
+                    fontFamily={gui.globalFont}
+                    fill={'black'}
+                    fontSize={gui.nodeFontSize}
+                    x={0}
+                    y={(props.numOutlets <= 3)
+                        ? gui.functionTotalSideLength / 2 - gui.functionHalfStrokeWidth
+                        : (gui.functionTotalSideLength + (props.numOutlets - 3) * gui.outletYOffset) / 2 -
+                        gui.functionHalfStrokeWidth}
+                    width={gui.functionTotalSideLength}
+                    align={'center'}
+                    _useStrictMode
+                />
+            </Group>
+            <Trashcan/>
             {showImage 
                 ? <Portal>
                     <MISTImage
@@ -221,12 +218,21 @@ function FunNode(props) {
                     fillRadialGradientEndPoint={{ x: -15, y: -5 }}
                     fillRadialGradientEndRadius={15}
                     fillRadialGradientColorStops={[0, u, 1, 'dark'+u]}
-                    //fill={u}
-                    shadowColor={"gray"}
-                    shadowBlur={2}
-                    opacity={1}
                     lineIn={null}
                     outletIndex={i}
+                    onMouseOver={(e) => {
+                        if(e.target.attrs.name && e.target.attrs.name.substring(0, 1) === "o") {
+                            outletHovered(e);
+                        }
+                    }}
+                    onMouseOut={(e) => {
+                        if(e.target.attrs.name && e.target.attrs.name.substring(0, 1) === "o") {
+                            outletExited(e);
+                        }
+                    }}
+                    onClick={(e) => {
+                        props.outletClicked(index, parseInt(e.target.attrs.name.substring(6))-1);
+                    }}
                 />
             )
             : [...Array(numOutlets)].map((u, i) =>
@@ -246,12 +252,22 @@ function FunNode(props) {
                     fillRadialGradientEndPoint={{ x: -15, y: -5 }}
                     fillRadialGradientEndRadius={15}
                     fillRadialGradientColorStops={[0, gui.outletColor, 1, gui.outletColor2]}
-                    //fill={gui.outletColor}
-                    //shadowColor={"gray"}
-                    //shadowBlur={2}
                     opacity={1}
                     lineIn={null}
                     outletIndex={i}
+                    onMouseOver={(e) => {
+                        if(e.target.attrs.name && e.target.attrs.name.substring(0, 1) === "o") {
+                            outletHovered(e);
+                        }
+                    }}
+                    onMouseOut={(e) => {
+                        if(e.target.attrs.name && e.target.attrs.name.substring(0, 1) === "o") {
+                            outletExited(e);
+                        }
+                    }}
+                    onClick={(e) => {
+                        props.outletClicked(index, parseInt(e.target.attrs.name.substring(6))-1);
+                    }}
                 />
             )}
         </Group>

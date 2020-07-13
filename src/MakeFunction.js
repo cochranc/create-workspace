@@ -4,34 +4,17 @@ import React, { useState } from "react";
 import Konva from "konva";
 import { Spring, animated } from 'react-spring/renderprops-konva';
 
-export var funcGroup = function makeFunctionGroup(addNode, funName, x, y, vis) {
-  function handleDragStart(e) {
-    e.target.setAttrs({
-      shadowOffset: {
-        x: 15,
-        y: 15
-      },
-      scaleX: 1.1,
-      scaleY: 1.1
-    });
-  }
+function FuncGroup(props) {
 
-  function handleDragEnd(e) {
-    e.target.to({
-      duration: 0.5,
-      easing: Konva.Easings.ElasticEaseOut,
-      scaleX: 1,
-      scaleY: 1,
-      shadowOffsetX: 5,
-      shadowOffsetY: 5
-    });
-    addNode('fun', funName, e.currentTarget.x(), e.currentTarget.y());
-  }
+  const funName = props.funName;
+  const [x, setX] = useState(props.x - gui.functionHalfStrokeWidth);
+  const [y, setY] = useState(props.y);
+  const vis = props.vis;
 
   return (
     <Group
       name={funName}
-      x={x - gui.functionHalfStrokeWidth}
+      x={x}
       y={y}
       numInputs={0}
       maxInputs={gui.functions[funName].max}
@@ -40,23 +23,45 @@ export var funcGroup = function makeFunctionGroup(addNode, funName, x, y, vis) {
       rep={gui.functions[funName].rep}
       prefix={gui.functions[funName].prefix}
       separator={gui.functions[funName].separator}
-      renderFunction={null}
+      renderFunction={""}
       visible={true}
       renderLayer={null}
       scaleX={1}
       scaleY={1}
       draggable
-      onDragStart = {handleDragStart}
-      onDragEnd={handleDragEnd}
+      onDragStart = {(e)=>{
+        e.target.setAttrs({
+          shadowOffset: {
+            x: 15,
+            y: 15
+          },
+          scaleX: 1.1,
+          scaleY: 1.1
+        });
+      }}
+      onDragEnd={(e)=>{
+        e.target.to({
+          duration: 0.5,
+          easing: Konva.Easings.ElasticEaseOut,
+          scaleX: 1,
+          scaleY: 1,
+          shadowOffsetX: 5,
+          shadowOffsetY: 5
+        });
+        if(e.currentTarget.y() > gui.menuHeight) {
+          props.addNode('fun', funName, e.currentTarget.x(), e.currentTarget.y());
+        }
+        setX(props.x - gui.functionHalfStrokeWidth);
+        setY(props.y);
+      }}
     >
     <Spring native 
-    from = {{x: vis? -300 : gui.functionHalfStrokeWidth, scaleX : vis? 0 : 1, scaleY : vis? 0:1}}
+    from = {{x: -300, scaleX : 0, scaleY : 0}}
     to = {{x : vis? gui.functionHalfStrokeWidth : -300, scaleX : vis? 1:0, scaleY : vis? 1:0}}>
       {props => (<animated.Rect
         {...props}
         name={funName}
-        //x={gui.functionHalfStrokeWidth}
-        y={gui.functionHalfStrokeWidth}
+        y={gui.functionHalfStrokeWidth + 10}
         width={gui.functionRectSideLength}
         height={gui.functionRectSideLength}
         fill={gui.functions[funName].color}
@@ -65,32 +70,20 @@ export var funcGroup = function makeFunctionGroup(addNode, funName, x, y, vis) {
         strokeWidth={gui.functionStrokeWidth}
       />)}
       </Spring>
-      <Spring native from = {{x : vis? -300 : 0, fontSize : vis? 0 : gui.nodeFontSize}}
+      <Spring native from = {{x : -300, fontSize : 0}}
       to = {{x : vis? 0 : -300, fontSize : vis? gui.nodeFontSize : 0}}>
       {props => (<animated.Text
         {...props}
         text={gui.functions[funName].rep}
         fontFamily={gui.globalFont}
         fill={"black"}
-        //fontSize={gui.nodeFontSize}
-        //x={0}
-        y={gui.functionTotalSideLength / 2 - gui.functionHalfStrokeWidth}
+        y={y + gui.functionTotalSideLength / 2 - gui.functionHalfStrokeWidth}
         width={gui.functionTotalSideLength}
         align={"center"}
       />)}
       </Spring>
-      <Rect
-        name={"imageBox"}
-        x={gui.functionRectSideLength + gui.functionImageBoxOffset}
-        y={gui.functionRectSideLength + gui.functionImageBoxOffset}
-        width={gui.imageBoxSideLength}
-        height={gui.imageBoxSideLength}
-        fill={gui.imageBoxColor}
-        stroke={"black"}
-        strokeWidth={0.5}
-        visible={false}
-        expanded={false}
-      />
     </Group>
-  );
-};
+  )
+}
+
+export default FuncGroup;

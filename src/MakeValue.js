@@ -1,10 +1,18 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
 import gui from "./mistgui-globals";
 import { Group, Rect, Text } from "react-konva";
 import Konva from "konva";
 import { Spring, animated } from 'react-spring/renderprops-konva';
 
-export var valGroup = function(addNode,valName, x, y, vis) {
+function ValGroup(props) {
+
+  const valName = props.valName;
+  const x = props.x;
+  const y = props.y;
+  const vis = props.vis;
+
+  console.log("vis:"+vis);
+
   function handleDragStart(e) {
     e.target.setAttrs({
       shadowOffset: {
@@ -25,13 +33,11 @@ export var valGroup = function(addNode,valName, x, y, vis) {
       shadowOffsetX: 5,
       shadowOffsetY: 5
     });
-    addNode('val', valName, e.currentTarget.x(), e.currentTarget.y());
+    props.addNode('val', valName, e.currentTarget.x(), e.currentTarget.y());
   }
   return (
     <Group
       name={valName}
-      x={x}
-      y={y}
       lineOut={[]}
       visible={true}
       renderFunction={gui.values[valName].rep}
@@ -45,18 +51,15 @@ export var valGroup = function(addNode,valName, x, y, vis) {
     >
     <Spring
     native
-    from = {{x :vis? -300 : gui.functionRectSideLength / 2, width : vis? 0 : gui.valueSideLength, height : vis? 0 : gui.valueSideLength}} 
+    from = {{x : -300, y : y, scaleX : 0, scaleY : 0}} 
     to = {{
-      x : vis? gui.functionRectSideLength / 2 : -300,
-      width : vis? gui.valueSideLength : 0,
-      height : vis? gui.valueSideLength : 0 
+      x : vis? gui.functionRectSideLength / 2 : -300, y : y, scaleX : vis? 1:0, scaleY : vis? 1:0
     }}>
       {props => (<animated.Rect
         {...props}
-        //x={gui.functionRectSideLength / 2}
         y={0}
-        //width={gui.valueSideLength}
-        //height={gui.valueSideLength}
+        width={gui.valueSideLength}
+        height={gui.valueSideLength}
         fill={gui.values[valName].color}
         rotation={45}
         name={valName}
@@ -64,7 +67,7 @@ export var valGroup = function(addNode,valName, x, y, vis) {
     </Spring>
     <Spring 
     native
-    from = {{x : vis? -300 : 0, fontSize : vis? 0 : gui.nodeFontSize}} 
+    from = {{x : -300, fontSize : 0}} 
     to = {{
       x : vis? 0:-300,
       fontSize : vis? gui.nodeFontSize : 0
@@ -84,3 +87,5 @@ export var valGroup = function(addNode,valName, x, y, vis) {
     </Group>
   );
 };
+
+export default ValGroup;

@@ -33,8 +33,8 @@ function MakeMenuButton(props) {
 
   return (
     <Group x={props.x} y={props.y} onClick={handleClick} onMouseOver={handleMouse} onMouseOut = {handleMouseOut}>
-      <Spring from={{fill: hovered ? gui.menuControlColor : 'orange'}}
-        to={{fill: hovered ? 'orange' : gui.menuControlColor}}>
+      <Spring from={{fill: props.buttonColor}}
+        to={{fill: hovered ? 'orange' : props.buttonColor}}>
       {props => (<animated.Rect
         {...props}
         x={5}

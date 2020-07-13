@@ -1,101 +1,60 @@
-import React, { Component } from "react";
-import { Line, Group, Text } from "react-konva";
+import React, { useState } from "react";
+import { Line, Group, Text, Image } from "react-konva";
 import gui from './mistgui-globals';
+import useImage from 'use-image';
 
-class DrawArrow extends Component {
-  state = {
-    isDrawing: false,
-    mode: "brush",
-    shadow: false
-  };
+function DrawArrow(props) {
 
-  componentDidMount() {
-    const canvas = document.createElement("canvas");
-    canvas.width = 300;
-    canvas.height = 300;
-    const context = canvas.getContext("2d");
+  const [hovered, setHovered] = useState(false);
+  const [trashHovered, setTrashHovered] = useState(false);
+  const [image] = useImage(require('./trash.png'));
 
-    this.setState({ canvas, context });
+  function Trashcan() {
+    return <Image
+      image={image}
+      x={props.sourceX + (props.sinkX - props.sourceX) * (3/5) - 7}
+      y={props.sourceY + (props.sinkY - props.sourceY) * (3/5) - 7}
+      width={14} height={14}
+      shadowColor={trashHovered ? "red" : props.hoverShadowColor}
+      shadowBlur={5}
+      visible={hovered}
+      onMouseEnter={() => {
+        setTrashHovered(true);
+      }}
+      onMouseLeave={() => {
+        setTrashHovered(false);
+        setHovered(false);
+      }}
+      onClick={() => props.removeLine(props.index)}
+    />;
   }
 
-  handleMouseDown = () => {
-
-    this.setState({ isDrawing: true });
-
-    // TODO: improve
-    const stage = this.arrow.parent.parent;
-    this.lastPointerPosition = stage.getPointerPosition();
-
-    this.setState({
-      posX: this.lastPointerPosition.x,
-      poxY: this.lastPointerPosition.y
-    });
-  };
-
-  handleMouseUp = () => {
-    this.setState({ isDrawing: false });
-  };
-
-  handleMouseMove = () => {
-    if (this.state.isDrawing) {
-      const stage = this.arrow.parent.parent;
-      this.lastPointerPosition = stage.getPointerPosition();
-      var pos = stage.getPointerPosition();
-      var oldPoints = this.arrow.points();
-      this.arrow.points([oldPoints[0], oldPoints[1], pos.x, pos.y]);
-      this.arrow.getLayer().draw();
-    }
-  };
-
-  handleMouseOver = () => {
-    this.setState({shadow: true});
-  }
-
-  handleMouseOut = () => {
-    this.setState({shadow: false});
-  }
-
-  render() {
-    return (
-      <Group>
-        <Line
-          ref={ref => (this.arrow = ref)}
-          points={[
-            this.props.sourceX,
-            this.props.sourceY,
-            this.props.sinkX,
-            this.props.sinkY
-          ]}
-          pointerLength={0}
-          pointerWidth={0}
-          //fill="black"
-          stroke="black"
-          shadowColor={"red"}
-          shadowBlur={5}
-          shadowEnabled={this.state.shadow}
-          strokeWidth={2}
-          //onMouseDown={this.handleMouseDown}
-          //onMouseUp={this.handleMouseUp}
-          onMouseMove={this.handleMouseMove}
-          onMouseOver={this.handleMouseOver}
-          onMouseOut={this.handleMouseOut}
-        />
-        <Text
-          x={this.props.sourceX + (this.props.sinkX - this.props.sourceX) * (2/3)}
-          y={this.props.sourceY + (this.props.sinkY - this.props.sourceY) * (2/3)}
-          text={"del."}
-          fill={"red"}
-          visible={this.state.shadow}
-          shadowColor={"red"}
-          shadowBlur={5}
-          onMouseOver={this.handleMouseOver}
-          onMouseOut={this.handleMouseOut}
-          onClick={() => this.props.removeLine(this.props.index)}
-        />
-      </Group>
-
-    );
-  }
+  return (
+    <Group
+      onMouseEnter={(e) => {
+        setHovered(true);
+      }}
+      onMouseLeave={(e) => {
+        setHovered(false);
+      }}
+    >
+      <Line
+        points={[
+          props.sourceX,
+          props.sourceY,
+          props.sinkX,
+          props.sinkY
+        ]}
+        pointerLength={0}
+        pointerWidth={0}
+        stroke={props.fill}
+        shadowColor={trashHovered ? "red" : props.hoverShadowColor}
+        shadowBlur={5}
+        shadowEnabled={hovered}
+        strokeWidth={3}
+      />
+      <Trashcan/>
+    </Group>
+  )
 }
-
 export default DrawArrow
