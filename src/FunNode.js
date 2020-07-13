@@ -22,20 +22,32 @@ function FunNode(props) {
     const rep = gui.functions[name].rep;
     const prefix = gui.functions[name].prefix;
     const separator = gui.functions[name].separator;
-    const renderFunction = props.findRF(index);
+    const renderFunction = props.renderFunction;
     const numOutlets = props.numOutlets;
     const [showImage, setShowImage] = useState(false);
-    const [image, setImage] = useState(null);
     const [mainRectState, setMainRectState] = useState('none');
-    const Trashcan = () => {
-        const [image] = useImage(require('./x.png'));
-        return <Image image={image}
-            x={50} y={-7} width={20} height={20}
-            visible={mainRectState==='hover' || mainRectState==='trash'}
-            onMouseOver={() => setMainRectState('trash')}
-            onMouseOut={() => setMainRectState('none')}
+    const [hovered, setHovered] = useState(false);
+    const [trashHovered, setTrashHovered] = useState(false);
+    const [image] = useImage(require('./trash.png'));
+    function Trashcan() {
+        return <Image
+        image={image}
+        x={0}//60}
+        y={0}//-5}
+        width={14} height={14}
+        shadowColor={trashHovered ? "red" : "cyan"}
+        shadowBlur={5}
+        visible={hovered}
+        onMouseEnter={() => {
+        setTrashHovered(true);
+        }}
+        onMouseLeave={() => {
+        setTrashHovered(false);
+        setHovered(false);
+        }}
+        onClick={() => props.removeNode(props.index)}
         />;
-    }
+        }
 
     function handleDragStart(e) {
         e.target.setAttrs({
@@ -117,21 +129,11 @@ function FunNode(props) {
             onDragStart={handleDragStart} onDragEnd={handleDragEnd}
             onDragMove={handleDrag} onClick={handleClick}
             onDblClick={handleDblClick}
-            onMouseOver={(e) => {
-                if(e.target.attrs.name && e.target.attrs.name.substring(0, 1) === "o") {
-                    outletHovered(e);
-                }
-                if(e.target.attrs.name && e.target.attrs.name.substring(0, 1) === "m") {
-                    setMainRectState('hover');
-                }
+            onMouseEnter={(e) => {
+                setHovered(true);
             }}
-            onMouseOut={(e) => {
-                if(e.target.attrs.name && e.target.attrs.name.substring(0, 1) === "o") {
-                    outletExited(e);
-                }
-                if(e.target.attrs.name && e.target.attrs.name.substring(0, 1) === "m") {
-                    setMainRectState('none');
-                }
+            onMouseLeave={(e) => {
+                setHovered(false);
             }}
             x={x}
             y={y}
@@ -159,7 +161,7 @@ function FunNode(props) {
                 shadowOffsetY={mainRectState === 'none' ? 1 : 0}
                 _useStrictMode
             />
-            {/*<Trashcan/>*/}
+            <Trashcan/>
             <Text
                 text={rep}
                 fontFamily={gui.globalFont}
@@ -177,7 +179,7 @@ function FunNode(props) {
             {showImage 
                 ? <Portal>
                     <MISTImage
-                        onClick={() => setShowImage(!showImage)}
+                        onClick={() => setShowImage(false)}
                         x={x + gui.functionRectSideLength + gui.functionImageBoxOffset}
                         y={y + gui.functionRectSideLength + gui.functionImageBoxOffset}
                         width={gui.renderSideLength}
@@ -186,7 +188,12 @@ function FunNode(props) {
                     />
                 </Portal>
                 : <Rect
-                    onClick={() => setShowImage(!showImage)}
+                    onClick={() => {
+                        console.log(renderFunction);
+                    if(renderFunction) {
+                        setShowImage(true);
+                    }
+                    }}
                     name={'imageBox'}
                     x={gui.functionRectSideLength + gui.functionImageBoxOffset}
                     y={(props.numOutlets <= 3)
