@@ -61,7 +61,7 @@ export default function Workspace(props) {
   // index of the themes list that is taking effect
   const [themeIndex, setThemeIndex] = useState(0);
 
-  const [theme, setTheme] = useState("dusk");
+  const [theme, setTheme] = useState("classic");
 
   /**
    * Displays a saved layout object.
@@ -578,6 +578,8 @@ export default function Workspace(props) {
               setThemeIndex(i);
               setTheme(themes[i]);
             }}
+            functionBoxBg={theme === 'dark' ? 'darkgray' : 'white'}
+            functionTextColor={theme === 'dark' ? 'black' : 'black'}
           />
           <Text
             x={10}

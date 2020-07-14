@@ -21,20 +21,20 @@ function FunBar(props) {
         height={gui.funBarHeight}
         fill={props.bg}
       />
-      <Rect
+      <Rect // render function background
         x={gui.funBarOffset}
         y={gui.funBarOffset}
         width={gui.funBarTextAreaWidth}
         height={gui.funBarTextAreaHeight}
-        fill={"white"}
+        fill={props.functionBoxBg}
       />
-      <Text
+      <Text // render function display
         text={props.renderFunction.renderFunction}
         x={gui.funBarTextOffset}
         y={gui.funBarTextOffset}
         width={gui.funBarTextAreaWidth - gui.funBarTextOffset}
         height={gui.funBarTextAreaHeight - 2 * gui.funBarOffset}
-        fill={"black"}
+        fill={props.functionTextColor}
         fontFamily={"Courier New"}
         fontSize={gui.funBarDisplayFontSize}
       />
@@ -54,13 +54,15 @@ function FunBar(props) {
         }
         y={gui.funBarOffset}
       >
-        <Spring
+        <Spring // animates function button fill
           native
-          from={{ fill: !functionButtonHovered ? "white" : "#f37121" }}
-          to={{ fill: functionButtonHovered ? "white" : "#f37121" }}
+          from={{ fill: props.renderFunction.isRenderable ? 'orange' : "#f79f6a"}}
+          to={{ fill: props.renderFunction.isRenderable
+            ? (functionButtonHovered ? "white" : 'orange')
+            :  "#f79f6a"}}
         >
           {(props) => (
-            <animated.Rect
+            <animated.Rect // function button
               {...props}
               x={0}
               y={0}
@@ -71,7 +73,7 @@ function FunBar(props) {
             />
           )}
         </Spring>
-        <Text
+        <Text // function button
           text={"Function"}
           x={0}
           y={gui.funBarOffset}
@@ -88,7 +90,7 @@ function FunBar(props) {
           }}
         />
       </Group>
-      <Group
+      <Group // image button
         x={
           gui.funBarTextAreaWidth +
           gui.funBarWidth * (2 / 25) +
@@ -98,19 +100,25 @@ function FunBar(props) {
         }
         y={gui.funBarOffset}
       >
-        <Rect
-          x={0}
-          y={0}
-          width={gui.funBarIconTextWidth}
-          height={gui.funBarTextAreaHeight}
-          fill={gui.valueMenuColorLight}
-          //shadowColor={'black'}
-          shadowBlur={2}
-          shadowOffsetX={1}
-          shadowOffsetY={1}
-          shadowColor={"black"}
-          cornerRadius={8}
-        />
+        <Spring // animates image button fill
+          native
+          from={{ fill: props.renderFunction.isRenderable ? 'orange' : "#f79f6a"}}
+          to={{ fill: props.renderFunction.isRenderable
+            ? (imageButtonHovered ? "white" : 'orange')
+            :  "#f79f6a"}}
+        >
+          {(props) => (
+            <animated.Rect // function button
+              {...props}
+              x={0}
+              y={0}
+              width={gui.funBarIconTextWidth}
+              height={gui.funBarTextAreaHeight}
+              stroke={"#424874"}
+              cornerRadius={8}
+            />
+          )}
+        </Spring>
         {imageButtonClicked ? ( //temp; remove ! later
           <Portal>
             <div
@@ -222,6 +230,7 @@ function FunBar(props) {
             onClick={() => {
               if (props.renderFunction.isRenderable) {
                 setImageButtonClicked(true);
+                setImageButtonHovered(false);
               }
             }}
             onMouseOver={() => {
