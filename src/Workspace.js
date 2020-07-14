@@ -52,6 +52,7 @@ export default function Workspace(props) {
   // index of the node that was double-clicked and has a temporary line coming out of it
   const [newSource, setNewSource] = useState(null);
 
+  // this is necessary for the temporary line to follow the cursor
   const [mouseListenerOn, setMouseListenerOn] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: null, y: null });
 
@@ -64,6 +65,7 @@ export default function Workspace(props) {
     isRenderable: false
   });
 
+  // this isn't neither used yet nor prioritized at the moment
   const [layouts, setLayouts] = useState([layout1]);
 
   // list of theme names
@@ -72,6 +74,7 @@ export default function Workspace(props) {
   // index of the themes list that is taking effect
   const [themeIndex, setThemeIndex] = useState(0);
 
+  // name of the current theme -- TODO: probably redundant
   const [theme, setTheme] = useState("classic");
 
   /**
@@ -172,7 +175,10 @@ export default function Workspace(props) {
       numInputs: 0,
       numOutlets: type === "fun" ? gui.functions[name].min : 0,
       activeOutlets:
-        type === "fun" ? Array(gui.functions[name].min).fill(false) : null,
+        type === "fun"
+           // e.g. if the function is 'add', this will be [false, false]
+          ? Array(gui.functions[name].min).fill(false)
+          : null
     };
     newLst.push(node);
     setNodes(newLst); //Updating the rendered node list with new node
@@ -189,7 +195,7 @@ export default function Workspace(props) {
     newLines.push({ //Pushing new line 
       sourceIndex: source,
       sinkIndex: sink,
-      outletIndex: outletIndex,
+      outletIndex: outletIndex // index of the outlet that the line is sinking into
     });
     console.log("newLines.length:" + newLines.length);
     var newNodes = [...nodes];
@@ -204,10 +210,9 @@ export default function Workspace(props) {
     }
     newNodes[sink].activeOutlets[outletIndex] = lineIndex;
     console.log("outletIndex:" + outletIndex);
-    // waits for setNodes and setLines to take effect
-    fetch(setNodes(newNodes))
-      .then(fetch(setLines(newLines)))
-      .then(setRedoFromIndices([sink]));
+    fetch(setNodes(newNodes)) // waits for setNodes to finish
+      .then(fetch(setLines(newLines))) // waits for setLines to finish
+      .then(setRedoFromIndices([sink])); // this needs to access the newly-update nodes and lines
   }
 
   /**
@@ -226,13 +231,17 @@ export default function Workspace(props) {
         if (typeof lineIndex === "number") {
           const source = newNodes[newLines[lineIndex].sourceIndex];
           // finds and sets the line to false
-          newNodes[newLines[lineIndex].sourceIndex].lineOut[
-            source.lineOut.indexOf(lineIndex)
-          ] = false;
+          newNodes[
+            newLines[lineIndex].sourceIndex // gets the source index of the line
+          ] // gets the source node of the line
+            .lineOut[ // gets the index of the line within the source node's lineIndex array
+              source.lineOut.indexOf(lineIndex)
+            ] = false;
           newLines[lineIndex] = false;
         }
       }
     }
+    // all the nodes that get directly affected by deleting the node
     var newRedoIndices = [];
     // update info for the outgoing lines and sink nodes
     for (var i = 0; i < node.lineOut.length; i++) {
@@ -240,15 +249,16 @@ export default function Workspace(props) {
       if (typeof lineIndex === "number") {
         const sinkIndex = lines[lineIndex].sinkIndex;
         const outletIndex = lines[lineIndex].outletIndex;
-        newNodes[sinkIndex].activeOutlets[outletIndex] = false;
-        newNodes[sinkIndex].numInputs -= 1;
-        redoFromIndices.push(sinkIndex);
-        newLines[lineIndex] = false;
+        newNodes[sinkIndex].activeOutlets[outletIndex] = false; // updates status of the sink node
+        newNodes[sinkIndex].numInputs -= 1; // updates sink node's number of inputs
+        newRedoIndices.push(sinkIndex);
+        newLines[lineIndex] = false; // removes the line
       }
     }
+
     newNodes[index] = false;
-    fetch(setNodes(newNodes))
-      .then(fetch(setLines(newLines)))
+    fetch(setNodes(newNodes)) // waits for setNodes to take effect
+      .then(fetch(setLines(newLines))) // waits for setLines to take effect
       .then(setRedoFromIndices(newRedoIndices));
   } // removeNode
 
@@ -261,8 +271,12 @@ export default function Workspace(props) {
     const sink = lines[index].sinkIndex;
     const outletIndex = lines[index].outletIndex;
     var newNodes = [...nodes];
-    newNodes[source].lineOut[newNodes[source].lineOut.indexOf(index)] = false;
-    newNodes[sink].activeOutlets[outletIndex] = false;
+    newNodes[source]
+      .lineOut[
+        // index of the removed line in the source node's lineOut array
+        newNodes[source].lineOut.indexOf(index)
+      ] = false;
+    newNodes[sink].activeOutlets[outletIndex] = false; // updates the sink node's outlet status
     newNodes[sink].numInputs -= 1;
     ////TO-DO: only remove an outlet if there's more than one free outlet at the bottom
     var newLines = [...lines];
@@ -288,6 +302,7 @@ export default function Workspace(props) {
         lineCount++;
         rf += nodes[lines[lineIndex].sourceIndex].renderFunction.renderFunction;
         rf += ",";
+        // checks if the incoming function is invalid; if so, sets isRenderable to false
         if(!nodes[lines[lineIndex].sourceIndex].renderFunction.isRenderable) {
           isRenderable = false;
         }
@@ -301,18 +316,21 @@ export default function Workspace(props) {
     }
     if (rf != "") {
       rf = rf.substring(0, rf.length - 1);
+      // puts the function's name and parentheses around the parameters
       rf = gui.functions[node.name].prefix + "(" + rf + ")";
     }
     var newNodes = [...nodes];
     newNodes[index].renderFunction = {
       renderFunction: rf,
-      isRenderable: isRenderable,
+      isRenderable: isRenderable
     };
     console.log("node index:" + index + " rf:" + rf + " isRenderable: "+isRenderable);
     setNodes(newNodes);
+    // goes through all of the lines coming out of the current node
     for (var i = 0; i < node.lineOut.length; i++) {
       const lineIndex = node.lineOut[i];
       if (typeof lineIndex === "number") {
+        // recursively calls this function on its children (?) nodes
         renderFunctionRedo(lines[lineIndex].sinkIndex);
       }
     }
