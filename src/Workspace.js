@@ -25,9 +25,16 @@ export default function Workspace(props) {
   // (indices of) the nodes starting from which the render function should be updated
   const [redoFromIndices, setRedoFromIndices] = useState([]);
 
+  /**
+   * Executes only when redoFromIndices is updated
+   */
   useEffect(() => {
     for (var i = 0; i < redoFromIndices.length; i++) {
-      renderFunctionRedo(redoFromIndices[i]);
+      fetch(findRenderFunction(redoFromIndices[i]))
+        .then(
+          // TO-DO: call this only on the branches
+          renderFunctionRedo(redoFromIndices[i])
+        )
     }
   }, [redoFromIndices]);
 
@@ -41,14 +48,24 @@ export default function Workspace(props) {
   const [tempLine, setTempLine] = useState(null);
 
   // text displayed in FunBar
-  const [currRF, setCurrRF] = useState({renderFunction: "", isRenderable: false});
+  const [currRF, setCurrRF] = useState({
+    renderFunction: "",
+    isRenderable: false,
+  });
 
   const [layouts, setLayouts] = useState([layout1]);
 
+  // list of theme names
   const themes = ["classic", "dusk", "dark"];
+
+  // index of the themes list that is taking effect
   const [themeIndex, setThemeIndex] = useState(0);
+
   const [theme, setTheme] = useState("dusk");
 
+  /**
+   * Displays a saved layout object.
+   */
   function displayLayout() {
     for (var i = 0; i < layouts.length; i++) {
       var IDindices = [];
@@ -137,7 +154,7 @@ export default function Workspace(props) {
       y: y,
       renderFunction:
         type === "fun"
-          ? { renderFunction: "", isRenderable: true }
+          ? { renderFunction: "", isRenderable: false }
           : { renderFunction: name, isRenderable: true },
       lineOut: [],
       numInputs: 0,
@@ -181,32 +198,26 @@ export default function Workspace(props) {
       .then(setRedoFromIndices([sink]));
   }
 
+  /**
+   * Resets the nodes and lines to reflect the deletion of a node at index
+   * @param {index} index
+   */
   function removeNode(index) {
     var newNodes = [...nodes];
     var newLines = [...lines];
-    console.log("newNodes at beginning of removeNode: " + newNodes);
-    console.log("newLines at beginning of removeNode: " + newLines);
     const node = nodes[index];
-    console.log("node.lineOut at beginning of removeNode: " + node.lineOut);
     // update info for the incoming lines
     if (node.type === "fun") {
-      console.log("node.activeOutlets.length:" + node.activeOutlets.length);
+      // updates lines and nodes according to the lines coming out of the node
       for (var i = 0; i < node.activeOutlets.length; i++) {
         const lineIndex = node.activeOutlets[i];
-        console.log("lineIndex " + lineIndex);
         if (typeof lineIndex === "number") {
           const source = newNodes[newLines[lineIndex].sourceIndex];
-          var temp = source.lineOut;
-          for (var j = 0; j < temp.length; j++) {
-            if (temp[j] === lineIndex) {
-              temp[j] = false;
-            }
-          }
-          newNodes[newLines[lineIndex].sourceIndex].lineOut = temp;
+          // finds and sets the line to false
+          newNodes[newLines[lineIndex].sourceIndex].lineOut[
+            source.lineOut.indexOf(lineIndex)
+          ] = false;
           newLines[lineIndex] = false;
-          console.log(
-            "newLines[" + lineIndex + "] set to: " + newLines[lineIndex]
-          );
         }
       }
     }
@@ -224,13 +235,15 @@ export default function Workspace(props) {
       }
     }
     newNodes[index] = false;
-    console.log("newLines at the end: " + newLines);
-    console.log("newNodes at the end: " + newNodes);
     fetch(setNodes(newNodes))
       .then(fetch(setLines(newLines)))
       .then(setRedoFromIndices(newRedoIndices));
-  }
+  } // removeNode
 
+  /**
+   * Resets the nodes and lines to reflect the deletion of a line at index
+   * @param {int} index
+   */
   function removeLine(index) {
     const source = lines[index].sourceIndex;
     const sink = lines[index].sinkIndex;
@@ -240,14 +253,8 @@ export default function Workspace(props) {
     newNodes[sink].activeOutlets[outletIndex] = false;
     newNodes[sink].numInputs -= 1;
     ////TO-DO: only remove an outlet if there's more than one free outlet at the bottom
-    /*if (newNodes[sink].numOutlets > gui.functions[newNodes[sink].name].min) {
-      newNodes[sink].numOutlets -= 1;
-    }*/
-    //subtract 1 from every outletIndex of every line going into sink
-    newNodes[sink].renderFunction = { renderFunction: "", isRenderable: false };
     var newLines = [...lines];
     newLines[index] = false;
-    console.log(newLines);
     fetch(setNodes(newNodes))
       .then(fetch(setLines(newLines)))
       .then(setRedoFromIndices([sink]));
@@ -259,17 +266,38 @@ export default function Workspace(props) {
    */
   function renderFunctionRedo(index) {
     var node = nodes[index];
-    console.log("node.name:" + node.name);
-    console.log("node.lineOut.length:" + node.lineOut.length);
-    console.log("lines.length:" + lines.length);
-    for (var i = 0; i < lines.length; i++) {
-      console.log("lines[" + i + "]:" + lines[i]);
+    var rf = "";
+    var isRenderable = true;
+    var lineCount = 0;
+    // getting the render function from each outlet (w/o going deeper into the tree)
+    for (var i = 0; i < node.activeOutlets.length; i++) {
+      const lineIndex = node.activeOutlets[i];
+      if (typeof lineIndex === "number") {
+        lineCount++;
+        rf += nodes[lines[lineIndex].sourceIndex].renderFunction.renderFunction;
+        rf += ",";
+        if(!nodes[lines[lineIndex].sourceIndex].renderFunction.isRenderable) {
+          isRenderable = false;
+        }
+      }
     }
-    console.log(
-      "renderFunctionRedo node.activeoutlets[1]:" + node.activeOutlets[1]
-    );
-    console.log("node.activeOutlets[1]:" + node.activeOutlets[1]);
-    findRenderFunction(index);
+    // runs if the minimum number of inputs isn't met
+    for (var i = 0; i < Math.max(0, gui.functions[node.name].min - lineCount); i++) {
+      rf += "__,";
+      // missing information means the function isn't renderable
+      isRenderable = false;
+    }
+    if (rf != "") {
+      rf = rf.substring(0, rf.length - 1);
+      rf = gui.functions[node.name].prefix + "(" + rf + ")";
+    }
+    var newNodes = [...nodes];
+    newNodes[index].renderFunction = {
+      renderFunction: rf,
+      isRenderable: isRenderable,
+    };
+    console.log("node index:" + index + " rf:" + rf + " isRenderable: "+isRenderable);
+    setNodes(newNodes);
     for (var i = 0; i < node.lineOut.length; i++) {
       const lineIndex = node.lineOut[i];
       if (typeof lineIndex === "number") {
@@ -284,38 +312,29 @@ export default function Workspace(props) {
    */
   function findRenderFunction(index) {
     const node = nodes[index];
-    console.log("node.name:" + node.name + "###");
     if (node.type === "val") {
       return node.renderFunction;
     }
     var rf = "";
-    if (node.type === "fun") {
-      // checking all the incoming lines
-      var lineCount = 0;
-      for (var i = 0; i < node.activeOutlets.length; i++) {
-        console.log("node.activeOutlets[" + i + "]:" + node.activeOutlets[i]);
-        const lineIndex = node.activeOutlets[i];
-        console.log("lines[" + lineIndex + "]: " + lines[lineIndex]);
-        if (typeof lineIndex === "number") {
-          lineCount++;
-          console.log("nodes[lines["+lineIndex+"].sourceIndex].type:"+nodes[lines[lineIndex].sourceIndex].type);
-          rf += findRenderFunction(lines[lineIndex].sourceIndex).renderFunction;
-          console.log("rf+" + findRenderFunction(lines[lineIndex].sourceIndex).renderFunction);
-          rf += ",";
-        }
+    var isRenderable = node.renderFunction.isRenderable;
+    // checking all the incoming lines
+    var lineCount = 0;
+    for (var i = 0; i < node.activeOutlets.length; i++) {
+      const lineIndex = node.activeOutlets[i];
+      if (typeof lineIndex === "number") {
+        lineCount++;
+        rf += findRenderFunction(lines[lineIndex].sourceIndex).renderFunction;
+        rf += ",";
       }
-      var isRenderable = node.renderFunction.isRenderable;
-      for (
-        var i = 0;
-        i < Math.max(0, gui.functions[node.name].min) - lineCount;
-        i++
-      ) {
-        rf += "__,";
-        isRenderable = false;
-      }
-      if (rf != "") {
-        rf = rf.substring(0, rf.length - 1);
-      }
+    }
+    // runs if the minimum number of inputs isn't met
+    for (var i = 0; i < Math.max(0, gui.functions[node.name].min - lineCount); i++) {
+      rf += "__,";
+      // missing information means the function isn't renderable
+      isRenderable = false;
+    }
+    if (rf != "") {
+      rf = rf.substring(0, rf.length - 1);
     }
     if (node.type === "fun" && rf != "") {
       // prevent parentheses with nothing in them
@@ -327,7 +346,7 @@ export default function Workspace(props) {
       isRenderable: isRenderable,
     };
     setNodes(newNodes);
-    console.log("node index:" + index + " rf:" + rf);
+    console.log("node index:" + index + " rf:" + rf + " isRenderable: "+isRenderable);
     return { renderFunction: rf, isRenderable: isRenderable };
   }
 
