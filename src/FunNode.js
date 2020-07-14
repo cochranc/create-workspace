@@ -232,6 +232,7 @@ function FunNode(props) {
           shadowOffsetX={1}
           shadowOffsetY={1}
           expanded={false}
+          visible={props.renderable}
         />
       )}
       {name === "rgb"

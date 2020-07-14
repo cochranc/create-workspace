@@ -1,3 +1,6 @@
+// +----------------------------+------------------------------------
+// | All dependent files        |
+// +----------------------------+
 import React from "react";
 import gui from "./mistgui-globals";
 import { Group, Rect, Text } from "react-konva";

@@ -1,3 +1,8 @@
+
+// +----------------------------+------------------------------------
+// | All dependent files        |
+// +----------------------------+
+
 import React, { useState, useEffect } from "react";
 import "./styles/menu.css";
 import {
@@ -15,7 +20,6 @@ import MakeMenuButton from "./MakeMenuButton";
 import { funcGroup } from "./MakeFunction";
 import { valGroup } from "./MakeValue";
 import { Spring, animated } from 'react-spring/renderprops-konva';
-//import tween from './tween';
 
 function Menu(props) {
   //keeps track if the menus are open
@@ -26,9 +30,9 @@ function Menu(props) {
   const [isFunctionMenuOpen, setIsFunctionMenuOpen] = useState(false);
 
 
-  function updateFunNodes(index, x, y) {}
-
-
+  /**
+   * Creates the value nodes array for the menu
+   */
   function handleMenuValues() {
     return Array.from(new Array(gui.valNames.length), (val, index) =>
       valGroup(
@@ -40,6 +44,10 @@ function Menu(props) {
       )
     );
   }
+
+  /**
+   * Handles the visibility of the value nodes
+   */
 
   function handleValueClick() {
     if (funcTog === false) {
@@ -53,6 +61,10 @@ function Menu(props) {
     }
   }
 
+  /**
+   * Handles the visibility of the function nodes
+   */
+
   function handleFunctionClick() {
     if (valTog === false) {
       setFuncTog(!funcTog);
@@ -64,6 +76,10 @@ function Menu(props) {
       setIsFunctionMenuOpen(!isFunctionMenuOpen);
     }
   }
+
+  /**
+   * Creates the function nodes array for the menu
+   */
 
   function handleMenuFunctions() {
     return Array.from(new Array(gui.funNames.length), (val, index) =>
@@ -77,23 +93,14 @@ function Menu(props) {
     );
   }
 
-
-
-  
   return (
     <Group width={window.innerWidth} height={gui.menuHeight}>
-      <Rect
+      <Rect // Entire menu bar
         width={window.innerWidth} height={gui.menuHeight}
         fill={props.bgColor} shadowColor={'black'} shadowBlur={5}
       />
-      {/*<Line
-        points={[0, gui.menuHeight, window.innerWidth, gui.menuHeight]}
-        stroke={"black"}
-        strokeWidth={2}
-      />*/}
-      
-        <Group visible={isValueMenuOpen}>
-          <Rect
+        <Group visible={isValueMenuOpen}> 
+          <Rect //Close value nodes arrow
             x={gui.menuFunctsXStart - 150}
             y={0}
             width={gui.arrowWidth}
@@ -116,15 +123,14 @@ function Menu(props) {
             opacity={0.2}
             onClick={handleValueClick}
           />
-          {handleMenuValues()}
+          {handleMenuValues() /** All value nodes */} 
         </Group>
-        <Group
+        <Group //Main value button
           name={"valueIcon"}
           x={gui.menuCornerWidth}
           onClick={handleValueClick}
           visible = {!isValueMenuOpen}  
         >
-
           <Rect
             x={0}
             y={0}
@@ -155,7 +161,7 @@ function Menu(props) {
           />
         </Group>
         <Group visible={isFunctionMenuOpen}>
-          <Rect
+          <Rect //Close function nodes arrow
             x={gui.menuFunctsXStart}
             y={0}
             width={gui.arrowWidth}
@@ -178,9 +184,9 @@ function Menu(props) {
             opacity={0.2}
             onClick={handleFunctionClick}
           />
-          {handleMenuFunctions()}
+          {handleMenuFunctions() /** All function nodes */}
         </Group>
-        <Group
+        <Group //Main function button 
           name={"functionIcon"}
           x={gui.menuCornerWidth + gui.buttonWidth}
           onClick={handleFunctionClick}
@@ -215,9 +221,9 @@ function Menu(props) {
         </Group>
       <Group>
         {[{name: "Reset Workspace", func: props.clearWorkspace}, {name: "Open Workspace"}, {name: "Save Workspace"}].map((u, i) =>
-          <MakeMenuButton
+          <MakeMenuButton //Calls MakeMenuButton.js to create the three side buttons
             text={u.name}
-            x={0}//gui.menuOffset}
+            x={0} //gui.menuOffset}
             y={(i+1)*gui.menuOffset + i*gui.menuControlHeight}
             handleClick={u.func}
             buttonColor = {props.wsButtonColor}

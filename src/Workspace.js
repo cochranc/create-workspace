@@ -1,3 +1,7 @@
+
+// +----------------------------+------------------------------------
+// | All dependent files        |
+// +----------------------------+
 import React, { useState, useEffect } from "react";
 import { Stage, Layer, Rect, Group, Portal, Text } from "react-konva";
 import { MIST } from "./mist.js";
@@ -19,9 +23,16 @@ export default function Workspace(props) {
   //example layouts for testing
   var layout1 = new MIST.Layout();
 
-  const [nodes, setNodes] = useState([]);
-  const [lines, setLines] = useState([]);
+  const [nodes, setNodes] = useState([]); //Fields : name, type, x, y, 
+                                          //renderFunction -> 2 fields: renderFunction, isRenderable, 
+                                          //LineOut -> Array of indices of the lines, numInputs,
+                                          //numOutlets -> Number of outlets,  
+                                          //activeOutlets -> Array of source indices || false
 
+
+  const [lines, setLines] = useState([]); // Fields : sourceIndex, sinkIndex, 
+                                          //outletIndex-> index of outlet in sink node
+                                          
   // (indices of) the nodes starting from which the render function should be updated
   const [redoFromIndices, setRedoFromIndices] = useState([]);
 
@@ -50,7 +61,7 @@ export default function Workspace(props) {
   // text displayed in FunBar
   const [currRF, setCurrRF] = useState({
     renderFunction: "",
-    isRenderable: false,
+    isRenderable: false
   });
 
   const [layouts, setLayouts] = useState([layout1]);
@@ -145,9 +156,10 @@ export default function Workspace(props) {
    * @param {float} x
    * @param {float} y
    */
+
   function pushNode(type, name, x, y) {
-    var newLst = [...nodes];
-    const node = {
+    var newLst = [...nodes]; //Creating a temporary node list
+    const node = { // Creating a new node
       name: name,
       type: type,
       x: x,
@@ -163,7 +175,7 @@ export default function Workspace(props) {
         type === "fun" ? Array(gui.functions[name].min).fill(false) : null,
     };
     newLst.push(node);
-    setNodes(newLst);
+    setNodes(newLst); //Updating the rendered node list with new node
   }
 
   /**
@@ -173,20 +185,20 @@ export default function Workspace(props) {
    */
   function pushLine(source, sink, outletIndex) {
     let newLines = [...lines];
-    let lineIndex = newLines.length;
-    newLines.push({
+    let lineIndex = newLines.length; //index of the new line about to be pushed
+    newLines.push({ //Pushing new line 
       sourceIndex: source,
       sinkIndex: sink,
       outletIndex: outletIndex,
     });
     console.log("newLines.length:" + newLines.length);
     var newNodes = [...nodes];
-    newNodes[source].lineOut.push(lineIndex);
+    newNodes[source].lineOut.push(lineIndex); //add line to lineOut array of source node
     newNodes[sink].numInputs += 1; // updating the number of inputs for sink node
     if (
       newNodes[sink].numInputs >= newNodes[sink].numOutlets &&
       gui.functions[newNodes[sink].name].color === gui.functionMultColor
-    ) {
+    ) { // Adding a new outlet once existing outlets are used 
       newNodes[sink].numOutlets += 1;
       newNodes[sink].activeOutlets.push(false);
     }
@@ -546,6 +558,11 @@ export default function Workspace(props) {
                   outletClicked={outletClicked}
                   dblClickHandler={dblClicked}
                   removeNode={removeNode}
+                  renderable = {
+                    node.renderFunction.isRenderable
+                      ? true
+                      : false
+                  }
                 />
               )) ||
               (node && node.type === "val" && (
