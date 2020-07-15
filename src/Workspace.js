@@ -311,8 +311,14 @@ export default function Workspace(props) {
       newNodes[source].lineOut.indexOf(index)
     ] = false;
     newNodes[sink].activeOutlets[outletIndex] = false; // updates the sink node's outlet status
+    let activeOutletsLength = newNodes[sink].activeOutlets.length;
+    if(newNodes[sink].activeOutlets[activeOutletsLength - 1] === false 
+      && newNodes[sink].activeOutlets[activeOutletsLength-2] === false
+      && activeOutletsLength > 2) {
+        newNodes[sink].numOutlets--;
+        newNodes[sink].activeOutlets.pop();
+      }
     newNodes[sink].numInputs -= 1;
-    ////TO-DO: only remove an outlet if there's more than one free outlet at the bottom
     let newLines = [...lines];
     newLines[index] = false;
     let promise = new Promise((resolve, reject) => {
@@ -323,7 +329,7 @@ export default function Workspace(props) {
   }
 
   // +--------------------------+
-  // | Removing Modes and Lines |
+  // | Removing Nodes and Lines |
   // +--------------------------+--------------------------------------
 
 
