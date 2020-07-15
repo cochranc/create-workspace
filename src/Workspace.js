@@ -1,38 +1,96 @@
+/**
+ * The workspace area in MIST.
+ *
+ * MIST is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+// +-------+---------------------------------------------------------
+// | Notes |
+// +-------+
+/*
+  1. Nodes and lines are saved in arrays of JSONs.
+
+  2. Nodes save the following information:
+  - name: String
+  - type: String; 'fun' or 'val'
+  - x: int
+  - y: int
+  - renderFunction: JSON;
+      {renderFunction: String; isRenderable: boolean}
+  - lineOut: int[]; array of indices of the lines
+  - numInputs: int; number of lines coming into the node
+  - numOutlets: int; number of outlets
+  - activeOutlets: int[]; each item is a source index if it exists,
+      or false if it doesn't have an incoming line
+
+  3. Lines save the following information:
+  - sourceIndex: int; index of the source node in the nodes array
+  - sinkIndex: int; ndex of the sink node in the nodes array
+  - outletIndex: int; index of outlet that the line goes into
+
+  4. The indices in redoFromIndices are where re-adjusting the
+     render functions need to start from. The render function
+     gets updated at each index, and renderFunctionReo gets called
+     recursively to do the same for all of the child nodes.
+
+  5. UseStrictMode is a good react-konva practice.
+
+*/
+// +-------+
+// | Notes |
+// +-------+---------------------------------------------------------
+
+
 
 // +----------------------------+------------------------------------
 // | All dependent files        |
 // +----------------------------+
-import React, { useState, useEffect } from "react";
-import { Stage, Layer, Rect, Group, Portal, Text } from "react-konva";
-import { MIST } from "./mist.js";
-import Menu from "./Menu";
-import gui from "./mistgui-globals";
-import FunNode from "./FunNode";
-import ValNode from "./ValNode";
-import DrawArrow from "./line";
+
 import FunBar from "./FunBar";
-import { width, height } from "./mistgui-globals";
-import { useStrictMode } from "react-konva";
+import FunNode from "./FunNode";
 import colors from "./globals-themes";
+import DrawArrow from "./line";
+import Menu from "./Menu";
+import gui, { width, height } from "./mistgui-globals";
+import { MIST } from "./mist.js";
+import React, { useState, useEffect } from "react";
+import { Stage, Layer, Rect, Group, Text, useStrictMode } from "react-konva";
+import ValNode from "./ValNode";
+
+// +----------------------------+
+// | All dependent files        |
+// +----------------------------+------------------------------------
+
+
 
 //container for everything related to the create workspace
 export default function Workspace(props) {
-  //hmm does this actually do anything?
   useStrictMode(true);
 
   //example layouts for testing
-  var layout1 = new MIST.Layout();
-
-  const [nodes, setNodes] = useState([]); //Fields : name, type, x, y, 
-                                          //renderFunction -> 2 fields: renderFunction, isRenderable, 
-                                          //LineOut -> Array of indices of the lines, numInputs,
-                                          //numOutlets -> Number of outlets,  
-                                          //activeOutlets -> Array of source indices || false
+  let layout1 = new MIST.Layout();
 
 
-  const [lines, setLines] = useState([]); // Fields : sourceIndex, sinkIndex, 
-                                          //outletIndex-> index of outlet in sink node
-                                          
+
+  // +--------+--------------------------------------------------------
+  // | States |
+  // +--------+
+
+  const [nodes, setNodes] = useState([]);
+
+  const [lines, setLines] = useState([]);
+
   // (indices of) the nodes starting from which the render function should be updated
   const [redoFromIndices, setRedoFromIndices] = useState([]);
 
@@ -40,12 +98,14 @@ export default function Workspace(props) {
    * Executes only when redoFromIndices is updated
    */
   useEffect(() => {
-    for (var i = 0; i < redoFromIndices.length; i++) {
-      fetch(findRenderFunction(redoFromIndices[i]))
-        .then(
-          // TO-DO: call this only on the branches
-          renderFunctionRedo(redoFromIndices[i])
-        )
+    for (let i = 0; i < redoFromIndices.length; i++) {
+      let promise = new Promise((resolve, reject) => {
+        findRenderFunction(redoFromIndices[i]);
+      });
+      promise.then(
+        // TO-DO: call this only on the branches
+        renderFunctionRedo(redoFromIndices[i])
+      );
     }
   }, [redoFromIndices]);
 
@@ -62,7 +122,7 @@ export default function Workspace(props) {
   // text displayed in FunBar
   const [currRF, setCurrRF] = useState({
     renderFunction: "",
-    isRenderable: false
+    isRenderable: false,
   });
 
   // this isn't neither used yet nor prioritized at the moment
@@ -77,80 +137,15 @@ export default function Workspace(props) {
   // name of the current theme -- TODO: probably redundant
   const [theme, setTheme] = useState("classic");
 
-  /**
-   * Displays a saved layout object.
-   */
-  function displayLayout() {
-    for (var i = 0; i < layouts.length; i++) {
-      var IDindices = [];
-      const IDoffset = nodes.length;
-      var layout = layouts[i];
-      let tempNodes = [...nodes];
-      for (var id in layout.operations) {
-        IDindices.push(id);
-        var op = layout.operations[id];
-        const node = {
-          name: op.name,
-          type: "fun",
-          x: op.x,
-          y: op.y,
-          renderFunction: { renderFunction: "", isRenderable: false },
-          lineFrom: [],
-          numInputs: 0,
-          numOutlets: gui.functions[op.name].min,
-          activeOutlets: Array(gui.functions[op.name].min).fill(false),
-        };
-        tempNodes.push(node);
-      }
-      for (id in layout.values) {
-        IDindices.push(id);
-        var val = layout.values[id];
-        const node = {
-          name: val.name,
-          type: "val",
-          x: val.x,
-          y: val.y,
-          renderFunction: { renderFunction: val.name, isRenderable: true },
-          hasLine: false,
-        };
-        tempNodes.push(node);
-      }
-      let newLines = [...lines];
-      for (var j = 0; j < layout.edges.length; j++) {
-        var edge = layout.edges[j];
-        var source =
-          layout.operations[edge.source] || layout.values[edge.source];
-        if (!source) {
-          throw (
-            "Invalid source in edge from " + edge.source + " to " + edge.sink
-          );
-        }
-        var sink = layout.operations[edge.sink];
-        if (!sink) {
-          throw "Invalid sink in edge from " + edge.source + " to " + edge.sink;
-        }
-        var sourceIndex = IDindices.indexOf(source.id) + IDoffset;
-        var sinkIndex = IDindices.indexOf(sink.id) + IDoffset;
-        var outletIndex = tempNodes[sinkIndex].lineFrom.length;
-        newLines.push({
-          sourceIndex: sourceIndex,
-          sinkIndex: sinkIndex,
-          outletIndex: outletIndex,
-        });
-        tempNodes[sourceIndex].hasLine = true;
-        tempNodes[sinkIndex].numInputs += 1;
-        tempNodes[sinkIndex].lineFrom.push(sourceIndex);
-        if (tempNodes[sinkIndex].numOutlets === outletIndex) {
-          tempNodes[sinkIndex].numOutlets += 1;
-          tempNodes[sinkIndex].activeOutlets.push(true);
-        } else {
-          tempNodes[sinkIndex].activeOutlets[outletIndex] = true;
-        }
-      }
-      setNodes(tempNodes);
-      setLines(newLines);
-    }
-  }
+  // +--------+
+  // | States |
+  // +--------+--------------------------------------------------------
+
+
+
+  // +------------------------+----------------------------------------
+  // | Adding Nodes and Lines |
+  // +------------------------+
 
   /**
    * Adds a node to the node array
@@ -161,27 +156,34 @@ export default function Workspace(props) {
    */
 
   function pushNode(type, name, x, y) {
-    var newLst = [...nodes]; //Creating a temporary node list
-    const node = { // Creating a new node
+    let rf = {};
+    switch(type) {
+      case 'fun':
+        rf = { renderFunction: "", isRenderable: false };
+        break;
+      case 'val':
+        rf = { renderFunction: name, isRenderable: true };
+        break;
+      default:
+        console.log("Error: neither a function or a value node.");
+    }
+    const node = {
+      // Creating a new node
       name: name,
       type: type,
       x: x,
       y: y,
-      renderFunction:
-        type === "fun"
-          ? { renderFunction: "", isRenderable: false }
-          : { renderFunction: name, isRenderable: true },
+      renderFunction: rf,
       lineOut: [],
       numInputs: 0,
       numOutlets: type === "fun" ? gui.functions[name].min : 0,
       activeOutlets:
         type === "fun"
-           // e.g. if the function is 'add', this will be [false, false]
-          ? Array(gui.functions[name].min).fill(false)
-          : null
+          ? // e.g. if the function is 'add', this will be [false, false]
+            Array(gui.functions[name].min).fill(false)
+          : null,
     };
-    newLst.push(node);
-    setNodes(newLst); //Updating the rendered node list with new node
+    setNodes((nodes) => [...nodes, node]); //Updating the rendered node list with new node
   }
 
   /**
@@ -192,59 +194,90 @@ export default function Workspace(props) {
   function pushLine(source, sink, outletIndex) {
     let newLines = [...lines];
     let lineIndex = newLines.length; //index of the new line about to be pushed
-    newLines.push({ //Pushing new line 
+    newLines.push({
+      //Pushing new line
       sourceIndex: source,
       sinkIndex: sink,
-      outletIndex: outletIndex // index of the outlet that the line is sinking into
+      outletIndex: outletIndex, // index of the outlet that the line is sinking into
     });
-    console.log("newLines.length:" + newLines.length);
-    var newNodes = [...nodes];
+    let newNodes = [...nodes];
     newNodes[source].lineOut.push(lineIndex); //add line to lineOut array of source node
     newNodes[sink].numInputs += 1; // updating the number of inputs for sink node
     if (
       newNodes[sink].numInputs >= newNodes[sink].numOutlets &&
       gui.functions[newNodes[sink].name].color === gui.functionMultColor
-    ) { // Adding a new outlet once existing outlets are used 
+    ) {
+      // Adding a new outlet once existing outlets are used
       newNodes[sink].numOutlets += 1;
       newNodes[sink].activeOutlets.push(false);
     }
     newNodes[sink].activeOutlets[outletIndex] = lineIndex;
-    console.log("outletIndex:" + outletIndex);
-    fetch(setNodes(newNodes)) // waits for setNodes to finish
-      .then(fetch(setLines(newLines))) // waits for setLines to finish
-      .then(setRedoFromIndices([sink])); // this needs to access the newly-update nodes and lines
+    let promise = new Promise((resolve, reject) => {
+      setNodes(newNodes);
+      setLines(newLines);
+    });
+    promise.then(setRedoFromIndices([sink]));
   }
+
+  // +------------------------+
+  // | Adding Nodes and Lines |
+  // +------------------------+----------------------------------------
+
+
+
+  // +------------------------+----------------------------------------
+  // | Updating Node Position |
+  // +------------------------+
+
+  /**
+   * Updates the position of a node
+   * @param {int} index
+   * @param {float} x
+   * @param {float} y
+   */
+  function updatePosition(index, x, y) {
+    let newLst = [...nodes];
+    newLst[index].x = x;
+    newLst[index].y = y;
+    setNodes(newLst);
+  }
+  // +------------------------+
+  // | Updating Node Position |
+  // +------------------------+----------------------------------------
+
+
+
+  // +--------------------------+--------------------------------------
+  // | Removing Nodes and Lines |
+  // +--------------------------+
 
   /**
    * Resets the nodes and lines to reflect the deletion of a node at index
    * @param {index} index
    */
   function removeNode(index) {
-    var newNodes = [...nodes];
-    var newLines = [...lines];
+    let newNodes = [...nodes];
+    let newLines = [...lines];
     const node = nodes[index];
     // update info for the incoming lines
     if (node.type === "fun") {
       // updates lines and nodes according to the lines coming out of the node
-      for (var i = 0; i < node.activeOutlets.length; i++) {
+      for (let i = 0; i < node.activeOutlets.length; i++) {
         const lineIndex = node.activeOutlets[i];
         if (typeof lineIndex === "number") {
           const source = newNodes[newLines[lineIndex].sourceIndex];
           // finds and sets the line to false
           newNodes[
             newLines[lineIndex].sourceIndex // gets the source index of the line
-          ] // gets the source node of the line
-            .lineOut[ // gets the index of the line within the source node's lineIndex array
-              source.lineOut.indexOf(lineIndex)
-            ] = false;
+          ].lineOut[source.lineOut.indexOf(lineIndex)] = false; // gets the source node of the line // gets the index of the line within the source node's lineIndex array
           newLines[lineIndex] = false;
         }
       }
     }
     // all the nodes that get directly affected by deleting the node
-    var newRedoIndices = [];
+    let newRedoIndices = [];
     // update info for the outgoing lines and sink nodes
-    for (var i = 0; i < node.lineOut.length; i++) {
+    for (let i = 0; i < node.lineOut.length; i++) {
       const lineIndex = node.lineOut[i];
       if (typeof lineIndex === "number") {
         const sinkIndex = lines[lineIndex].sinkIndex;
@@ -257,9 +290,11 @@ export default function Workspace(props) {
     }
 
     newNodes[index] = false;
-    fetch(setNodes(newNodes)) // waits for setNodes to take effect
-      .then(fetch(setLines(newLines))) // waits for setLines to take effect
-      .then(setRedoFromIndices(newRedoIndices));
+    let promise = new Promise((resolve, reject) => {
+      setNodes(newNodes);
+      setLines(newLines);
+    });
+    promise.then(setRedoFromIndices(newRedoIndices));
   } // removeNode
 
   /**
@@ -270,64 +305,82 @@ export default function Workspace(props) {
     const source = lines[index].sourceIndex;
     const sink = lines[index].sinkIndex;
     const outletIndex = lines[index].outletIndex;
-    var newNodes = [...nodes];
-    newNodes[source]
-      .lineOut[
-        // index of the removed line in the source node's lineOut array
-        newNodes[source].lineOut.indexOf(index)
-      ] = false;
+    let newNodes = [...nodes];
+    newNodes[source].lineOut[
+      // index of the removed line in the source node's lineOut array
+      newNodes[source].lineOut.indexOf(index)
+    ] = false;
     newNodes[sink].activeOutlets[outletIndex] = false; // updates the sink node's outlet status
     newNodes[sink].numInputs -= 1;
     ////TO-DO: only remove an outlet if there's more than one free outlet at the bottom
-    var newLines = [...lines];
+    let newLines = [...lines];
     newLines[index] = false;
-    fetch(setNodes(newNodes))
-      .then(fetch(setLines(newLines)))
-      .then(setRedoFromIndices([sink]));
+    let promise = new Promise((resolve, reject) => {
+      setNodes(newNodes);
+      setLines(newLines);
+    });
+    promise.then(setRedoFromIndices([sink]));
   }
+
+  // +--------------------------+
+  // | Removing Modes and Lines |
+  // +--------------------------+--------------------------------------
+
+
+
+  // +-------------------------------+---------------------------------
+  // | Updating the Render Functions |
+  // +-------------------------------+
 
   /**
    * Updates the render function of the node at index as well as all the nodes that branch out of it
    * @param {int} index
    */
   function renderFunctionRedo(index) {
-    var node = nodes[index];
-    var rf = "";
-    var isRenderable = true;
-    var lineCount = 0;
+    let node = nodes[index];
+    let rf = "";
+    let isRenderable = true;
+    let lineCount = 0;
     // getting the render function from each outlet (w/o going deeper into the tree)
-    for (var i = 0; i < node.activeOutlets.length; i++) {
+    for (let i = 0; i < node.activeOutlets.length; i++) {
       const lineIndex = node.activeOutlets[i];
       if (typeof lineIndex === "number") {
         lineCount++;
         rf += nodes[lines[lineIndex].sourceIndex].renderFunction.renderFunction;
         rf += ",";
-        // checks if the incoming function is invalid; if so, sets isRenderable to false
-        if(!nodes[lines[lineIndex].sourceIndex].renderFunction.isRenderable) {
+        // checks if any of the child node's render function is invalid;
+        // if so, sets isRenderable to false
+        if (!nodes[lines[lineIndex].sourceIndex].renderFunction.isRenderable) {
           isRenderable = false;
         }
       }
     }
     // runs if the minimum number of inputs isn't met
-    for (var i = 0; i < Math.max(0, gui.functions[node.name].min - lineCount); i++) {
+    for (
+      let i = 0;
+      i < Math.max(0, gui.functions[node.name].min - lineCount);
+      i++
+    ) {
       rf += "__,";
       // missing information means the function isn't renderable
       isRenderable = false;
     }
-    if (rf != "") {
+    if (rf!=="") {
       rf = rf.substring(0, rf.length - 1);
       // puts the function's name and parentheses around the parameters
       rf = gui.functions[node.name].prefix + "(" + rf + ")";
     }
-    var newNodes = [...nodes];
+    let newNodes = [...nodes];
     newNodes[index].renderFunction = {
       renderFunction: rf,
-      isRenderable: isRenderable
+      isRenderable: isRenderable,
     };
-    console.log("node index:" + index + " rf:" + rf + " isRenderable: "+isRenderable);
+    console.log(
+      "node index:" + index + " rf:" + rf + " isRenderable: " + isRenderable
+    );
     setNodes(newNodes);
     // goes through all of the lines coming out of the current node
-    for (var i = 0; i < node.lineOut.length; i++) {
+    for (let i = 0; i < node.lineOut.length; i++) {
       const lineIndex = node.lineOut[i];
       if (typeof lineIndex === "number") {
         // recursively calls this function on its children (?) nodes
@@ -345,11 +398,11 @@ export default function Workspace(props) {
     if (node.type === "val") {
       return node.renderFunction;
     }
-    var rf = "";
-    var isRenderable = node.renderFunction.isRenderable;
+    let rf = "";
+    let isRenderable = node.renderFunction.isRenderable;
     // checking all the incoming lines
-    var lineCount = 0;
-    for (var i = 0; i < node.activeOutlets.length; i++) {
+    let lineCount = 0;
+    for (let i = 0; i < node.activeOutlets.length; i++) {
       const lineIndex = node.activeOutlets[i];
       if (typeof lineIndex === "number") {
         lineCount++;
@@ -358,39 +411,64 @@ export default function Workspace(props) {
       }
     }
     // runs if the minimum number of inputs isn't met
-    for (var i = 0; i < Math.max(0, gui.functions[node.name].min - lineCount); i++) {
+    for (
+      let i = 0;
+      i < Math.max(0, gui.functions[node.name].min - lineCount);
+      i++
+    ) {
       rf += "__,";
       // missing information means the function isn't renderable
       isRenderable = false;
     }
-    if (rf != "") {
+    if (rf!=="") {
       rf = rf.substring(0, rf.length - 1);
     }
-    if (node.type === "fun" && rf != "") {
+    if (node.type === "fun" && rf!=="") {
       // prevent parentheses with nothing in them
       rf = gui.functions[node.name].prefix + "(" + rf + ")";
     }
-    var newNodes = [...nodes];
+    let newNodes = [...nodes];
     newNodes[index].renderFunction = {
       renderFunction: rf,
       isRenderable: isRenderable,
     };
     setNodes(newNodes);
-    console.log("node index:" + index + " rf:" + rf + " isRenderable: "+isRenderable);
+    console.log(
+      "node index:" + index + " rf:" + rf + " isRenderable: " + isRenderable
+    );
     return { renderFunction: rf, isRenderable: isRenderable };
   }
 
+  // +-------------------------------+
+  // | Updating the Render Functions |
+  // +-------------------------------+---------------------------------
+
+
+
+  // +------------------------+----------------------------------------
+  // | Updating the Workspace |
+  // +------------------------+
+
   /**
-   * Updates the position of a node
-   * @param {int} index
-   * @param {float} x
-   * @param {float} y
+   * Clears all nodes and lines
    */
-  function updatePosition(index, x, y) {
-    var newLst = [...nodes];
-    newLst[index].x = x;
-    newLst[index].y = y;
-    setNodes(newLst);
+  function clearWorkspace() {
+    setNodes([]);
+    setLines([]);
+  }
+
+  // +------------------------+
+  // | Updating the Workspace |
+  // +------------------------+----------------------------------------
+
+
+
+  // +----------------------+------------------------------------------
+  // | Mouse Event Handlers |
+  // +----------------------+
+
+  function updateMousePosition(x, y) {
+    setMousePosition({ x: x, y: y });
   }
 
   /**
@@ -409,10 +487,6 @@ export default function Workspace(props) {
     setCurrRF(nodes[index].renderFunction);
   }
 
-  function updateMousePosition(x, y) {
-    setMousePosition({ x: x, y: y });
-  }
-
   /**
    * If the connection is valid, clicking the outlet pushes a new line
    * @param {*} sinkIndex
@@ -420,14 +494,23 @@ export default function Workspace(props) {
    */
   function outletClicked(sinkIndex, outletIndex) {
     if (
-      newSource != null &&
-      newSource != sinkIndex &&
+      newSource!==null &&
+      newSource!==sinkIndex &&
       nodes[sinkIndex].activeOutlets[outletIndex] === false &&
       nodes[sinkIndex].numInputs < gui.functions[nodes[sinkIndex].name].max
     ) {
       // a line coming out of source
       pushLine(newSource, sinkIndex, outletIndex);
     }
+  }
+
+  /**
+   * Called when the background is clicked.
+   */
+  function bgClicked(e) {
+    setNewSource(null);
+    setTempLine(null);
+    setMouseListenerOn(false);
   }
 
   /**
@@ -446,22 +529,15 @@ export default function Workspace(props) {
     }
   }
 
-  /**
-   * Clears all nodes and lines
-   */
-  function clearWorkspace() {
-    setNodes([]);
-    setLines([]);
-  }
+  // +----------------------+
+  // | Mouse Event Handlers |
+  // +----------------------+------------------------------------------
 
-  /**
-   * Called when the background is clicked.
-   */
-  function bgClicked(e) {
-    setNewSource(null);
-    setTempLine(null);
-    setMouseListenerOn(false);
-  }
+
+
+  // +--------+--------------------------------------------------------
+  // | RENDER |
+  // +--------+
 
   return (
     <div id="workspace">
@@ -520,7 +596,7 @@ export default function Workspace(props) {
               (theme === "dark" && colors.valueMenuColor3)
             }
           />
-          {nodes.length !== 0 &&
+          {nodes.length !==  0 &&
             lines.map(
               (line, index) =>
                 line && (
@@ -576,11 +652,7 @@ export default function Workspace(props) {
                   outletClicked={outletClicked}
                   dblClickHandler={dblClicked}
                   removeNode={removeNode}
-                  renderable = {
-                    node.renderFunction.isRenderable
-                      ? true
-                      : false
-                  }
+                  renderable={node.renderFunction.isRenderable ? true : false}
                 />
               )) ||
               (node && node.type === "val" && (
@@ -609,12 +681,12 @@ export default function Workspace(props) {
               (theme === "dark" && colors.funBarBg3)
             }
             onClick={() => {
-              var i = (themeIndex + 1) % themes.length;
+              let i = (themeIndex + 1) % themes.length;
               setThemeIndex(i);
               setTheme(themes[i]);
             }}
-            functionBoxBg={theme === 'dark' ? 'darkgray' : 'white'}
-            functionTextColor={theme === 'dark' ? 'black' : 'black'}
+            functionBoxBg={theme === "dark" ? "darkgray" : "white"}
+            functionTextColor={theme === "dark" ? "black" : "black"}
           />
           <Text
             x={10}
@@ -625,7 +697,7 @@ export default function Workspace(props) {
             fill={theme === "dark" ? "white" : "black"}
             fontSize={14}
             onClick={() => {
-              var i = (themeIndex + 1) % themes.length;
+              let i = (themeIndex + 1) % themes.length;
               setThemeIndex(i);
               setTheme(themes[i]);
             }}
