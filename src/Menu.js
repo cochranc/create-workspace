@@ -28,7 +28,11 @@ function Menu(props) {
   const [valTog, setValTog] = useState(false);
   const [isValueMenuOpen, setIsValueMenuOpen] = useState(false);
   const [isFunctionMenuOpen, setIsFunctionMenuOpen] = useState(false);
+  const [key, setKey] = useState(null);
 
+  function changeKey() {
+    setKey(Math.random());
+  }
 
   /**
    * Creates the value nodes array for the menu
@@ -40,7 +44,9 @@ function Menu(props) {
         gui.valNames[index],
         gui.menuFunctsXStart + 200 + index * 80,
         gui.menuYspacing - 20,
-        valTog
+        valTog,
+        key,
+        changeKey
       )
     );
   }
@@ -88,13 +94,15 @@ function Menu(props) {
         gui.funNames[index],
         gui.menuFunctsXStart + 100 + index * 80,
         gui.menuYspacing - 20,
-        funcTog
+        funcTog,
+        key, 
+        changeKey
       )
     );
   }
 
   return (
-    <Group width={window.innerWidth} height={gui.menuHeight}>
+    <Group width={window.innerWidth} height={gui.menuHeight} key = {key}>
       <Rect // Entire menu bar
         width={window.innerWidth} height={gui.menuHeight}
         fill={props.bgColor} shadowColor={'black'} shadowBlur={5}

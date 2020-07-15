@@ -1,13 +1,16 @@
 // +----------------------------+------------------------------------
 // | All dependent files        |
 // +----------------------------+
-import React from "react";
+import React, {useState} from "react";
 import gui from "./mistgui-globals";
 import { Group, Rect, Text } from "react-konva";
 import Konva from "konva";
 import { Spring, animated } from 'react-spring/renderprops-konva';
 
-export var valGroup = function(addNode,valName, x, y, vis) {
+export var valGroup = function(addNode,valName, x, y, vis, key, changeKey) {
+
+  
+
   function handleDragStart(e) {
     e.target.setAttrs({
       shadowOffset: {
@@ -28,7 +31,11 @@ export var valGroup = function(addNode,valName, x, y, vis) {
       shadowOffsetX: 5,
       shadowOffsetY: 5
     });
-    addNode('val', valName, e.currentTarget.x(), e.currentTarget.y());
+    if(e.currentTarget.y() > gui.menuHeight){
+      addNode('val', valName, e.currentTarget.x(), e.currentTarget.y());
+    } else {
+      changeKey();
+    }
   }
   return (
     <Group
@@ -45,6 +52,26 @@ export var valGroup = function(addNode,valName, x, y, vis) {
       draggable
       onDragStart = {handleDragStart}
       onDragEnd = {handleDragEnd}
+      dragBoundFunc={function (pos) {
+        if (pos.x < 0) {
+          pos.x = 0;
+        }
+        if (pos.x > window.innerWidth - gui.functionTotalSideLength) {
+          pos.x = window.innerWidth - gui.functionTotalSideLength;
+        }
+        if (pos.y < 0) {
+          pos.y = 0;
+        }
+        if (
+          pos.y >
+          window.innerHeight - gui.funBarHeight - gui.functionTotalSideLength
+        ) {
+          pos.y =
+            window.innerHeight - gui.funBarHeight - gui.functionTotalSideLength;
+        }
+        return pos;
+      }}
+      key = {key}
     >
     <Spring
     native
@@ -56,10 +83,7 @@ export var valGroup = function(addNode,valName, x, y, vis) {
     }}>
       {props => (<animated.Rect
         {...props}
-        //x={gui.functionRectSideLength / 2}
         y={0}
-        //width={gui.valueSideLength}
-        //height={gui.valueSideLength}
         fill={gui.values[valName].color}
         rotation={45}
         name={valName}
@@ -77,8 +101,6 @@ export var valGroup = function(addNode,valName, x, y, vis) {
         text={gui.values[valName].rep}
         fontFamily={gui.globalFont}
         fill={"black"}
-        //fontSize={gui.nodeFontSize}
-        //x={0}
         y={gui.valueSideLength / 2}
         width={gui.functionRectSideLength}
         align={"center"}

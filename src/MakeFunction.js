@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Konva from "konva";
 import { Spring, animated } from 'react-spring/renderprops-konva';
 
-export var funcGroup = function makeFunctionGroup(addNode, funName, x, y, vis) {
+export var funcGroup = function makeFunctionGroup(addNode, funName, x, y, vis, key, changeKey) {
   function handleDragStart(e) {
     e.target.setAttrs({
       shadowOffset: {
@@ -25,7 +25,12 @@ export var funcGroup = function makeFunctionGroup(addNode, funName, x, y, vis) {
       shadowOffsetX: 5,
       shadowOffsetY: 5
     });
-    addNode('fun', funName, e.currentTarget.x(), e.currentTarget.y());
+    if(e.currentTarget.y() > gui.menuHeight) {
+      addNode('fun', funName, e.currentTarget.x(), e.currentTarget.y());
+    } else {
+      changeKey()
+    }
+    
   }
 
   return (
@@ -48,6 +53,26 @@ export var funcGroup = function makeFunctionGroup(addNode, funName, x, y, vis) {
       draggable
       onDragStart = {handleDragStart}
       onDragEnd={handleDragEnd}
+      dragBoundFunc={function (pos) {
+        if (pos.x < 0) {
+          pos.x = 0;
+        }
+        if (pos.x > window.innerWidth - gui.functionTotalSideLength) {
+          pos.x = window.innerWidth - gui.functionTotalSideLength;
+        }
+        if (pos.y < 0) {
+          pos.y = 0;
+        }
+        if (
+          pos.y >
+          window.innerHeight - gui.funBarHeight - gui.functionTotalSideLength
+        ) {
+          pos.y =
+            window.innerHeight - gui.funBarHeight - gui.functionTotalSideLength;
+        }
+        return pos;
+      }}
+      key = {key}
     >
     <Spring native 
     from = {{x: vis? -300 : gui.functionHalfStrokeWidth, scaleX : vis? 0 : 1, scaleY : vis? 0:1}}
