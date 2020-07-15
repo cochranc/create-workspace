@@ -1,9 +1,9 @@
-import React, { Component } from "react";
+import React, { Component, useEffect, useState } from "react";
 import Konva from 'konva';
 import gui from './mistgui-globals.js'
 import MIST from "./mistui.js";
 
-class MISTImage extends Component {
+class MISTImageOld extends Component {
 
     constructor(props) {
         super(props);
@@ -13,7 +13,7 @@ class MISTImage extends Component {
     }
 
     componentDidMount() {
-        const canvas = this.canvasRef.current;
+        /*const canvas = this.canvasRef.current;
         const ctx = canvas.getContext('2d');
         const width = canvas.width;
         const height = canvas.height;
@@ -59,18 +59,21 @@ class MISTImage extends Component {
             // And advance to the next pixel
             x += deltaX;
         }
-        ctx.putImageData(region, 0, 0);
+        ctx.putImageData(region, 0, 0);*/
 
         //MIST.renderAt(0, this.exp1, ctx, canvas, width, height, 0, 0);
         //exptoRGB causes an error at line 1034. It doesn't recognize stuff
         //like "[object HTMLCanvasElement]"
 
-        /*var animator = new MIST.ui.Animator("sum(x,y)", [], ctx, 
+        let animator = new MIST.ui.Animator("sum(x,y)", [], {}, 
             this.canvasRef.current, function() { });
-        animator.bounds(this.props.x,this.props.y,this.props.width,this.props.height);
+		window.animator = animator;
+        // console.log(this.props.x, this.props.y, this.props.width, this.props.height)
+		// debugger;
+        // animator.bounds(this.props.x,this.props.y,this.props.width,this.props.height);
         animator.setResolution(this.props.width,this.props.height);
         animator.frame();
-        animator.start();*/
+        animator.start();
     }
 
     render () {
@@ -88,7 +91,68 @@ class MISTImage extends Component {
         
         }
 }
-export default MISTImage
+
+
+/* MISTImage props
+ *   resolution: the resolution used to render the image (may be smaller than
+ *     the actual canvas)
+ *   code: the MIST code used to render the image
+ *   width: (optional, defaults to resolution) the width of the canvas
+ *   height: (optional, defaults to resolution) the height of the canvas
+ */
+export default function MISTImage(props) {
+  const [canvas] = useState(React.createRef());
+  const [animator, setAnimator] = useState(null);
+
+  useEffect(() => {
+    if (animator) {
+      animator.stop();
+    }
+    const new_animator = new MIST.ui.Animator(props.renderFunction, [], {}, canvas.current)
+    new_animator.setResolution(props.width, props.height);
+    new_animator.frame();
+    setAnimator(new_animator);
+    return () => {
+      if (animator) {
+        animator.stop();
+      }
+    }
+  }, [animator, props.renderFunction, canvas, setAnimator]);
+
+  useEffect(() => {
+    if (animator) {
+      animator.setResolution(props.width, props.height);
+      animator.frame();
+    }
+  }, [animator, props.width, props.height])
+
+  return (
+    <canvas
+      className="mist-image"
+      width={props.width}
+      height={props.height}
+      style={{
+        position: 'absolute',
+        top: props.y,
+        left: props.x,
+        width: props.width,
+        height: props.height
+      }}
+      onMouseOut={() => {
+        if (animator) {
+          animator.stop();
+        }
+      }}
+      onMouseOver={() => {
+        if (animator) {
+          animator.stop();
+          animator.start();
+        }
+      }}
+      ref={canvas}
+    />
+  );
+}
 
 
 /*<Image
