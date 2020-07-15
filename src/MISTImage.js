@@ -27,7 +27,7 @@ export default function MISTImage(props) {
         animator.stop();
       }
     }
-  }, [animator, props.renderFunction, canvas, setAnimator]);
+  }, [props.renderFunction, canvas, setAnimator]);
 
   useEffect(() => {
     if (animator) {

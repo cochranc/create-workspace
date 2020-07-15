@@ -211,6 +211,7 @@ function FunNode(props) {
         <Rect
           onClick={() => {
             console.log(renderFunction);
+			debugger;
             if (renderFunction) {
               setShowImage(true);
             }
