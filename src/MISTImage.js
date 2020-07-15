@@ -1,6 +1,6 @@
 import React, { Component, useEffect, useState } from "react";
-import Konva from 'konva';
-import gui from './mistgui-globals.js'
+import Konva from "konva";
+import gui from "./mistgui-globals.js";
 import MIST from "./mistui.js";
 
 /* MISTImage props
@@ -18,15 +18,23 @@ export default function MISTImage(props) {
     if (animator) {
       animator.stop();
     }
-    const new_animator = new MIST.ui.Animator(props.renderFunction, [], {}, canvas.current)
+    const new_animator = new MIST.ui.Animator(
+      props.renderFunction,
+      [],
+      {},
+      canvas.current
+    );
     new_animator.setResolution(props.width, props.height);
     new_animator.frame();
+    if(props.automated) {
+        new_animator.start();
+    }
     setAnimator(new_animator);
     return () => {
       if (animator) {
         animator.stop();
       }
-    }
+    };
   }, [props.renderFunction, canvas, setAnimator]);
 
   useEffect(() => {
@@ -34,7 +42,7 @@ export default function MISTImage(props) {
       animator.setResolution(props.width, props.height);
       animator.frame();
     }
-  }, [animator, props.width, props.height])
+  }, [animator, props.width, props.height]);
 
   return (
     <canvas
@@ -42,21 +50,25 @@ export default function MISTImage(props) {
       width={props.width}
       height={props.height}
       style={{
-        position: 'absolute',
+        position: "absolute",
         top: props.y,
         left: props.x,
         width: props.width,
-        height: props.height
+        height: props.height,
       }}
       onMouseOut={() => {
-        if (animator) {
-          animator.stop();
+        if (!props.automated) {
+          if (animator) {
+            animator.stop();
+          }
         }
       }}
       onMouseOver={() => {
-        if (animator) {
-          animator.stop();
-          animator.start();
+        if (!props.automated) {
+          if (animator) {
+            animator.stop();
+            animator.start();
+          }
         }
       }}
       onClick={props.onClick}

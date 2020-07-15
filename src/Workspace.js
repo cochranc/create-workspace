@@ -530,7 +530,7 @@ export default function Workspace(props) {
    * @param {int} index
    */
   function dblClicked(index) {
-    if (!tempLine) {
+    if (!tempLine && nodes[index].name !== 'rgb') {
       setNewSource(index);
       setMouseListenerOn(true);
       setMousePosition({
