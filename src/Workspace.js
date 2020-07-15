@@ -105,7 +105,13 @@ export default function Workspace(props) {
       promise.then(
         // TO-DO: call this only on the branches
         renderFunctionRedo(redoFromIndices[i])
-      );
+      )/*.then(
+        setCurrRF({
+          renderFunction: nodes[redoFromIndices[i]].renderFunction.renderFunction,
+          isRenderable: nodes[redoFromIndices[i]].renderFunction.isRenderable,
+        })
+      )*/
+
     }
   }, [redoFromIndices]);
 
@@ -162,7 +168,7 @@ export default function Workspace(props) {
         rf = { renderFunction: "", isRenderable: false };
         break;
       case 'val':
-        rf = { renderFunction: name, isRenderable: true };
+        rf = { renderFunction: gui.values[name].rep, isRenderable: true };
         break;
       default:
         console.log("Error: neither a function or a value node.");
