@@ -149,6 +149,7 @@ function FunBar(props) {
               width={gui.popCanvasSide}
               height={gui.popCanvasSide}
               renderFunction={props.renderFunction.renderFunction}
+              automated={true}
             />
             <div
               style={{

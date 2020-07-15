@@ -159,6 +159,7 @@ function ValNode(props) {
             width={gui.renderSideLength}
             height={gui.renderSideLength}
             renderFunction={renderFunction}
+            automated={false}
           />
         </Portal>
       ) : (
