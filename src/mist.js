@@ -1956,16 +1956,16 @@ MIST.renderAt = function(t, exp, context, canvas,
 
   // Build the function
   var fun = MIST.expToRGB("untitled image", exp, context);
-  console.log("1959");
+  //console.log("1959");
   // Set up our main variables
   var x = -1;
   var y = -1 - deltaY;
   // Loop through all of the pixels
   for (var i = 0; i < region.data.length; i+= 4)
     {
-      if(i%16===0) {
+      /*if(i%16===0) {
         console.log("i:"+i);
-      }
+      }*/
       // When we reach the end of the row, move on to the next row
       if ((i % (4*renderWidth)) == 0)
         { 
@@ -2106,5 +2106,8 @@ var Data = function() {
   
 }
 
-export {MIST, gifTime};
+MIST.setMouse = setMouse;
+MIST.setClick = setClick;
+
+export {MIST, gifTime, setMouse};
 //module.exports = MIST;

@@ -181,7 +181,7 @@ function makeMouseMoveHandler(animator) {
     if ((scaledX < -1) || (scaledX > 1) || (scaledY < -1) || (scaledY > 1)) {
       return;
     }
-    MIST.setMouse(scaledX,scaledY);
+    mist.setMouse(scaledX,scaledY);
   }; // function
 } // makeMouseMoveHandler
 
