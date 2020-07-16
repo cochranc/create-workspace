@@ -51,8 +51,6 @@
 // | Notes |
 // +-------+---------------------------------------------------------
 
-
-
 // +----------------------------+------------------------------------
 // | All dependent files        |
 // +----------------------------+
@@ -72,16 +70,12 @@ import ValNode from "./ValNode";
 // | All dependent files        |
 // +----------------------------+------------------------------------
 
-
-
 //container for everything related to the create workspace
 export default function Workspace(props) {
   useStrictMode(true);
 
   //example layouts for testing
   let layout1 = new MIST.Layout();
-
-
 
   // +--------+--------------------------------------------------------
   // | States |
@@ -105,13 +99,12 @@ export default function Workspace(props) {
       promise.then(
         // TO-DO: call this only on the branches
         renderFunctionRedo(redoFromIndices[i])
-      )/*.then(
+      ); /*.then(
         setCurrRF({
           renderFunction: nodes[redoFromIndices[i]].renderFunction.renderFunction,
           isRenderable: nodes[redoFromIndices[i]].renderFunction.isRenderable,
         })
       )*/
-
     }
   }, [redoFromIndices]);
 
@@ -147,8 +140,6 @@ export default function Workspace(props) {
   // | States |
   // +--------+--------------------------------------------------------
 
-
-
   // +------------------------+----------------------------------------
   // | Adding Nodes and Lines |
   // +------------------------+
@@ -163,11 +154,11 @@ export default function Workspace(props) {
 
   function pushNode(type, name, x, y) {
     let rf = {};
-    switch(type) {
-      case 'fun':
+    switch (type) {
+      case "fun":
         rf = { renderFunction: "", isRenderable: false };
         break;
-      case 'val':
+      case "val":
         rf = { renderFunction: gui.values[name].rep, isRenderable: true };
         break;
       default:
@@ -188,7 +179,7 @@ export default function Workspace(props) {
           ? // e.g. if the function is 'add', this will be [false, false]
             Array(gui.functions[name].min).fill(false)
           : null,
-      parentNodes: []
+      parentNodes: [],
     };
     setNodes((nodes) => [...nodes, node]); //Updating the rendered node list with new node
   }
@@ -199,38 +190,38 @@ export default function Workspace(props) {
    * @param {int} sink
    */
   function pushLine(source, sink, outletIndex) {
-    let newLines = [...lines];
-    let lineIndex = newLines.length; //index of the new line about to be pushed
-    newLines.push({
-      //Pushing new line
-      sourceIndex: source,
-      sinkIndex: sink,
-      outletIndex: outletIndex, // index of the outlet that the line is sinking into
-    });
-    let newNodes = [...nodes];
-    newNodes[source].lineOut.push(lineIndex); //add line to lineOut array of source node
-    newNodes[sink].numInputs += 1; // updating the number of inputs for sink node
-    if (
-      newNodes[sink].numInputs >= newNodes[sink].numOutlets &&
-      gui.functions[newNodes[sink].name].color === gui.functionMultColor
-    ) {
-      // Adding a new outlet once existing outlets are used
-      newNodes[sink].numOutlets += 1;
-      newNodes[sink].activeOutlets.push(false);
+    if (!nodes[source].parentNodes.includes(sink)) {
+      let newLines = [...lines];
+      let lineIndex = newLines.length; //index of the new line about to be pushed
+      newLines.push({
+        //Pushing new line
+        sourceIndex: source,
+        sinkIndex: sink,
+        outletIndex: outletIndex, // index of the outlet that the line is sinking into
+      });
+      let newNodes = [...nodes];
+      newNodes[source].lineOut.push(lineIndex); //add line to lineOut array of source node
+      newNodes[sink].numInputs += 1; // updating the number of inputs for sink node
+      if (
+        newNodes[sink].numInputs >= newNodes[sink].numOutlets &&
+        gui.functions[newNodes[sink].name].color === gui.functionMultColor
+      ) {
+        // Adding a new outlet once existing outlets are used
+        newNodes[sink].numOutlets += 1;
+        newNodes[sink].activeOutlets.push(false);
+      }
+      newNodes[sink].activeOutlets[outletIndex] = lineIndex;
+      let promise = new Promise((resolve, reject) => {
+        setNodes(newNodes);
+        setLines(newLines);
+      });
+      promise.then(setRedoFromIndices([sink]));
     }
-    newNodes[sink].activeOutlets[outletIndex] = lineIndex;
-    let promise = new Promise((resolve, reject) => {
-      setNodes(newNodes);
-      setLines(newLines);
-    });
-    promise.then(setRedoFromIndices([sink]));
   }
 
   // +------------------------+
   // | Adding Nodes and Lines |
   // +------------------------+----------------------------------------
-
-
 
   // +------------------------+----------------------------------------
   // | Updating Node Position |
@@ -251,8 +242,6 @@ export default function Workspace(props) {
   // +------------------------+
   // | Updating Node Position |
   // +------------------------+----------------------------------------
-
-
 
   // +--------------------------+--------------------------------------
   // | Removing Nodes and Lines |
@@ -319,12 +308,14 @@ export default function Workspace(props) {
     ] = false;
     newNodes[sink].activeOutlets[outletIndex] = false; // updates the sink node's outlet status
     let activeOutletsLength = newNodes[sink].activeOutlets.length;
-    if(newNodes[sink].activeOutlets[activeOutletsLength - 1] === false 
-      && newNodes[sink].activeOutlets[activeOutletsLength - 2] === false
-      && activeOutletsLength > gui.functions[newNodes[sink].name].min) {
-        newNodes[sink].numOutlets--;
-        newNodes[sink].activeOutlets.pop();
-      }
+    if (
+      newNodes[sink].activeOutlets[activeOutletsLength - 1] === false &&
+      newNodes[sink].activeOutlets[activeOutletsLength - 2] === false &&
+      activeOutletsLength > gui.functions[newNodes[sink].name].min
+    ) {
+      newNodes[sink].numOutlets--;
+      newNodes[sink].activeOutlets.pop();
+    }
     newNodes[sink].numInputs -= 1;
     let newLines = [...lines];
     newLines[index] = false;
@@ -339,8 +330,6 @@ export default function Workspace(props) {
   // | Removing Nodes and Lines |
   // +--------------------------+--------------------------------------
 
-
-
   // +-------------------------------+---------------------------------
   // | Updating the Render Functions |
   // +-------------------------------+
@@ -350,9 +339,6 @@ export default function Workspace(props) {
    * @param {int} index
    */
   function renderFunctionRedo(index) {
-
-
-    
     let newNodes = [...nodes];
 
     let node = nodes[index];
@@ -368,7 +354,7 @@ export default function Workspace(props) {
         let sourceIndex = lines[lineIndex].sourceIndex;
         let sourceNode = nodes[sourceIndex];
         // update parentNodes
-        if(sourceNode.type === 'fun') {
+        if (sourceNode.type === "fun") {
           parentNodes.push(sourceIndex);
           parentNodes.push(...sourceNode.parentNodes);
         }
@@ -381,6 +367,7 @@ export default function Workspace(props) {
         }
       }
     }
+    newNodes[index].parentNodes = parentNodes;
     // runs if the minimum number of inputs isn't met
     for (
       let i = 0;
@@ -391,7 +378,7 @@ export default function Workspace(props) {
       // missing information means the function isn't renderable
       isRenderable = false;
     }
-    if (rf!=="") {
+    if (rf !== "") {
       rf = rf.substring(0, rf.length - 1);
       // puts the function's name and parentheses around the parameters
       rf = gui.functions[node.name].prefix + "(" + rf + ")";
@@ -446,10 +433,10 @@ export default function Workspace(props) {
       // missing information means the function isn't renderable
       isRenderable = false;
     }
-    if (rf!=="") {
+    if (rf !== "") {
       rf = rf.substring(0, rf.length - 1);
     }
-    if (node.type === "fun" && rf!=="") {
+    if (node.type === "fun" && rf !== "") {
       // prevent parentheses with nothing in them
       rf = gui.functions[node.name].prefix + "(" + rf + ")";
     }
@@ -469,8 +456,6 @@ export default function Workspace(props) {
   // | Updating the Render Functions |
   // +-------------------------------+---------------------------------
 
-
-
   // +------------------------+----------------------------------------
   // | Updating the Workspace |
   // +------------------------+
@@ -487,8 +472,6 @@ export default function Workspace(props) {
   // | Updating the Workspace |
   // +------------------------+----------------------------------------
 
-
-
   // +----------------------+------------------------------------------
   // | Mouse Event Handlers |
   // +----------------------+
@@ -503,8 +486,14 @@ export default function Workspace(props) {
    */
   function funClicked(index) {
     setCurrRF(nodes[index].renderFunction);
-    for(let i = 0; i < nodes[index].parentNodes.length; i++) {
-      console.log("parentNode for "+nodes[index].name+": "+nodes[index].parentNodes[i]);
+    console.log("parentNodes.length:" + nodes[index].parentNodes.length);
+    for (let i = 0; i < nodes[index].parentNodes.length; i++) {
+      console.log(
+        "parentNode for " +
+          nodes[index].name +
+          ": " +
+          nodes[index].parentNodes[i]
+      );
     }
   }
 
@@ -523,8 +512,8 @@ export default function Workspace(props) {
    */
   function outletClicked(sinkIndex, outletIndex) {
     if (
-      newSource!==null &&
-      newSource!==sinkIndex &&
+      newSource !== null &&
+      newSource !== sinkIndex &&
       nodes[sinkIndex].activeOutlets[outletIndex] === false &&
       nodes[sinkIndex].numInputs < gui.functions[nodes[sinkIndex].name].max
     ) {
@@ -547,7 +536,7 @@ export default function Workspace(props) {
    * @param {int} index
    */
   function dblClicked(index) {
-    if (!tempLine && nodes[index].name !== 'rgb') {
+    if (!tempLine && nodes[index].name !== "rgb") {
       setNewSource(index);
       setMouseListenerOn(true);
       setMousePosition({
@@ -561,8 +550,6 @@ export default function Workspace(props) {
   // +----------------------+
   // | Mouse Event Handlers |
   // +----------------------+------------------------------------------
-
-
 
   // +--------+--------------------------------------------------------
   // | RENDER |
@@ -625,7 +612,7 @@ export default function Workspace(props) {
               (theme === "dark" && colors.valueMenuColor3)
             }
           />
-          {nodes.length !==  0 &&
+          {nodes.length !== 0 &&
             lines.map(
               (line, index) =>
                 line && (
