@@ -24,7 +24,8 @@ export default function MISTImage(props) {
       {},
       canvas.current
     );
-    new_animator.setResolution(props.width, props.height);
+    new_animator.setResolution((props.width < 150) ? props.width : 150,
+        (props.height < 150) ? props.height : 150);
     new_animator.frame();
     if(props.automated) {
         new_animator.start();
@@ -39,7 +40,8 @@ export default function MISTImage(props) {
 
   useEffect(() => {
     if (animator) {
-      animator.setResolution(props.width, props.height);
+      animator.setResolution((props.width < 150) ? props.width : 150,
+      (props.height < 150) ? props.height : 150);
       animator.frame();
     }
   }, [animator, props.width, props.height]);

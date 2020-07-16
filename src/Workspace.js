@@ -658,7 +658,6 @@ export default function Workspace(props) {
                       ? node.renderFunction.renderFunction
                       : false
                   }
-                  //findRF={findRenderFunction}
                   handler={updatePosition}
                   funClicked={funClicked}
                   outletClicked={outletClicked}

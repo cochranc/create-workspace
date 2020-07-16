@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Rect, Group, Text, Shape, Image } from "react-konva";
 import Konva from "konva";
 import Portal from "./Portal";
 import gui from "./mistgui-globals.js";
 import MISTImage from "./MISTImage";
 import useImage from "use-image";
+import { render } from "@testing-library/react";
 
 /**
  *
@@ -22,7 +23,7 @@ function FunNode(props) {
   const rep = gui.functions[name].rep;
   const prefix = gui.functions[name].prefix;
   const separator = gui.functions[name].separator;
-  const renderFunction = props.renderFunction;
+  const renderFunction = props.renderFunction ? props.renderFunction : "";
   const numOutlets = props.numOutlets;
   const [showImage, setShowImage] = useState(false);
   const [mainRectState, setMainRectState] = useState("none");
@@ -51,6 +52,12 @@ function FunNode(props) {
       />
     );
   }
+
+  useEffect(() => {
+    if(!props.renderFunction) {
+      setShowImage(false);
+    }
+  }, [props.renderFunction])
 
   function handleDragStart(e) {
     e.target.setAttrs({
@@ -204,7 +211,7 @@ function FunNode(props) {
             y={y + gui.functionRectSideLength + gui.functionImageBoxOffset}
             width={gui.renderSideLength}
             height={gui.renderSideLength}
-            renderFunction={renderFunction}
+            renderFunction={props.renderFunction ? props.renderFunction : ""}
             automated={false}
           />
         </Portal>
