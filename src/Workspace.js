@@ -188,6 +188,7 @@ export default function Workspace(props) {
           ? // e.g. if the function is 'add', this will be [false, false]
             Array(gui.functions[name].min).fill(false)
           : null,
+      parentNodes: []
     };
     setNodes((nodes) => [...nodes, node]); //Updating the rendered node list with new node
   }
@@ -319,8 +320,8 @@ export default function Workspace(props) {
     newNodes[sink].activeOutlets[outletIndex] = false; // updates the sink node's outlet status
     let activeOutletsLength = newNodes[sink].activeOutlets.length;
     if(newNodes[sink].activeOutlets[activeOutletsLength - 1] === false 
-      && newNodes[sink].activeOutlets[activeOutletsLength-2] === false
-      && activeOutletsLength > 2) {
+      && newNodes[sink].activeOutlets[activeOutletsLength - 2] === false
+      && activeOutletsLength > gui.functions[newNodes[sink].name].min) {
         newNodes[sink].numOutlets--;
         newNodes[sink].activeOutlets.pop();
       }
@@ -349,20 +350,33 @@ export default function Workspace(props) {
    * @param {int} index
    */
   function renderFunctionRedo(index) {
+
+
+    
+    let newNodes = [...nodes];
+
     let node = nodes[index];
     let rf = "";
     let isRenderable = true;
     let lineCount = 0;
+    let parentNodes = [];
     // getting the render function from each outlet (w/o going deeper into the tree)
     for (let i = 0; i < node.activeOutlets.length; i++) {
       const lineIndex = node.activeOutlets[i];
       if (typeof lineIndex === "number") {
         lineCount++;
-        rf += nodes[lines[lineIndex].sourceIndex].renderFunction.renderFunction;
+        let sourceIndex = lines[lineIndex].sourceIndex;
+        let sourceNode = nodes[sourceIndex];
+        // update parentNodes
+        if(sourceNode.type === 'fun') {
+          parentNodes.push(sourceIndex);
+          parentNodes.push(...sourceNode.parentNodes);
+        }
+        rf += sourceNode.renderFunction.renderFunction;
         rf += ",";
         // checks if any of the child node's render function is invalid;
         // if so, sets isRenderable to false
-        if (!nodes[lines[lineIndex].sourceIndex].renderFunction.isRenderable) {
+        if (!sourceNode.renderFunction.isRenderable) {
           isRenderable = false;
         }
       }
@@ -382,7 +396,7 @@ export default function Workspace(props) {
       // puts the function's name and parentheses around the parameters
       rf = gui.functions[node.name].prefix + "(" + rf + ")";
     }
-    let newNodes = [...nodes];
+
     newNodes[index].renderFunction = {
       renderFunction: rf,
       isRenderable: isRenderable,
@@ -489,6 +503,9 @@ export default function Workspace(props) {
    */
   function funClicked(index) {
     setCurrRF(nodes[index].renderFunction);
+    for(let i = 0; i < nodes[index].parentNodes.length; i++) {
+      console.log("parentNode for "+nodes[index].name+": "+nodes[index].parentNodes[i]);
+    }
   }
 
   /**
