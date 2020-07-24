@@ -92,10 +92,10 @@ MIST.expType = function(exp,context) {
   // Long term: Scan through the expression.
   // Short term: Look at the top-level operation
   if (exp instanceof MIST.App) {
-    if ((exp.operation == "rgb") || (exp.operation == "MIST.rgb")) {
+    if ((exp.operation === "rgb") || (exp.operation === "MIST.rgb")) {
       return MIST.TYPE.RGB;
     }
-    else if (exp.operation == "hsv") {
+    else if (exp.operation === "hsv") {
       return MIST.TYPE.HSV;
     }
     else {
@@ -121,7 +121,7 @@ MIST.expType = function(exp,context) {
 function contains(array, val)
 {
   for (var i = 0; i < array.length; i++) {
-    if (array[i] == val) {
+    if (array[i] === val) {
       return true;
     } // if
   } // for
@@ -139,7 +139,7 @@ function getArgs(args, start)
   if (!start) { start = 0; }
   var arglen = args.length - start;
   //console.log("arglen: "+arglen);
-  if ((arglen == 1) && (args[start] instanceof Array)) {
+  if ((arglen === 1) && (args[start] instanceof Array)) {
     return args[start];
   } // if there's only one argument, and it's an array.
   else {
@@ -237,7 +237,7 @@ MIST.isFun = function(val)
  */
 MIST.rebuild = function(obj) {
   // If we start with a string, we assume it's JSON.
-  if (typeof(obj) == "string") {
+  if (typeof(obj) === "string") {
     try {
       return MIST.rebuild(JSON.parse(obj));
     } // try
@@ -247,17 +247,17 @@ MIST.rebuild = function(obj) {
   } // if it's a string
 
   // Handle the standard MIST. objects
-  else if (obj.class == "MIST.Val") {
+  else if (obj.class === "MIST.Val") {
     return new MIST.Val(obj.name);
   }
-  else if (obj.class == "MIST.App") {
+  else if (obj.class === "MIST.App") {
     var operands = Array(obj.operands.length);
     for (var i = 0; i < obj.operands.length; i++) {
       operands[i] = MIST.rebuild(obj.operands[i]);
     } // for
     return new MIST.App(obj.operation, operands);
   }
-  else if (obj.class == "MIST.Fun") {
+  else if (obj.class === "MIST.Fun") {
     return new MIST.Fun(obj.parameters, MIST.rebuild(obj.body));
   }
 
@@ -279,7 +279,7 @@ MIST.sameExp = function(a,b,checkedLoops)
 
   // Two values are the same if the have the same name
   if ((a instanceof MIST.Val) && (b instanceof MIST.Val)) {
-    return a.name == b.name;
+    return a.name === b.name;
   } // two values
 
   // Two expressions are the same if they have the same operations
@@ -345,7 +345,7 @@ MIST.validate = function(name, exp, context) {
     } // for
 
     // For RGB functions, make sure that all parameters are numbers.
-    if (opInfo.type == "RGB") {
+    if (opInfo.type === "RGB") {
       exp.type = MIST.TYPE.RGB;
       for (var i = 0; i < exp.operands.length; i++) {
         if (exp.operands[i].type != MIST.TYPE.NUMBER) {
@@ -356,10 +356,10 @@ MIST.validate = function(name, exp, context) {
       } // for
     } // if it's an RGB function
 
-    else if (opInfo.type == "HSV") {
+    else if (opInfo.type === "HSV") {
     } // if it's an HSV function
 
-    else if (opInfo.type == "GENERAL") {
+    else if (opInfo.type === "GENERAL") {
       for (var i = 0; i < exp.operands.length; i++) {
       } // for
     } // if it's a general function
@@ -401,7 +401,7 @@ MIST.App = function(operation) {
   } // for
 
   // Build the code for this expression
-  if (this.operands.length == 0)
+  if (this.operands.length === 0)
     this.code = this.operation + "()";
   else
     this.code = this.operation + "(" + this.operands.join(",") + ")";
@@ -425,12 +425,12 @@ MIST.App.prototype.prettyPrint = function(indent,suffix) {
   var newindent = indent + nspaces(this.operation.length+1);
 
   // If there are no operands
-  if (arity == 0) {
+  if (arity === 0) {
     return this.operation + "()" + suffix;
   } // if there are no operands
 
   // If there's only one operand
-  else if (arity == 1) {
+  else if (arity === 1) {
     return this.operation + "(" + this.operands[0].prettyPrint(newindent, ")"+suffix);
   } // if there's only one operand
 
@@ -500,7 +500,17 @@ MIST.Fun.prototype.toFunction = function() {
  */
 MIST.Val = function(name) {
   this.class = "MIST.Val";
-  this.name = name;
+  if(name === 't.s'){
+    this.name = 'second'
+  } else if(name === 't.m') {
+    this.name = 'minute';
+  } else if(name === 't.d') {
+    this.name = 'day'
+  } else if(name === 't.h') {
+    this.name = 'hour'
+  } else {
+    this.name = name;
+  }
   this.code = "" + name;
 } // MIST.Val
 
@@ -712,7 +722,7 @@ MIST.Input = function(text)
   // Get the next character
   this.next = function() {
     var c = this.peek();
-    if (c == undefined) {
+    if (c === undefined) {
       return undefined;
     }
     else {
@@ -720,7 +730,7 @@ MIST.Input = function(text)
           this.row, this.col);
       ++this.pos;
       ++this.col;
-      if (c == "\n") {
+      if (c === "\n") {
         ++this.row;
         this.col = 1;
       }
@@ -756,29 +766,29 @@ MIST.tokenize = function(str) {
   while (!input.eof())
     {
       var ch = input.next();
-      if (ch.text == "(") {
+      if (ch.text === "(") {
         ch.type = MIST.tokens.OPEN;
         tokens.push(ch);
       }
-      else if (ch.text == ")") {
+      else if (ch.text === ")") {
         ch.type = MIST.tokens.CLOSE;
         tokens.push(ch);
       }
-      else if (ch.text == ",") {
+      else if (ch.text === ",") {
         ch.type = MIST.tokens.COMMA;
         tokens.push(ch);
       }
       else if (/[0-9-.]/.test(ch.text)) {
         var num = ch.text;
         var c;
-        var dot = (ch.text == ".");
+        var dot = (ch.text === ".");
         while ((c = input.peek()) &&
-            (/[0-9]/.test(c) || (!dot && (c == ".")))) {
+            (/[0-9]/.test(c) || (!dot && (c === ".")))) {
           input.next();
           num += c;
-          if (c == ".") { dot = true; }
+          if (c === ".") { dot = true; }
         } // while
-        if (num == "-") {
+        if (num === "-") {
           MIST.parseError("Singleton negative signs not allowed.",
             ch.row, ch.col);
         } // if we only saw a negative sign
@@ -848,19 +858,19 @@ MIST.parse = function(str,prefix) {
   // The kernel.  Does the work, also recurses.
   var kernel = function(tokens) {
     // This should never happen, but let's be safe.
-    if (tokens.length == 0) {
+    if (tokens.length === 0) {
       MIST.parseError("Unexpected end of input", 0, 0);
     }
 
     var tok = tokens.shift();
 
     // Check for end of input
-    if (tok.type == MIST.tokens.EOF) {
+    if (tok.type === MIST.tokens.EOF) {
       MIST.parseError("Unexpected end of input", tok.row, tok.col);
     }
 
     // Is it a number?
-    if (tok.type == MIST.tokens.NUM) {
+    if (tok.type === MIST.tokens.NUM) {
       return new MIST.Val(tok.text);
     } // MIST.tokens.NUM
 
@@ -870,14 +880,14 @@ MIST.parse = function(str,prefix) {
     } // if it's not an identifier
 
     // Is it a function call?
-    else if (peekType(tokens) == MIST.tokens.OPEN) {
+    else if (peekType(tokens) === MIST.tokens.OPEN) {
       tokens.shift();
       var children = [];
       while (peekType(tokens) != MIST.tokens.CLOSE) {
         children.push(kernel(tokens));
-        if (peekType(tokens) == MIST.tokens.COMMA) {
+        if (peekType(tokens) === MIST.tokens.COMMA) {
           tokens.shift();
-          if (peekType(tokens) == MIST.tokens.CLOSE) {
+          if (peekType(tokens) === MIST.tokens.CLOSE) {
             MIST.parseError("Close paren follows comma", tokens[0].row, tokens[0].col);
           } // if there's a close paren after a comma
         } // if there's a comma
@@ -1016,7 +1026,7 @@ MIST.expToRGB = function(name,exp,env) {
   //      ...
   //      return (exp).map(r2c);
   //   };
-  if (type == MIST.TYPE.RGB) {
+  if (type === MIST.TYPE.RGB) {
     var code = "(function(x,y,t,m,p) { " + envCode +
         "; return (" + exp.toString() + ").map(r2c); })";
     return eval(code);
@@ -1027,7 +1037,7 @@ MIST.expToRGB = function(name,exp,env) {
   //      ...
   //      var _tmp_ = r2c(-exp);
   //      return [_tmp_, _tmp_, _tmp];
-  else if (type == MIST.TYPE.NUMBER) {
+  else if (type === MIST.TYPE.NUMBER) {
     var code = "(function(x,y,t,m,p) { " + envCode +
         "; var _tmp_ = r2c(-" + exp.toString() +
         "); return [_tmp_, _tmp_, _tmp_]; })";
@@ -1571,7 +1581,7 @@ MIST.displayLayout = function(layout, display)
  */
 MIST.rebuildLayout = function(layout)
 {
-  if (typeof(layout) == "string")
+  if (typeof(layout) === "string")
     return MIST.rebuildlayout(JSON.parse(layout));
   
   if (layout.class != "MIST.Layout")
@@ -1956,22 +1966,22 @@ MIST.renderAt = function(t, exp, context, canvas,
 
   // Build the function
   var fun = MIST.expToRGB("untitled image", exp, context);
-  console.log("1959");
+  //console.log("1959");
   // Set up our main variables
   var x = -1;
   var y = -1 - deltaY;
   // Loop through all of the pixels
   for (var i = 0; i < region.data.length; i+= 4)
     {
-      if(i%16===0) {
+      /*if(i%16===0) {
         console.log("i:"+i);
-      }
+      }*/
       // When we reach the end of the row, move on to the next row
-      if ((i % (4*renderWidth)) == 0)
+      if ((i % (4*renderWidth)) === 0)
         { 
           x = -1;
           y += deltaY;
-        } // if (i % (4*imgWidth)) == 0
+        } // if (i % (4*imgWidth)) === 0
 
       // Evaluate the function
       var rgb = fun(x,y,t,m);
@@ -2033,7 +2043,7 @@ function api(action,params,callback,method) {
   console.log(data);
   var request = new XMLHttpRequest();
   // If we're supposed to post the request ...
-  if (method == "POST") {
+  if (method === "POST") {
     request.open("POST", "/api", false);
     request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     request.send(data);
@@ -2091,7 +2101,7 @@ function restore(obj) {
     // Recurse on the children
     for (var key in val) {
       var child = val[key];
-      if ((typeof(child) == "object") && (!contains(unprocessed,child))
+      if ((typeof(child) === "object") && (!contains(unprocessed,child))
           && (!contains(processed,child))) {
         unprocessed.push(child);
       } // if it's a new object
@@ -2106,5 +2116,8 @@ var Data = function() {
   
 }
 
-export {MIST, gifTime};
+MIST.setMouse = setMouse;
+MIST.setClick = setClick;
+
+export {MIST, gifTime, setMouse};
 //module.exports = MIST;

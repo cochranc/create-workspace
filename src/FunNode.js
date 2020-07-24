@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Rect, Group, Text, Shape, Image } from "react-konva";
 import Konva from "konva";
 import Portal from "./Portal";
 import gui from "./mistgui-globals.js";
 import MISTImage from "./MISTImage";
 import useImage from "use-image";
+import nodeDimensions from "./globals-nodes-dimensions.js";
+import globals from "./globals.js";
 
 /**
  *
@@ -15,26 +17,21 @@ function FunNode(props) {
   const index = props.index;
   const x = props.x;
   const y = props.y;
-  const numInputs = props.numInputs;
-  const maxInputs = gui.functions[name].max;
-  const minInputs = gui.functions[name].min;
-  const [lineOut, setLineOut] = useState([]);
   const rep = gui.functions[name].rep;
-  const prefix = gui.functions[name].prefix;
-  const separator = gui.functions[name].separator;
-  const renderFunction = props.renderFunction;
+  const renderFunction = props.renderFunction ? props.renderFunction : "";
   const numOutlets = props.numOutlets;
   const [showImage, setShowImage] = useState(false);
-  const [mainRectState, setMainRectState] = useState("none");
   const [hovered, setHovered] = useState(false);
   const [trashHovered, setTrashHovered] = useState(false);
   const [image] = useImage(require("./trash.png"));
+  const groupRef = useRef(null);
+
   function Trashcan() {
     return (
       <Image
         image={image}
-        x={0} //60}
-        y={0} //-5}
+        x={nodeDimensions.functionTrashX}
+        y={nodeDimensions.functionTrashY}
         width={14}
         height={14}
         shadowColor={trashHovered ? "red" : "cyan"}
@@ -52,159 +49,152 @@ function FunNode(props) {
     );
   }
 
-  function handleDragStart(e) {
-    e.target.setAttrs({
-      shadowOffset: {
-        x: 15,
-        y: 15,
-      },
-      scaleX: 1.1,
-      scaleY: 1.1,
-    });
-  }
-
-  function handleDragEnd(e) {
-    e.target.to({
-      duration: 0.5,
-      easing: Konva.Easings.ElasticEaseOut,
-      scaleX: 1,
-      scaleY: 1,
-      shadowOffsetX: 5,
-      shadowOffsetY: 5,
-    });
-  }
-
-  function handleDrag(e) {
-    props.handler(index, e.currentTarget.x(), e.currentTarget.y());
-  }
-
-  function handleClick(e) {
-    if (e.target.attrs.name) {
-      props.outletClicked(
-        index,
-        parseInt(e.target.attrs.name.substring(6)) - 1
-      );
-    } else {
-      props.funClicked(index);
+  useEffect(() => {
+    if (!props.renderFunction) {
+      setShowImage(false);
     }
-  }
-
-  function handleDblClick(e) {
-    props.dblClickHandler(index);
-  }
-
-  function outletHovered(e) {
-    e.target.to({
-      duration: 0.3,
-      easing: Konva.Easings.ElasticEaseOut,
-      scaleX: 1.2,
-      scaleY: 1.2,
-      shadowOffsetX: 5,
-      shadowOffsetY: 5,
-    });
-  }
-
-  function outletExited(e) {
-    e.target.to({
-      duration: 0.3,
-      easing: Konva.Easings.ElasticEaseOut,
-      scaleX: 1,
-      scaleY: 1,
-      shadowOffsetX: 5,
-      shadowOffsetY: 5,
-    });
-  }
+  }, [props.renderFunction]);
 
   return (
     <Group
+      ref={groupRef}
+      x={x}
+      y={y}
       draggable
       dragBoundFunc={function (pos) {
         if (pos.x < 0) {
           pos.x = 0;
         }
-        if (pos.x > window.innerWidth - gui.functionTotalSideLength) {
-          pos.x = window.innerWidth - gui.functionTotalSideLength;
+        if (pos.x > window.innerWidth - nodeDimensions.functionWidth) {
+          pos.x = window.innerWidth - nodeDimensions.functionWidth;
         }
-        if (pos.y < gui.menuHeight) {
-          pos.y = gui.menuHeight;
+        if (pos.y < globals.menuHeight) {
+          pos.y = globals.menuHeight;
         }
         if (
           pos.y >
-          window.innerHeight - gui.funBarHeight - gui.functionTotalSideLength
+          window.innerHeight -
+            globals.funBarHeight -
+            nodeDimensions.functionWidth
         ) {
           pos.y =
-            window.innerHeight - gui.funBarHeight - gui.functionTotalSideLength;
+            window.innerHeight -
+            globals.funBarHeight -
+            nodeDimensions.functionWidth;
         }
         return pos;
       }}
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
-      onDragMove={handleDrag}
-      onClick={handleClick}
-      onDblClick={handleDblClick}
-      onMouseEnter={(e) => {
-        setHovered(true);
+      onDragStart={(e) => {
+        e.target.setAttrs({
+          duration: 0.5,
+          shadowOffset: {
+            x: 5,
+            y: 5,
+          },
+          shadowBlur: 6,
+          scaleX: 1.1,
+          scaleY: 1.1,
+        });
       }}
-      onMouseLeave={(e) => {
-        setHovered(false);
+      onDragEnd={(e) => {
+        e.target.to({
+          duration: 0.5,
+          easing: Konva.Easings.ElasticEaseOut,
+          scaleX: 1,
+          scaleY: 1,
+        });
+        props.updateNodePosition(index, e.currentTarget.x(), e.currentTarget.y());
       }}
-      x={x}
-      y={y}
+      onDragMove={(e) => {
+        props.updateLinePosition(index, 'fun', e.currentTarget.x(), e.currentTarget.y());
+      }}
+      onClick={(e) => {
+        if (e.target.attrs.name) {
+          props.outletClicked(
+            index,
+            parseInt(e.target.attrs.name.substring(6)) - 1
+          );
+        } else {
+          props.funClicked(index);
+        }
+      }}
+      onDblClick={() => {
+        props.dblClickHandler(index);
+      }}
     >
-      <Rect
-        name={"mainRect"}
-        x={gui.functionHalfStrokeWidth}
-        y={gui.functionHalfStrokeWidth}
-        width={gui.functionRectSideLength}
-        height={
-          props.numOutlets <= 3
-            ? gui.functionRectSideLength
-            : gui.functionRectSideLength +
-              (props.numOutlets - 3) * gui.outletYOffset
-        }
-        fill={gui.functions[name].color}
-        lineJoin={"round"}
-        stroke={gui.functions[name].color}
-        strokeWidth={gui.functionStrokeWidth}
-        shadowColor={
-          (mainRectState === "none" && "gray") ||
-          (mainRectState === "hover" && "cyan") ||
-          (mainRectState === "clicked" && "cyan") ||
-          (mainRectState === "trash" && "red")
-        }
-        shadowBlur={mainRectState === "hover" ? 5 : 2}
-        shadowOffsetX={mainRectState === "none" ? 1 : 0}
-        shadowOffsetY={mainRectState === "none" ? 1 : 0}
-        _useStrictMode
-      />
-      <Trashcan />
-      <Text
-        text={rep}
-        fontFamily={gui.globalFont}
-        fill={"white"}
-        fontSize={gui.nodeFontSize}
-        x={0}
-        y={
-          props.numOutlets <= 3
-            ? gui.functionTotalSideLength / 2 - gui.functionHalfStrokeWidth
-            : (gui.functionTotalSideLength +
-                (props.numOutlets - 3) * gui.outletYOffset) /
-                2 -
-              gui.functionHalfStrokeWidth
-        }
-        width={gui.functionTotalSideLength}
-        align={"center"}
-        _useStrictMode
-      />
+      <Group
+        onMouseEnter={(e) => {
+          groupRef.current.children.map((u, i) => {
+            u.to({
+              duration: 0.5,
+              easing: Konva.Easings.ElasticEaseOut,
+              scaleX: 1.07,
+              scaleY: 1.07
+            })
+          })
+          setHovered(true);
+        }}
+        onMouseLeave={(e) => {
+          setHovered(false);
+          groupRef.current.children.map((u, i) => {
+            u.to({
+              duration: 0.5,
+              easing: Konva.Easings.ElasticEaseOut,
+              scaleX: 1,
+              scaleY: 1
+            })
+          })
+        }}
+      >
+        <Rect
+          x={0}
+          y={0}
+          width={nodeDimensions.functionWidth}
+          height={
+            props.numOutlets <= 3
+              ? nodeDimensions.functionWidth
+              : nodeDimensions.functionWidth +
+                (props.numOutlets - 3) * nodeDimensions.outletYOffset
+          }
+          fill={gui.functions[name].color}
+          cornerRadius={10}
+          shadowColor={
+            hovered ? (trashHovered ? "red" : props.hoverShadowColor) : "black"
+          }
+          shadowOffset={{ x: hovered ? 0 : 1, y: hovered ? 0 : 1 }}
+          shadowBlur={3}
+          _useStrictMode
+        />
+        <Text
+          text={rep}
+          fontFamily={gui.globalFont}
+          fill={"white"}
+          fontSize={gui.nodeFontSize}
+          x={0}
+          y={0}
+          width={nodeDimensions.functionWidth}
+          height={
+            props.numOutlets <= 3
+              ? nodeDimensions.functionWidth
+              : nodeDimensions.functionWidth +
+                (props.numOutlets - 3) * nodeDimensions.outletYOffset
+          }
+          align={"center"}
+          verticalAlign={"middle"}
+          _useStrictMode
+        />
+        <Trashcan />
+      </Group>
       {showImage ? (
         <Portal>
           <MISTImage
             onClick={() => setShowImage(false)}
-            x={x + gui.functionRectSideLength + gui.functionImageBoxOffset}
-            y={y + gui.functionRectSideLength + gui.functionImageBoxOffset}
-            width={gui.renderSideLength}
-            height={gui.renderSideLength}
-            renderFunction={renderFunction}
+            x={x + nodeDimensions.functionImageBoxOffset + props.offsetX}
+            y={y + nodeDimensions.functionImageBoxOffset + props.offsetY}
+            width={nodeDimensions.renderSideLength}
+            height={nodeDimensions.renderSideLength}
+            renderFunction={props.renderFunction ? props.renderFunction : ""}
+            automated={false}
           />
         </Portal>
       ) : (
@@ -216,22 +206,22 @@ function FunNode(props) {
             }
           }}
           name={"imageBox"}
-          x={gui.functionRectSideLength + gui.functionImageBoxOffset}
+          x={nodeDimensions.functionImageBoxOffset}
           y={
             props.numOutlets <= 3
-              ? gui.functionRectSideLength + gui.functionImageBoxOffset
-              : gui.functionRectSideLength +
-                gui.functionImageBoxOffset +
-                (props.numOutlets - 3) * gui.outletYOffset
+              ? nodeDimensions.functionImageBoxOffset
+              : nodeDimensions.functionImageBoxOffset +
+                (props.numOutlets - 3) * nodeDimensions.outletYOffset
           }
-          width={gui.imageBoxSideLength}
-          height={gui.imageBoxSideLength}
+          width={nodeDimensions.imageBoxSideLength}
+          height={nodeDimensions.imageBoxSideLength}
           fill={gui.imageBoxColor}
           shadowColor={"gray"}
           shadowBlur={2}
           shadowOffsetX={1}
           shadowOffsetY={1}
           expanded={false}
+          visible={props.renderfunction != false}
         />
       )}
       {name === "rgb"
@@ -252,19 +242,34 @@ function FunNode(props) {
                 context.fillStrokeShape(this);
               }}
               name={"outlet" + (i + 1)}
-              x={gui.outletXOffset}
-              y={i * gui.outletYOffset + 17}
+              key={i} // to silence a warning
+              x={nodeDimensions.outletXOffset}
+              y={i * nodeDimensions.outletYOffset + nodeDimensions.outletStartY}
               fillRadialGradientStartPoint={{ x: -19, y: -5 }}
               fillRadialGradientStartRadius={3}
               fillRadialGradientEndPoint={{ x: -15, y: -5 }}
               fillRadialGradientEndRadius={15}
               fillRadialGradientColorStops={[0, u, 1, "dark" + u]}
-              //fill={u}
-              shadowColor={"gray"}
-              shadowBlur={2}
-              opacity={1}
-              lineIn={null}
-              outletIndex={i}
+              onMouseOver={(e) => {
+                e.target.to({
+                  duration: 0.3,
+                  easing: Konva.Easings.ElasticEaseOut,
+                  scaleX: 1.2,
+                  scaleY: 1.2,
+                  shadowOffsetX: 5,
+                  shadowOffsetY: 5,
+                });
+              }}
+              onMouseOut={(e) => {
+                e.target.to({
+                  duration: 0.3,
+                  easing: Konva.Easings.ElasticEaseOut,
+                  scaleX: 1,
+                  scaleY: 1,
+                  shadowOffsetX: 5,
+                  shadowOffsetY: 5,
+                });
+              }}
             />
           ))
         : [...Array(numOutlets)].map((u, i) => (
@@ -284,8 +289,9 @@ function FunNode(props) {
                 context.fillStrokeShape(this);
               }}
               name={"outlet" + (i + 1)}
-              x={gui.outletXOffset}
-              y={i * gui.outletYOffset + 17}
+              x={nodeDimensions.outletXOffset}
+              key={i}
+              y={i * nodeDimensions.outletYOffset + nodeDimensions.outletStartY}
               fillRadialGradientStartPoint={{ x: -19, y: -5 }}
               fillRadialGradientStartRadius={3}
               fillRadialGradientEndPoint={{ x: -15, y: -5 }}
@@ -296,12 +302,26 @@ function FunNode(props) {
                 1,
                 gui.outletColor2,
               ]}
-              //fill={gui.outletColor}
-              //shadowColor={"gray"}
-              //shadowBlur={2}
-              opacity={1}
-              lineIn={null}
-              outletIndex={i}
+              onMouseOver={(e) => {
+                e.target.to({
+                  duration: 0.3,
+                  easing: Konva.Easings.ElasticEaseOut,
+                  scaleX: 1.2,
+                  scaleY: 1.2,
+                  shadowOffsetX: 5,
+                  shadowOffsetY: 5,
+                });
+              }}
+              onMouseOut={(e) => {
+                e.target.to({
+                  duration: 0.3,
+                  easing: Konva.Easings.ElasticEaseOut,
+                  scaleX: 1,
+                  scaleY: 1,
+                  shadowOffsetX: 5,
+                  shadowOffsetY: 5,
+                });
+              }}
             />
           ))}
     </Group>

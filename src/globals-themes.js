@@ -1,38 +1,80 @@
-const background1 = '#FAFBFF';
-const background2 = '#f0f5ff';
-const background3 = 'black';
+// +------------------+----------------------------------------------
+// | Workspace Colors |
+// +------------------+
 
-const lineFill1 = 'black';
-const lineFill2 = 'black';
-const lineFill3 = 'white';
+// Workspace's background.
+const workspaceBackground = {
+  classic: "#FAFBFF",
+  dusk: "#f0f5ff",
+  dark: "black",
+};
 
-const hoverShadowColor1 = 'cyan';
-const hoverShadowColor2 = 'cyan';
-const hoverShadowColor3 = 'cyan';
+// +-------------+---------------------------------------------------
+// | Node Colors |
+// +-------------+
 
-const menuBg1 = 'white';
-const menuBg2 = '#EEF0FF';
-const menuBg3 = '#4d4a45'
+// Color of the lines between nodes.
+const lineFill = {
+  classic: "black",
+  dusk: "black",
+  dark: "white",
+};
 
-const valueMenuColor1 = '#F2937C';
-const valueMenuColor2 = '#ffa931';
-const valueMenuColor3 = '#ffa931'
+// Color of the shadow when you hover over a node.
+const nodeHoverShadow = {
+    classic: 'cyan',
+    dusk: 'cyan',
+    dark: 'white',
+}
 
-const wsButtonColor1 = '#7FA7E7';
-const wsButtonColor2 = '#111d5e';
-const wsButtonColor3 = '#1c170f';
 
-const funBarBg1 = '#7FA7E7';
-const funBarBg2 = '#111d5e';
-const funBarBg3 = '#4d4a45';
+
+// +-------------+---------------------------------------------------
+// | Menu Colors |
+// +-------------+
+
+// Menu background color.
+const menuBackground = {
+    classic: 'white',
+    dusk: '#EEF0FF',
+    dark: '#1c170f',
+}
+
+// FOR NOW: Color of the value node on the menu value button.
+const valueMenuColor1 = "#F2937C";
+const valueMenuColor2 = "#ffa931";
+const valueMenuColor3 = "#ffa931";
+
+// Color of the reset/open/save buttons on the menu.
+const workspaceButton = {
+    classic: '#7FA7E7',
+    dusk: '#111d5e',
+    dark: '#4d4a45',
+}
+
+// +---------------+-------------------------------------------------
+// | FunBar Colors |
+// +---------------+
+
+// Function bar's background.
+const funBarBackground = {
+    classic: '#7FA7E7',
+    dusk: '#111d5e',
+    dark: '#1c170f',
+}
+
+// +---------+-------------------------------------------------------
+// | Exports |
+// +---------+
 
 export default {
-    background1, background2,
-    lineFill1, lineFill2,
-    hoverShadowColor1, hoverShadowColor2,
-    menuBg1, menuBg2,
-    valueMenuColor1, valueMenuColor2,
-    wsButtonColor1, wsButtonColor2,
-    funBarBg1, funBarBg2, background3, lineFill3,
-    hoverShadowColor3, menuBg3, valueMenuColor3, wsButtonColor3, funBarBg3
-}
+  workspaceBackground,
+  lineFill,
+  nodeHoverShadow,
+  menuBackground,
+  valueMenuColor1,
+  valueMenuColor2,
+  valueMenuColor3,
+  workspaceButton,
+  funBarBackground,
+};
